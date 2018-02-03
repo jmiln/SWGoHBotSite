@@ -2,143 +2,301 @@
 <html lang="en">
     <head>
         <% include ../partials/head %>
+
+        <title>SWGoHBot Commands</title>
     </head>
 
     <body>
         <header>
             <% include ../partials/nav %>
-            <style>
-                .sidenav {
-                    background-color: #2b2b2b;
-                    height: 100%;
-                    color: white;
-                    padding: 15px;
-                }
-                th {
-                    background-color: #2b2b2b;
-                }
-                table.table-striped > thead > tr > th {
-                    border-top:1px solid #2b2b2b;
-                    border-bottom:1px solid #2b2b2b;
-                }
-                table.table-striped > tbody > tr > td{
-                    border-top:1px solid #2b2b2b;
-                    border-bottom:1px solid #2b2b2b;
-                }
-                pre code {
-                    color: white;
-                }
-            </style>
         </header>
-        <div class="container">
-            <h2>Commands</h2>
-            <div class="row content">
-                <div class="col-sm-2 sidenav border-right rounded">
-                    <nav class="nav nav-pills flex-column">
-                        <% var commandCats = Object.keys(command_list); %>
-                        <% for(var i=0; i < commandCats.length; i++) { %>
-                            <a href="#<%= commandCats[i].split(' ').join('').toLowerCase() %>" class="nav-link<% if(i===0) { %> active<% } %>" data-toggle="pill" role="tab">
-                                <%= commandCats[i] %>
-                            </a>
-                        <% } %>
-                    </nav>
 
-                </div>
+        <div class="content container">
+            <h2 style="text-align: center;" id="ignoretheme">Commands</h2>
+            <hr class="my-2"><br>
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a data-toggle="tab" class="nav-link active" href="#admin">Admin</a></li>
+                <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#misc">Misc</a></li>
+                <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#star-wars">Star Wars</a></li>
 
-                <div class="col-sm-9">
-                    <div class="tab-content">
-                        <% for(var i=0; i < commandCats.length; i++) { %>
-                            <div class="tab-pane<% if(i===0) { %> active<% } %>"  id="<%= commandCats[i].split(' ').join('').toLowerCase() %>" role="tabpanel">
-                                <table class="table table-striped table-sm">
-                                    <thead>
-                                        <tr><th>Command</th><th>Description</th><th>Usage</th></tr>
-                                    </thead>
-                                    <tbody>
+            </ul>
+            <div class="tab-content">
+                <!-- Command Template
+                <tr>
+                    <td>NAME</td>
+                    <td><ul>
+                        <li>ALIAS</li>
+                    </ul></td>
+                    <td><ul>
+                        <li>;NAME <code id="input">&lt;ARGS&gt;</code></li>
+                    </ul></td>
+                    <td>DESC</td>
+                </tr> 
+                -->
+                  
+                <!-- Admin commands -->
+                <div class="tab-pane show active fade in" id="admin">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th width="10%">Name</th>
+                                <th width="10%">Aliases</th>
+                                <th width="30%">Usage</th>
+                                <th width="50%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>nickname</td>
+                                <td><ul>
+                                    <li>nick</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;nickname <code id="input">&lt;name&gt;</code></li>
+                                </ul></td>
+                                <td>Changes the bot's nickname on the server</td>
+                            </tr>
+                            <tr>
+                                <td>setconf</td>
+                                <td><ul>
+                                    <li>setconfig</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;setconf <code id="input">&lt;help&gt;</code></li>
+                                    <li>;setconf <code id="input">&lt;key&gt; &lt;value&gt;</code></li>
+                                </ul></td>
+                                <td>Used to set the bot's config settings.</td>
+                            </tr> 
+                            <tr>
+                                <td>showconf</td>
+                                <td><ul>
+                                    <li>showconfs</li>
+                                    <li>showconfig</li>
+                                    <li>showconfigs</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;showconf</li>
+                                </ul></td>
+                                <td>Shows the current configs for your server.</td>
+                            </tr> 
+                            <tr>
+                                <td>stats</td>
+                                <td></td>
+                                <td><ul>
+                                    <li>;stats</li>
+                                </ul></td>
+                                <td>Shows the bot's stats.</td>
+                            </tr> 
+                        </tbody>
+                    </table>
+                </div> 
 
-                                        <% command_list[commandCats[i]].forEach(command => { %>
-                                            <tr class="clickable" data-toggle="collapse" href="#<%= command.help.name.split(' ').join('') %>-collapse" aria-expanded="false" aria-controls="<%= command.help.name.split(' ').join('') %>-collapse">
-                                                <td width="15%"><strong><%= command.help.name %></strong></td>
-                                                <td width="45%"><%= command.help.description %></td>
-                                                <td width="40%"><%= command.help.usage %></td>
-                                            </tr>
-                                            <tr id="<%= command.help.name.split(' ').join('') %>-collapse" class="collapse">
-                                                <td></td>
-                                                <td colspan="2" >
-                                                    <strong>Aliases: </strong> <%= command.conf.aliases.join(', ') %></br>
-                                                    <strong>Example: </strong> <%= command.help.example %></br>
-                                                    <strong>Extended Help: </strong></br> <span style="color:white"><%- command.help.extended %></span>
-                                                </td>
-                                            </tr>
-                                        <% }); %>
-                                        
-                                    </tbody>
-                                </table>
-                            </div>
-                        <% } %>
-                        <!-- <div id="accordion" class="tab-pane" role="tabpanel" aria-multiselectable="false">
-                        <div>
-                            <div role="tab" id="headingOne">
-                                <div class="table" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                    <div class="cell" style="width: 20%">cell</div>
-                                    <div class="cell" style="width: 40%">another</div>
-                                    <div class="cell" style="width: 40%">one more</div>
-                                </div>
-                            </div>
+                <!-- Misc commands -->
+                <div class="tab-pane show fade in" id="misc">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th width="10%">Name</th>
+                                <th width="10%">Aliases</th>
+                                <th width="30%">Usage</th>
+                                <th width="50%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody> 
+                            <tr>
+                                <td>event</td>
+                                <td><ul>
+                                    <li>events</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;event <code id="input">&lt;create&gt; &lt;eventName&gt; &lt;eventDay&gt; &lt;eventTime&gt; &lt;eventMessage&gt;</code></li>
+                                    <li>;event <code id="input">&lt;view&gt; &lt;eventName&gt;</code></li>
+                                    <li>;event <code id="input">&lt;delete&gt; &lt;eventName&gt;</code></li>
+                                    <li>;event <code id="input">&lt;trigger&gt; &lt;eventName&gt;</code></li>
+                                </ul></td>
+                                <td>Used to make, check, or delete an event.</td>
+                            </tr> 
+                            <tr>
+                                <td>help</td>
+                                <td><ul>
+                                    <li>h</li>
+                                    <li>halp</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;help <code id="input">&lt;command&gt;</code></li>
+                                </ul></td>
+                                <td>Displays info about available commands.</td>
+                            </tr> 
+                            <tr>
+                                <td>info</td>
+                                <td><ul>
+                                    <li>invite</li>
+                                    <li>inv</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;info</code></li>
+                                </ul></td>
+                                <td>Shows useful links pertaining to the bot.</td>
+                            </tr> 
+                            <tr>
+                                <td>time</td>
+                                <td></td>
+                                <td><ul>
+                                    <li>;time</li>
+                                    <li>;time <code id="input">&lt;timezone&gt;</code></li>
+                                </ul></td>
+                                <td>Used to check the time with the guild\'s configured timezone.</td>
+                            </tr> 
+                        </tbody>
+                    </table>
+                </div>  
 
-                            <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-                                <div class="table">
-                                    <div class="cell" style="width: 20%"></div>
-                                    <div class="cell" style="width: 80%">
-                                        really long cell?really long cell?really long cell?really long cell?really long cell?really long cell?really long cell?really
-                                        long cell?really long cell?really long cell?
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <style>
-                        .table {
-                            display: table;
-                            width: 100%;
-                            table-layout: fixed;
-                        }
-
-                        .row {
-                            display: table-row;
-                            border-bottom: 1px solid black;
-                        }
-
-                        .cell {
-                            display: table-cell;
-                            padding: 10px;
-                            text-align: justify;
-                            border-bottom: 1PX SOLID black;
-                        }
-                    </style> -->
-                    </div>
+                <!-- Star Wars commands -->
+                <div class="tab-pane show fade in" id="star-wars">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th width="10%">Name</th>
+                                <th width="10%">Aliases</th>
+                                <th width="30%">Usage</th>
+                                <th width="50%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>abilities</td>
+                                <td><ul>
+                                    <li>a</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;abilities <code id="input">&lt;character&gt;</code></li>
+                                </ul></td>
+                                <td>Shows the abilities for the specified character.</td>
+                            </tr>
+                            <tr>
+                                <td>activities</td>
+                                <td><ul>
+                                    <li>act</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;activities</li>
+                                    <li>;activities <code id="input">&lt;dayOfWeek&gt;</code></li>
+                                </ul></td>
+                                <td>Shows the daily guild activites.</td>
+                            </tr>
+                            <tr>
+                                <td>arenarank</td>
+                                <td><ul>
+                                    <li>arena</li>
+                                </ul> </td>
+                                <td><ul>
+                                    <li>;arenarank <code id="input">&lt;currentRank&gt;</code></li>
+                                </ul></td>
+                                <td>Shows the (approximate) highest rank you can get if you win every arena battle.</td>
+                            </tr>
+                            <tr>
+                                <td>challenges</td>
+                                <td><ul>
+                                    <li>challenge</li>
+                                    <li>chal</li>
+                                </ul> </td>
+                                <td><ul>
+                                        <li>;challenges <code id="input">&lt;dayOfWeek&gt;</code></li>
+                                    </ul>
+                                </td>
+                                <td>Shows the daily guild challenges.</td>
+                            </tr>
+                            <tr>
+                                <td>charactergear</td>
+                                <td><ul>
+                                    <li>chargear</li>
+                                    <li>gear</li>
+                                </ul>
+                                </td>
+                                <td><ul>
+                                    <li>;charactergear <code id="input">&lt;char&gt;</code></li>
+                                    <li>;charactergear <code id="input">&lt;char&gt; &lt;gearLvl&gt;</code></li>
+                                </ul></td>
+                                <td>Shows the gear requirements for the specified character/ lvl.</td>
+                            </tr>
+                            <tr>
+                                <td>faction</td>
+                                <td><ul>
+                                    <li>factions</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;faction <code id="input">&lt;faction&gt;</code></li>
+                                </ul></td>
+                                <td>Shows the list of characters in the specified faction.</td>
+                            </tr> 
+                            <tr>
+                                <td>mods</td>
+                                <td><ul>
+                                    <li>m</li>
+                                    <li>mod</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;mods <code id="input">&lt;character&gt;</code></li>
+                                </ul></td>
+                                <td>Shows some suggested mods for the specified character.</td>
+                            </tr> 
+                            <tr>
+                                <td>modsets</td>
+                                <td></td>
+                                <td><ul>
+                                    <li>;modsets</li>
+                                </ul></td>
+                                <td>Shows how many of each kind of mod you need for a set.</td>
+                            </tr> 
+                            <tr>
+                                <td>raidteams</td>
+                                <td><ul>
+                                    <li>raid</li>
+                                    <li>raidteam</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;raidteams <code id="input">&lt;aat|pit&gt; &lt;p1|p2|p3|p4|solo&gt;</code></li>
+                                </ul></td>
+                                <td>Shows some teams that work well for each raid.</td>
+                            </tr> 
+                            <tr>
+                                <td>randomchar</td>
+                                <td><ul>
+                                    <li>random</li>
+                                    <li>rand</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;randomchar</li>
+                                    <li>;randomchar <code id="input">&lt;numberOfChars&gt;</code></li>                                </ul></td>
+                                <td>Picks up to 5 random characters to form a squad.</td>
+                            </tr> 
+                            <tr>
+                                <td>ships</td>
+                                <td><ul>
+                                    <li>s</li>
+                                    <li>ship</li>
+                                </ul></td>
+                                <td><ul>
+                                    <li>;ships <code id="input">&lt;ship|character&gt;</code></li>
+                                </ul></td>
+                                <td>Shows the info about the specified ship.</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-
-        <script>
-            $(function () {
-                $('#myTab a:last').tab('show')
-            })
-        </script>
-
-        <hr>
+        </div>
 
         <footer>
             <% include ../partials/footer %>
         </footer>
-
-        <!-- Bootstrap core JavaScript
-            ================================================== -->
-            <!-- Placed at the end of the document so the pages load faster -->
-
-            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     </body>
 </html>
 
+<script type="text/javascript">
+    if (window.location.hash) {$(".nav-tabs a[href=\"" + window.location.hash.replace(";", "") + "\"]").tab("show")}
+    $(".nav-tabs a").on("shown.bs.tab", function(tab) {window.location.hash = tab.target.hash.replace("#", "#;")})
+</script>
