@@ -18,6 +18,7 @@
                 <li class="nav-item"><a data-toggle="tab" class="nav-link active" href="#admin">Admin</a></li>
                 <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#misc">Misc</a></li>
                 <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#star-wars">Star Wars</a></li>
+                <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#swgoh">SWGoH</a></li>
 
             </ul>
             <div class="tab-content">
@@ -293,7 +294,8 @@
                                 </ul></td>
                                 <td><ul>
                                     <li>;randomchar</li>
-                                    <li>;randomchar <code>&lt;numberOfChars&gt;</code></li>                                </ul></td>
+                                    <li>;randomchar <code>&lt;numberOfChars&gt;</code></li>                                
+                                <ul></td>
                                 <td>Picks up to 5 random characters to form a squad.</td>
                             </tr> 
                             <tr>
@@ -307,6 +309,128 @@
                                 </ul></td>
                                 <td>Shows the info about the specified ship.</td>
                             </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- SWGoH Commands -->
+                <div class="tab-pane show active fade in" id="swgoh">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th width="10%">Name</th>
+                                <th width="10%">Aliases</th>
+                                <th width="30%">Usage</th>
+                                <th width="50%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>charmods</td>
+                                <td>
+                                    <ul>
+                                        <li>charactermods</li>
+                                        <li>cmods</li>
+                                        <li>mymods</li>
+                                        <li>cm</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li>;charmods <code>[user] &lt;character&gt;</code></li>
+                                    </ul>
+                                </td>
+                                <td>Shows the mods that you have equipped on the selected character.</td>
+                            </tr> 
+                            <tr>
+                                <td>currentevents</td>
+                                <td>
+                                    <ul>
+                                        <li>cevents</li>
+                                        <li>ce</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li>;currentevents <code>[num]</code></li>
+                                    </ul>
+                                </td>
+                                <td>Shows up to [num] upcoming events.</td>
+                            </tr> 
+                            <tr>
+                                <td>guilds</td>
+                                <td>
+                                    <ul>
+                                        <li>guild</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li>;guilds <code>[user|allycode|guildname]</code></li>
+                                    </ul>
+                                </td>
+                                <td>Shows the top registered guilds and everyone that's registered in yours.</td>
+                            </tr> 
+                            <tr>
+                                <td>guildsearch</td>
+                                <td>
+                                    <ul>
+                                        <li>search</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li>;guildsearch <code>[user] &lt;character&gt; [-ship] [starLvl]</code></li>
+                                    </ul>
+                                </td>
+                                <td>Shows the star level of the selected character for everyone in the guild.</td>
+                            </tr> 
+                            <tr>
+                                <td>heists</td>
+                                <td>
+                                    <ul>
+                                        <li>heist</li>
+                                        <li>$</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li>;heists</li>
+                                    </ul>
+                                </td>
+                                <td>Shows the date of any upcoming heists.</td>
+                            </tr> 
+                            <tr>
+                                <td>myarena</td>
+                                <td>
+                                    <ul>
+                                        <li>userarena</li>
+                                        <li>ua</li>
+                                        <li>ma</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li>;myarena <code>[user]</code></li>
+                                    </ul>
+                                </td>
+                                <td>Show user's current arena ranks and their squads.</td>
+                            </tr> 
+                            <tr>
+                                <td>register</td>
+                                <td>
+                                    <ul>
+                                        <li>reg</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li>;register add <code>&lt;user&gt; &lt;allyCode&gt;</code></li>
+                                        <li>;register update <code>&lt;user&gt;</code></li>
+                                        <li>;register remove <code>&lt;user&gt;</code></li>
+                                    </ul>
+                                </td>
+                                <td>Register your ally code to your Discord ID, and sync your SWGoH profile.</td>
+                            </tr> 
                         </tbody>
                     </table>
                 </div>
