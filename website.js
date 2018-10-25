@@ -69,7 +69,7 @@ initSite = async function() {
 
     // The link to invite the bot
     app.get('/invite', function(req, res) {
-        res.redirect('https://discordapp.com/oauth2/authorize?permissions=67624000&scope=bot&client_id=315739499932024834');
+        res.redirect("https://discordapp.com/oauth2/authorize/?permissions=378944&scope=bot&client_id=315739499932024834");
     });
 
     // The link to join the support server
