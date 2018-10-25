@@ -334,7 +334,7 @@
                                 </td>
                                 <td>
                                     <ul>
-                                        <li>;currentevents <code>[num] [filter]</code></li>
+                                        <li>;currentevents <code>[num]</code></li>
                                     </ul>
                                 </td>
                                 <td>Shows up to [num] upcoming events.</td>
@@ -348,7 +348,9 @@
                                 </td>
                                 <td>
                                     <ul>
-                                        <li>;guilds <code>[user|allycode|guildname]</code></li>
+                                        <li>;guild <code>[user]</code>
+                                            ;guild <code>[user] [-roster] [-sort sortBy] [-reg]</code>
+                                            ;guild <code>[user] [-roster] [-allycode] [-reg]</code></li>
                                     </ul>
                                 </td>
                                 <td>Shows the top registered guilds and everyone that's registered in yours.</td>
@@ -362,7 +364,7 @@
                                 </td>
                                 <td>
                                     <ul>
-                                        <li>;guildsearch <code>[user] &lt;character&gt; [-ship] [starLvl]</code></li>
+                                        <li>;guildsearch <code>[user] &lt;character&gt; [-ship] [-reverse] [-sort type] [starLvl]</code></li>
                                     </ul>
                                 </td>
                                 <td>Shows the star level of the selected character for everyone in the guild.</td>
@@ -395,7 +397,11 @@
                                 </td>
                                 <td>
                                     <ul>
-                                        <li>;mymods <code>[user] &lt;character&gt;</code></li>
+                                        <li>
+                                            ;mymods <code>[user] &lt;character&gt;</code>
+                                            ;mymods <code>-best &lt;filter&gt;</code>
+                                            ;mymods <code>-total -best &lt;filter&gt;</code>
+                                        </li>
                                     </ul>
                                 </td>
                                 <td>Shows the mods that you have equipped on the selected character.</td>
