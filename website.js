@@ -4,6 +4,7 @@ const path = require('path');
 const momentTZ = require('moment-timezone');
 const Sequelize = require('sequelize');
 const config = require('./config.json');
+const fs = require("fs");
 
 initSite = async function() {
     const sequelize = new Sequelize(config.database.data, config.database.user, config.database.pass, {
@@ -16,6 +17,11 @@ initSite = async function() {
         logText: Sequelize.TEXT
     });
     
+    let guildCount = await parseInt(fs.readFileSync(path.join(__dirname, path.sep + "/data/guildCount.txt")));
+    setInterval(async () => {
+        let guildCount = await parseInt(fs.readFileSync(path.join(__dirname, path.sep + "/data/guildCount.txt")));
+    }, 5 * 60 * 1000);
+
     // Set the directory for the views and stuff
     app.set("views", path.join(__dirname, `..${path.sep}dashboard`));
 
@@ -25,7 +31,7 @@ initSite = async function() {
     // Index page
     app.get('/', function(req, res) {
         res.render('pages/index', {
-            // clientServers: client.guilds.size,
+            clientServers: guildCount,
             page_name: 'index'
         });
     });
@@ -40,6 +46,28 @@ initSite = async function() {
     // Changelog page
     app.get('/changelog', async function(req, res) {
         await changelogs.findAll().then(function(logs) { 
+            const logList = [];
+            const sortedLogs = logs.sort((p, c) => c.dataValues.createdAt - p.dataValues.createdAt);
+            sortedLogs.forEach(log => {
+                logList.push(`<strong><font color="gray">${momentTZ.tz(log.dataValues.createdAt, 'us/pacific').format('M/D/YYYY [at] h:mm a')}</font></strong></br>${log.dataValues.logText.replace(/\n/g, '</br>')}`);
+            });
+
+            res.render('pages/changelog', {
+                changelogs: logList,
+                page_name: 'changelog'
+            });
+        });
+    });
+
+    // Changelog Specific page
+    app.get('/changelog/:logID', async function(req, res) {
+        let id = {};
+        if (!parseInt(req.params.logID)) {
+            console.log("Broke trying to get log #" + req.params.logID);
+        } else {
+            id = {id: req.params.logID};
+        }
+        await changelogs.findAll({where: id}).then(function(logs) { 
             const logList = [];
             const sortedLogs = logs.sort((p, c) => c.dataValues.createdAt - p.dataValues.createdAt);
             sortedLogs.forEach(log => {
