@@ -17,15 +17,14 @@
   },
   "homepage": "https://github.com/jmiln/SWGoHBotSite#readme",
   "dependencies": {
-    "body-parser": "^1.18.2",
-    "ejs": "^2.5.7",
-    "express": "^4.16.2",
-    "express-session": "^1.15.6",
-    "marked": "^0.3.16",
-    "moment": "^2.20.1",
-    "moment-timezone": "^0.5.14",
-    "pg": "^7.4.1",
-    "pg-hstore": "^2.3.2",
-    "sequelize": "^4.34.0"
+    "ejs": "^2.7.4",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "marked": "^0.8.0",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.27",
+    "pg": "^7.17.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.21.3"
   }
 }
