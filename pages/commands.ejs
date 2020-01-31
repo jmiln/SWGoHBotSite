@@ -459,16 +459,21 @@
 </html>
 
 <script type="text/javascript">
+    // If someone it trying to link to a specific tab
     if (window.location.hash) {
         var hash = window.location.hash;
         hash = hash.replace("#", "");
 
-        //  First remove class "active" from currently active tab & table
-        $(".nav-link").removeClass('active');
-        $(".tab-pane").removeClass("active");
+        // Make sure it's a valid id, else just go to the default one
+        if ($("#"+hash).length && $(".nav-link#tab-" + hash).length) {
+            //  First remove class "active" from currently active tab & table
+            $(".nav-link").removeClass('active');
+            $(".tab-pane").removeClass("active");
 
-        $(".nav-link#tab-" + hash).addClass("active")
-        $("#" + hash).addClass("active");
+            // Add the active class to the appropriate ones
+            $(".nav-link#tab-" + hash).addClass("active")
+            $("#" + hash).addClass("active");
+        }
     }
 
 	$(document).ready(function() {
