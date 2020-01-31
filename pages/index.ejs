@@ -1,49 +1,94 @@
 <!DOCTYPE html>
+<link href="/css/test.css" rel="stylesheet" type="text/css">
 <html lang="en">
+    <style>
+
+    </style>
     <head>
         <% include ../partials/head %>
     </head>
-
     <body>
         <header>
             <% include ../partials/nav %>
         </header>
 
+        <!-- Main area with some about and links  -->
         <div class="jumbotron" style="background-color: #2b2b2b">
-            <div class="container">
-                <h1 class="display-3">Hello!</h1>
-                <p>This bot is made to help players of EA/CG's game Star Wars Galaxy of Heroes, by working to make the information more accessible as well as providing some other useful utilities.  <strong>Currently active in <%= clientServers %> servers!</strong></p>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h2 style="text-align: center;">Support Server</h2>
-                    <p style="text-align:center;">
-                        <a class="discord-widget" href="https://discord.gg/FfwGvhr" title="Join us on Discord" align="center">
-                            <img src="https://discordapp.com/api/guilds/327968689175658496/embed.png?style=banner3&">
+            <div class="container col-sm-8 text-center" >
+                <div class="row">
+                    <div class="col-sm-7">
+                        <div class="panel panel-default text-left">
+                            <div class="panel-body">
+                                <h3>About <strong>SWGoHBot</strong></h3>
+                                </br>
+                                <p>SWGoHBot is a bot for your discord server that brings many features such as mod lookup, guild-wide character searching, personal character stats, arena tracking, and much more that will help to simplify the SWGoH experience for you and your guild.
+                                </br>
+                                </br>
+                                SWGoHBot is active on over <strong>7,000</strong> servers, we welcome you to try it out and hope you enjoy!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 my-auto">
+                        <a type="button" class="btn btn-primary btn-block" href="https://discord.gg/FfwGvhr" style="min-width: 120px;"><strong>Join us on Discord</strong></a>
+                        <a type="button" class="btn btn-primary btn-block" href="https://discord.gg/FfwGvhr" style="min-width: 120px;"><strong>Invite SWGoHBot to your server</strong></a>
+                        <a type="button" class="btn btn-block" href="https://github.com/jmiln/swgohbot"      style="min-width: 120px; background-color: #ffffff">
+                            <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="15%">
+                            <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Logo.png" width="45%">
                         </a>
-                    </p>
-                </div>
-                <div class="col-md-4">
-                    <h2 style="text-align: center;">Github</h2>
-                    <p style="text-align: center;">If you'd like to contribute to the bot's developement, you can find the repo <a href="https://github.com/jmiln/SWGoHBot">HERE<a/>, and a list of what's being worked on <a href="https://github.com/jmiln/SWGoHBot/projects/2">HERE<a/></p>
-                </div>
-                <div class="col-md-4">
-                    <h2 style="text-align: center;">Support</h2>
-                    <p style="text-align: center;">If you'd like to help keep the server running that the bot's on, I do have a patreon page at <a href="https://www.patreon.com/bePatron?u=8423320" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script><p/>
+                        <a type="button" class="btn btn-block" href="https://www.patreon.com/bePatron?u=8423320" style="min-width: 120px; background-color: #f96854">
+                            <img src="images/Patreon_White.png" width="50%">
+                        </a>
+                    </div>
                 </div>
             </div>
-
         </div>
+
+        <!-- Cards to show off what the bot can do -->
+        <div class="card-container" >
+            <div class="card" style="background-color: #2b2b2b;">
+                <div class="img-container">
+                    <img src="https://swgohbot.com/images/myCharacter.png" alt="Arena Alert example" />
+                </div>
+                <div class="card-desc">
+                    <span class="desc-text">Check your character's stats</span>
+                </div>
+            </div>
+            <div class="card" style="background-color: #2b2b2b;">
+                <div class="img-container">
+                    <img src="https://swgohbot.com/images/arenaAlerts.png" alt="Arena Alert example" />
+                </div>
+                <div class="card-desc">
+                    <span class="desc-text">Get updates when your rank drops</span></br>
+                </div>
+            </div>
+            <div class="card" style="background-color: #2b2b2b;">
+                <div class="img-container">
+                    <img src="https://swgohbot.com/images/guildSearch.png" alt="Arena Alert example" />
+                </div>
+                <div class="card-desc">
+                    <span class="desc-text">Check your guild's characters</span>
+                </div>
+            </div>
+            <div class="card" style="background-color: #2b2b2b;">
+                <div class="img-container">
+                    <img src="https://swgohbot.com/images/myProfile.png" alt="Arena Alert example" />
+                </div>
+                <div class="card-desc">
+                    <span class="desc-text">See your overall account stats</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer  class="footer">
+            <hr width="80%">
+            <div class="container">
+                <% include ../partials/footer %>
+            </div>
+        </footer>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-        <hr width="80%">
-        <footer>
-            <% include ../partials/footer %>
-        </footer>
     </body>
 </html>
 
