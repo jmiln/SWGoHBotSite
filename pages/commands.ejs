@@ -25,9 +25,6 @@
                 <tr>
                     <td>NAME</td>
                     <td><ul>
-                        <li>ALIAS</li>
-                    </ul></td>
-                    <td><ul>
                         <li>;NAME <code>&lt;ARGS&gt;</code></li>
                     </ul></td>
                     <td>DESC</td>
@@ -40,44 +37,38 @@
                         <thead>
                             <tr>
                                 <th class="text-center" width="10%">Name</th>
-                                <th class="text-center" width="10%">Aliases</th>
-                                <th class="text-center" width="30%">Usage</th>
-                                <th class="text-center" width="50%">Description</th>
+                                <th class="text-center" width="40%">Description</th>
+                                <th class="text-center" width="50%">Usage</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>nickname</td>
-                                <td><ul>
-                                    <li>nick</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;nickname <code>&lt;name&gt;</code></li>
-                                </ul></td>
                                 <td>Changes the bot's nickname on the server</td>
+                                <td>
+                                    <ul>
+                                        <li>;nickname <code>&lt;name&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>setconf</td>
-                                <td><ul>
-                                    <li>setconfig</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;setconf <code>&lt;help&gt;</code></li>
-                                    <li>;setconf <code>&lt;key&gt; &lt;value&gt;</code></li>
-                                </ul></td>
                                 <td>Used to set the bot's config settings.</td>
+                                <td>
+                                    <ul>
+                                        <li>;setconf <code>&lt;help&gt;</code></li>
+                                        <li>;setconf <code>&lt;key&gt; &lt;value&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>showconf</td>
-                                <td><ul>
-                                    <li>showconfs</li>
-                                    <li>showconfig</li>
-                                    <li>showconfigs</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;showconf</li>
-                                </ul></td>
                                 <td>Shows the current configs for your server.</td>
+                                <td>
+                                    <ul>
+                                        <li>;showconf</li>
+                                    </ul>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -89,93 +80,84 @@
                         <thead>
                             <tr>
                                 <th class="text-center" width="10%">Name</th>
-                                <th class="text-center" width="10%">Aliases</th>
-                                <th class="text-center" width="30%">Usage</th>
-                                <th class="text-center" width="50%">Description</th>
+                                <th class="text-center" width="40%">Description</th>
+                                <th class="text-center" width="50%">Usage</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>event</td>
-                                <td><ul>
-                                    <li>ev</li>
-                                    <li>events</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;event <code>&lt;create&gt; &lt;eventName&gt; &lt;eventDay&gt; &lt;eventTime&gt; &lt;eventMessage&gt;</code></li>
-                                    <li>;event <code>&lt;create&gt; &lt;-json&gt; &lt;jsonEvents&gt;</code></li>
-                                    <li>;event <code>&lt;view&gt; &lt;eventName&gt;</code></li>
-                                    <li>;event <code>&lt;delete&gt; &lt;eventName&gt;</code></li>
-                                    <li>;event <code>&lt;trigger&gt; &lt;eventName&gt;</code></li>
-                                </ul></td>
                                 <td>Used to make, check, or delete events.</td>
+                                <td>
+                                    <ul>
+                                        <li>;event <code>&lt;create&gt; &lt;eventName&gt; &lt;eventDay&gt; &lt;eventTime&gt; &lt;eventMessage&gt;</code></li>
+                                        <li>;event <code>&lt;create&gt; &lt;-json&gt; &lt;jsonEvents&gt;</code></li>
+                                        <li>;event <code>&lt;view&gt; &lt;eventName&gt;</code></li>
+                                        <li>;event <code>&lt;delete&gt; &lt;eventName&gt;</code></li>
+                                        <li>;event <code>&lt;trigger&gt; &lt;eventName&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>help</td>
-                                <td><ul>
-                                    <li>h</li>
-                                    <li>halp</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;help <code>&lt;command&gt;</code></li>
-                                </ul></td>
                                 <td>Displays info about available commands.</td>
+                                <td>
+                                    <ul>
+                                        <li>;help <code>&lt;command&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>info</td>
-                                <td><ul>
-                                    <li>invite</li>
-                                    <li>inv</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;info</li>
-                                </ul></td>
                                 <td>Shows useful links pertaining to the bot.</td>
+                                <td>
+                                    <ul>
+                                        <li>;info</li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>poll</td>
-                                <td><ul>
-                                    <li>vote</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;poll <code>&lt;create&gt; &lt;question&gt; | &lt;opt1&gt; | &lt;opt2&gt; | [...] | [opt10]</code></li>
-                                    <li>;poll <code>&lt;choice&gt;</code></li>
-                                    <li>;poll <code>&lt;view&gt;</code></li>
-                                    <li>;poll <code>&lt;close&gt;</code></li>
-                                    <li>;poll <code>&lt;help&gt;</code></li>
-                                </ul></td>
                                 <td> Lets you start a poll with multiple options. </td>
+                                <td>
+                                    <ul>
+                                        <li>;poll <code>&lt;create&gt; &lt;question&gt; | &lt;opt1&gt; | &lt;opt2&gt; | [...] | [opt10]</code></li>
+                                        <li>;poll <code>&lt;choice&gt;</code></li>
+                                        <li>;poll <code>&lt;view&gt;</code></li>
+                                        <li>;poll <code>&lt;close&gt;</code></li>
+                                        <li>;poll <code>&lt;help&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>resources</td>
-                                <td><ul>
-                                    <li>res</li>
-                                </ul></td>
-                                <td><ul>
-                                        <li>;resources <code>&lt;category&gt;&lt
-                                </ul></td>
                                 <td>Shows useful SWGoH resources.</td>
+                                <td>
+                                    <ul>
+                                        <li>;resources <code>&lt;category&gt;&lt
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>shardtimes</td>
-                                <td><ul>
-                                    <li>shard</li>
-                                </ul></td>
-                                <td><ul>
+                                <td>Used to check the time with the guild\'s configured timezone.</td>
+                                <td>
+                                    <ul>
                                         <li>;shardtimes add <code>&lt;me|userID|mention&gt; &lt;timezone&gt; [flag/emoji]</code></li>
                                         <li>;shardtimes remove <code>&lt;me|userID|mention&gt;</code></li>
                                         <li>;shardtimes [view]</li>
-                                </ul></td>
-                                <td>Used to check the time with the guild\'s configured timezone.</td>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>time</td>
-                                <td></td>
-                                <td><ul>
-                                    <li>;time</li>
-                                    <li>;time <code>&lt;timezone&gt;</code></li>
-                                </ul></td>
                                 <td>Used to check the time with the guild\'s configured timezone.</td>
+                                <td>
+                                    <ul>
+                                        <li>;time</li>
+                                        <li>;time <code>&lt;timezone&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -187,132 +169,113 @@
                         <thead>
                             <tr>
                                 <th class="text-center" width="10%">Name</th>
-                                <th class="text-center" width="10%">Aliases</th>
-                                <th class="text-center" width="30%">Usage</th>
-                                <th class="text-center" width="50%">Description</th>
+                                <th class="text-center" width="40%">Description</th>
+                                <th class="text-center" width="50%">Usage</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>abilities</td>
-                                <td><ul>
-                                    <li>a</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;abilities <code>&lt;character&gt;</code></li>
-                                </ul></td>
                                 <td>Shows the abilities for the specified character.</td>
+                                <td>
+                                    <ul>
+                                        <li>;abilities <code>&lt;character&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>activities</td>
-                                <td><ul>
-                                    <li>act</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;activities</li>
-                                    <li>;activities <code>&lt;dayOfWeek&gt;</code></li>
-                                </ul></td>
                                 <td>Shows the daily guild activites.</td>
+                                <td>
+                                    <ul>
+                                        <li>;activities</li>
+                                        <li>;activities <code>&lt;dayOfWeek&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>arenarank</td>
-                                <td><ul>
-                                    <li>arena</li>
-                                </ul> </td>
-                                <td><ul>
-                                    <li>;arenarank <code>&lt;currentRank&gt;</code></li>
-                                </ul></td>
                                 <td>Shows the (approximate) highest rank you can get if you win every arena battle.</td>
+                                <td>
+                                    <ul>
+                                        <li>;arenarank <code>&lt;currentRank&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>challenges</td>
-                                <td><ul>
-                                    <li>challenge</li>
-                                    <li>chal</li>
-                                </ul> </td>
-                                <td><ul>
+                                <td>Shows the daily guild challenges.</td>
+                                <td>
+                                    <ul>
                                         <li>;challenges <code>&lt;dayOfWeek&gt;</code></li>
                                     </ul>
                                 </td>
-                                <td>Shows the daily guild challenges.</td>
                             </tr>
                             <tr>
                                 <td>charactergear</td>
-                                <td><ul>
-                                    <li>chargear</li>
-                                    <li>gear</li>
-                                </ul>
                                 </td>
-                                <td><ul>
-                                    <li>;charactergear <code>&lt;char&gt;</code></li>
-                                    <li>;charactergear <code>&lt;char&gt; &lt;gearLvl&gt;</code></li>
-                                </ul></td>
                                 <td>Shows the gear requirements for the specified character/ lvl.</td>
+                                <td>
+                                    <ul>
+                                        <li>;charactergear <code>&lt;char&gt;</code></li>
+                                        <li>;charactergear <code>&lt;char&gt; &lt;gearLvl&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>faction</td>
-                                <td><ul>
-                                    <li>factions</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;faction <code>&lt;faction&gt;</code></li>
-                                </ul></td>
                                 <td>Shows the list of characters in the specified faction.</td>
+                                <td>
+                                    <ul>
+                                        <li>;faction <code>&lt;faction&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>mods</td>
-                                <td><ul>
-                                    <li>m</li>
-                                    <li>mod</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;mods <code>&lt;character&gt;</code></li>
-                                </ul></td>
                                 <td>Shows some suggested mods for the specified character.</td>
+                                <td>
+                                    <ul>
+                                        <li>;mods <code>&lt;character&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>modsets</td>
-                                <td></td>
-                                <td><ul>
-                                    <li>;modsets</li>
-                                </ul></td>
                                 <td>Shows how many of each kind of mod you need for a set.</td>
+                                <td>
+                                    <ul>
+                                        <li>;modsets</li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>randomchar</td>
-                                <td><ul>
-                                    <li>random</li>
-                                    <li>rand</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;randomchar</li>
-                                    <li>;randomchar <code>&lt;numberOfChars&gt;</code></li>
-                                <ul></td>
                                 <td>Picks up to 5 random characters to form a squad.</td>
+                                <td>
+                                    <ul>
+                                        <li>;randomchar</li>
+                                        <li>;randomchar <code>&lt;numberOfChars&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
                                 <td>ships</td>
-                                <td><ul>
-                                    <li>s</li>
-                                    <li>ship</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;ships <code>&lt;ship|character&gt;</code></li>
-                                </ul></td>
                                 <td>Shows the info about the specified ship.</td>
+                                <td>
+                                    <ul>
+                                        <li>;ships <code>&lt;ship|character&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                             <tr>
-                            <td>squads</td>
-                                <td><ul>
-                                    <li>sq</li>
-                                    <li>squad</li>
-                                    <li>raid</li>
-                                    <li>raidteam</li>
-                                </ul></td>
-                                <td><ul>
-                                    <li>;squads <code>[user] &lt;event&gt; &lt;phaseNum&gt;</code></li>
-                                </ul></td>
+                                <td>squads</td>
                                 <td>Shows characters/ squads that are useful for various events.</td>
+                                <td>
+                                    <ul>
+                                        <li>;squads <code>[user] &lt;event&gt; &lt;phaseNum&gt;</code></li>
+                                    </ul>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -323,35 +286,23 @@
                         <thead>
                             <tr>
                                 <th class="text-center" width="10%">Name</th>
-                                <th class="text-center" width="10%">Aliases</th>
-                                <th class="text-center" width="30%">Usage</th>
-                                <th class="text-center" width="50%">Description</th>
+                                <th class="text-center" width="40%">Description</th>
+                                <th class="text-center" width="50%">Usage</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>currentevents</td>
-                                <td>
-                                    <ul>
-                                        <li>cevents</li>
-                                        <li>ce</li>
-                                    </ul>
-                                </td>
+                                <td>Shows up to [num] upcoming events.</td>
                                 <td>
                                     <ul>
                                         <li>;currentevents <code>[num]</code></li>
                                     </ul>
                                 </td>
-                                <td>Shows up to [num] upcoming events.</td>
                             </tr>
                             <tr>
                                 <td>guilds</td>
-                                <td>
-                                    <ul>
-                                        <li>g</li>
-                                        <li>guild</li>
-                                    </ul>
-                                </td>
+                                <td>Shows the top registered guilds and everyone that's registered in yours.</td>
                                 <td>
                                     <ul>
                                         <li>;guild <code>[user]</code></li>
@@ -359,46 +310,28 @@
                                         <li>;guild <code>[user] [-roster] [-allycode] [-reg]</code></li>
                                     </ul>
                                 </td>
-                                <td>Shows the top registered guilds and everyone that's registered in yours.</td>
                             </tr>
                             <tr>
                                 <td>guildsearch</td>
-                                <td>
-                                    <ul>
-                                        <li>search</li>
-                                    </ul>
-                                </td>
+                                <td>Shows the star level of the selected character for everyone in the guild.</td>
                                 <td>
                                     <ul>
                                         <li>;guildsearch <code>[user] &lt;character&gt; [-ship] [-reverse] [-sort type] [starLvl]</code></li>
                                     </ul>
                                 </td>
-                                <td>Shows the star level of the selected character for everyone in the guild.</td>
                             </tr>
                             <tr>
                                 <td>myarena</td>
-                                <td>
-                                    <ul>
-                                        <li>userarena</li>
-                                        <li>ua</li>
-                                        <li>ma</li>
-                                    </ul>
-                                </td>
+                                <td>Show user's current arena ranks and their squads.</td>
                                 <td>
                                     <ul>
                                         <li>;myarena <code>[user]</code></li>
                                     </ul>
                                 </td>
-                                <td>Show user's current arena ranks and their squads.</td>
                             </tr>
                             <tr>
                                 <td>mycharacter</td>
-                                <td>
-                                    <ul>
-                                        <li>mc</li>
-                                        <li>mychar</li>
-                                    </ul>
-                                </td>
+                                <td>Shows the general stats about the selected character.</td>
                                 <td>
                                     <ul>
                                         <li>
@@ -406,18 +339,10 @@
                                         </li>
                                     </ul>
                                 </td>
-                                <td>Shows the general stats about the selected character.</td>
                             </tr>
                             <tr>
                                 <td>mymods</td>
-                                <td>
-                                    <ul>
-                                        <li>charactermods</li>
-                                        <li>charmods</li>
-                                        <li>cmods</li>
-                                        <li>cm</li>
-                                    </ul>
-                                </td>
+                                <td>Shows the mods that you have equipped on the selected character.</td>
                                 <td>
                                     <ul>
                                         <li>;mymods <code>[user] &lt;character&gt;</code></li>
@@ -425,15 +350,10 @@
                                         <li>;mymods <code>-total -best &lt;filter&gt;</code></li>
                                     </ul>
                                 </td>
-                                <td>Shows the mods that you have equipped on the selected character.</td>
                             </tr>
                             <tr>
                                 <td>register</td>
-                                <td>
-                                    <ul>
-                                        <li>reg</li>
-                                    </ul>
-                                </td>
+                                <td>Register your ally code to your Discord ID, and sync your SWGoH profile.</td>
                                 <td>
                                     <ul>
                                         <li>;register add <code>&lt;user&gt; &lt;allyCode&gt;</code></li>
@@ -441,7 +361,6 @@
                                         <li>;register remove <code>&lt;user&gt;</code></li>
                                     </ul>
                                 </td>
-                                <td>Register your ally code to your Discord ID, and sync your SWGoH profile.</td>
                             </tr>
                         </tbody>
                     </table>
