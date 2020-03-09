@@ -8,15 +8,14 @@
         <header>
             <% include ../partials/nav %>
         </header>
-        <div class="container">
-
-			<div class="col-sm-9">
-				<h2>Recent Changes</h2>
-                <br><br>
+		<div class="page-wrapper">
+				<h2 style="text-align: center;">Recent Changes</h2>
+                <hr class="w60"/>
+			<div class="column w60 autoMargin">
                 <!-- <code> -->
                     <%-  changelogs.join('<hr>'); %>
                 <!-- </code> -->
-                
+
 			</div>
 			<hr>
             <footer>

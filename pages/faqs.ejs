@@ -8,10 +8,12 @@
         <header>
             <% include ../partials/nav %>
 		</header>
-		<div class="container">
-			<div class="col-sm-10">
-				<h2>Frequently Asked Questions</h2>
-				<hr>
+		<div class="page-wrapper">
+            <div style="text-align: center;">
+                <h2>Frequently Asked Questions</h2>
+                <hr class="w60"/>
+            </div>
+            <div class="column w60 autoMargin">
 
 				<h4>Adding the bot:</h4>
 				<p>
@@ -41,9 +43,9 @@
 				<h4>Events:</h4>
 				<p>
 					<strong>Setting an Event:</strong></br>
-					The Event Name cannot have spaces but the Event Message can.  
+					The Event Name cannot have spaces but the Event Message can.
 					You can use the "@" to mention specific users or everyone/here as you see fit in the event message.</br>
-					The date format is "dd/mm/yyyy", and the time uses the 24 hr format.</br> 
+					The date format is "dd/mm/yyyy", and the time uses the 24 hr format.</br>
 					Command:  <code>;event [create|view|delete] [eventName] [eventDay="dd/mm/yyyy"] [eventTime] [eventMessage]</code></br>
 					Example:  <code>;event create RANCOR_RAID_STARTING 17/08/2017 21:00 | P1 Opens | @everyone | P1 Hitters: @Reaper @SHOManiac | 24hr No Hit |</code>
 
@@ -56,16 +58,7 @@
 			<footer>
 				<% include ../partials/footer %>
 			</footer>
-		</div> <!-- /container -->
-
-
-		<!-- Bootstrap core JavaScript
-	  ================================================== -->
-            <!-- Placed at the end of the document so the pages load faster -->
-
-            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+		</div>
     </body>
 </html>
 
