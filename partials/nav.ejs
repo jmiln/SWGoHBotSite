@@ -1,40 +1,16 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-    <a class="navbar-brand" href="/">
-        <img src="images/botAvatar.png" width="30" height="30" class="d-inline-block align-top" alt="">
-        SWGoH Bot
-    </a>
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded.="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="btn btn-outline-success" role="button" href="/invite">Invite Bot</a>
-            </li>
-            <li <% if (page_name === 'index') { %>class="nav-item active" <% } else { %> class="nav-item" <% } %> >
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li <% if (page_name === 'commands') { %>class="nav-item active" <% } else { %> class="nav-item" <% } %> >
-                <a class="nav-link" href="/commands">Commands</a>
-            </li>
-            <li <% if (page_name === 'faqs') { %>class="nav-item active" <% } else { %> class="nav-item" <% } %> >
-                <a class="nav-link" href="/faqs">FAQs</a>
-            </li>
-            <li <% if (page_name === 'changelog') { %>class="nav-item active" <% } else { %> class="nav-item" <% } %> >
-                <a class="nav-link" href="/changelog">Changelog</a>
-            </li>
-            <li <% if (page_name === 'about') { %>class="nav-item active" <% } else { %> class="nav-item" <% } %> >
-                <a class="nav-link" href="/about">About</a>
-            </li>
-        </ul>
-        <!-- <ul class="nav navbar-nav navbar-right"> -->
-        <!--     <li class="nav-item"> -->
-        <!--         <a class="nav-item" href="#">Login</a> -->
-        <!--     </li> -->
-        <!-- </ul> -->
-    </div>
+<nav class="navbar" id="navbar">
+	<div class="navbar-brand">
+		<img src="https://swgohbot.com/images/botAvatar.png" width="50" height="50" >
+		<a href="/">SWGoH Bot</a>
+	</div>
+    <a class="nav-btn btn-outline-invite hide-mobile"  href="/invite">Invite Bot</a>
+    <a class="nav-btn btn-outline-patreon hide-mobile" href="https://www.patreon.com/bePatron?u=8423320">Get Premium</a>
+	<a class="nav-links hide-mobile" href="/">Home</a>
+	<a class="nav-links hide-mobile" href="/commands">Commands</a>
+	<a class="nav-links hide-mobile" href="/faqs">FAQs</a>
+	<a class="nav-links hide-mobile no-border" href="/changelog">Changelog</a>
+	<span class="navbar-toggle" onclick="toggleNav()">
+		<i class="fa fa-bars"></i>
+	</span>
 </nav>
-
 
