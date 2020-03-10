@@ -1,5 +1,6 @@
 # Directories
 /node_modules/
+/bk/
 
 # Specific Files
 config.json
