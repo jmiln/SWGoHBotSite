@@ -355,7 +355,7 @@ footer {
         display: flex;
     }
     .btn-outline-patreon {
-        margin-left: 10px;
+        margin: 0 10px;
     }
     /* Set the widths for when not in mobile view */
     .w15 {
