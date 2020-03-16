@@ -1,10 +1,18 @@
+// Native Node Imports
+const url = require("url");
+const path = require("path");
+const fs = require("fs");
+
+// Express Session
 const express = require("express");
 const app = express();
-const path = require("path");
 const momentTZ = require("moment-timezone");
+require("moment-duration-format");
+
 const Sequelize = require("sequelize");
 const config = require("./config.json");
-const fs = require("fs");
+
+
 
 const initSite = async function() {
     const sequelize = new Sequelize(config.database.data, config.database.user, config.database.pass, {
@@ -50,7 +58,9 @@ const initSite = async function() {
                 logList.push(`<strong><font color="gray">${momentTZ.tz(log.dataValues.createdAt, "us/pacific").format("M/D/YYYY [at] h:mm a")}</font></strong></br>${log.dataValues.logText.replace(/\n/g, "</br>")}`);
             });
 
-            res.render("pages/changelog");
+            res.render("pages/changelog", {
+                changelogs: logList
+            });
         });
     });
 
