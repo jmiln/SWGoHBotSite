@@ -28,7 +28,6 @@
     "level": "^6.0.1",
     "level-session-store": "^2.2.0",
     "marked": "^4.0.10",
-    "moment": "^2.29.1",
     "moment-duration-format": "^2.3.2",
     "moment-timezone": "^0.5.33",
     "passport": "^0.4.1",
