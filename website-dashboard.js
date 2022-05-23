@@ -10,7 +10,6 @@ const Discord = require("discord.js");
 // Express Session
 const express = require("express");
 const app = express();
-const moment = require("moment");
 const momentTZ = require("moment-timezone");
 require("moment-duration-format");
 
