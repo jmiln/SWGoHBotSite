@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <% include ../partials/head %>
+        <%- include("../partials/head") -%>
     </head>
 
     <body>
         <header>
-            <% include ../partials/nav %>
+            <%- include("../partials/nav") -%>
         </header>
 		<div class="page-wrapper">
 				<h2 style="text-align: center;">Recent Changes</h2>
@@ -19,7 +19,7 @@
 			</div>
 			<hr>
             <footer>
-                <% include ../partials/footer %>
+                <%- include("../partials/footer") -%>
             </footer>
         </div> <!-- /container -->
 
@@ -33,4 +33,3 @@
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     </body>
 </html>
-
