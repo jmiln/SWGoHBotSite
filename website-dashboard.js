@@ -1,7 +1,7 @@
 // Native Node Imports
 const url = require("url");
 const path = require("path");
-const fs = require("fs");
+// const fs = require("fs");
 const join = require("path").join;
 
 // Used for Permission Resolving...
@@ -10,12 +10,12 @@ const Discord = require("discord.js");
 // Express Session
 const express = require("express");
 const app = express();
-const moment = require("moment");
+// const moment = require("moment");
 const momentTZ = require("moment-timezone");
 require("moment-duration-format");
 
 const Sequelize = require("sequelize");
-const config = require("./config.json");
+const config = require("./config.js");
 
 // Express Plugins
 // Specifically, passport helps with oauth2 in general.
@@ -24,7 +24,7 @@ const config = require("./config.json");
 // (so that when you come back to the page, it still remembers you're logged in).
 const passport = require("passport");
 const session = require("express-session");
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = require("connect-mongo")(session);
 const Strategy = require("passport-discord").Strategy;
 
 // Helmet is specifically a security plugin that enables some specific, useful
@@ -32,9 +32,9 @@ const Strategy = require("passport-discord").Strategy;
 const helmet = require("helmet");
 
 // Used to parse Markdown from things like ExtendedHelp
-const md = require("marked");
+// const md = require("marked");
 
-const initSite = async function () {
+const initSite = async function() {
     const sequelize = new Sequelize(config.database.data, config.database.user, config.database.pass, {
         host: config.database.host,
         dialect: "postgres",
@@ -80,14 +80,14 @@ const initSite = async function () {
       See config.js.example to set these up.
       */
     passport.use(new Strategy({
-            clientID: "315739499932024834",
-            clientSecret: config.dashboard.oauthSecret,
-            callbackURL: config.dashboard.callbackURL,
-            scope: ["identify", "guilds"]
-        },
-        (accessToken, refreshToken, profile, done) => {
-            process.nextTick(() => done(null, profile));
-        }));
+        clientID: "315739499932024834",
+        clientSecret: config.dashboard.oauthSecret,
+        callbackURL: config.dashboard.callbackURL,
+        scope: ["identify", "guilds"]
+    },
+    (accessToken, refreshToken, profile, done) => {
+        process.nextTick(() => done(null, profile));
+    }));
 
 
     // Session data, used for temporary storage of your visitor's session information.
@@ -147,7 +147,7 @@ const initSite = async function () {
             user: req.isAuthenticated() ? req.user : null
         };
         if (baseData.user) {
-            baseData.user.avatarURL = `https://cdn.discordapp.com/avatars/${baseData.user.id}/${baseData.user.avatar}.png?size=32`
+            baseData.user.avatarURL = `https://cdn.discordapp.com/avatars/${baseData.user.id}/${baseData.user.avatar}.png?size=32`;
         }
         res.render(path.resolve(`${pageDir}${path.sep}${page}`), Object.assign(baseData, data));
     };
@@ -155,19 +155,19 @@ const initSite = async function () {
     // The login page saves the page the person was on in the session,
     // then throws the user to the Discord OAuth2 login page.
     app.get("/login", (req, res, next) => {
-            if (req.session.backURL) {
-                req.session.backURL = req.session.backURL;
-            } else if (req.headers.referer) {
-                const parsed = url.parse(req.headers.referer);
-                if (parsed.hostname === app.locals.domain) {
-                    req.session.backURL = parsed.path;
-                }
-            } else {
-                req.session.backURL = "/";
+        if (req.session.backURL) {
+            // req.session.backURL = req.session.backURL;
+        } else if (req.headers.referer) {
+            const parsed = url.parse(req.headers.referer);
+            if (parsed.hostname === app.locals.domain) {
+                req.session.backURL = parsed.path;
             }
-            next();
-        },
-        passport.authenticate("discord")
+        } else {
+            req.session.backURL = "/";
+        }
+        next();
+    },
+    passport.authenticate("discord")
     );
 
     // Once the user returns from OAuth2, this endpoint gets called.
@@ -192,11 +192,11 @@ const initSite = async function () {
     // If an error happens during authentication, this is what's displayed.
     app.get("/autherror", (req, res) => {
         // TODO  Need to swap this out since it doesn't exist here
-        renderTemplate(res, req, "autherror.ejs");
+        renderPage(res, req, "autherror.ejs");
     });
 
     // Destroys the session to log out the user.
-    app.get("/logout", function (req, res) {
+    app.get("/logout", function(req, res) {
         req.session.destroy(() => {
             req.logout();
             res.redirect("/"); //Inside a callback… bulletproof!
@@ -207,23 +207,23 @@ const initSite = async function () {
 
 
     // Index page
-    app.get("/", function (req, res) {
+    app.get("/", function(req, res) {
         renderPage(res, req, "index.ejs");
     });
 
     // Test home page/ logged in?
-    app.get("/test", function (req, res) {
-        renderPage(res, req, "test-index.ejs");
-    });
+    // app.get("/test", function(req, res) {
+    //     renderPage(res, req, "test-index.ejs");
+    // });
 
     // About page
-    app.get("/about", function (req, res) {
+    app.get("/about", function(req, res) {
         renderPage(res, req, "about.ejs");
     });
 
     // Changelog page
-    app.get("/changelog", async function (req, res) {
-        await changelogs.findAll().then(function (logs) {
+    app.get("/changelog", async function(req, res) {
+        await changelogs.findAll().then(function(logs) {
             const logList = [];
             const sortedLogs = logs.sort((p, c) => c.dataValues.createdAt - p.dataValues.createdAt);
             sortedLogs.forEach(log => {
@@ -237,7 +237,7 @@ const initSite = async function () {
     });
 
     // Changelog Specific page
-    app.get("/changelog/:logID", async function (req, res) {
+    app.get("/changelog/:logID", async function(req, res) {
         let id = {};
         if (!parseInt(req.params.logID)) {
             console.log("Broke trying to get log #" + req.params.logID);
@@ -248,55 +248,57 @@ const initSite = async function () {
         }
         await changelogs.findAll({
             where: id
-        }).then(function (logs) {
+        }).then(function(logs) {
             const logList = [];
             const sortedLogs = logs.sort((p, c) => c.dataValues.createdAt - p.dataValues.createdAt);
             sortedLogs.forEach(log => {
                 logList.push(`<strong><font color="gray">${momentTZ.tz(log.dataValues.createdAt, "us/pacific").format("M/D/YYYY [at] h:mm a")}</font></strong></br>${log.dataValues.logText.replace(/\n/g, "</br>")}`);
             });
 
-            res.render("pages/changelog");
+            renderPage(res, req, "changelog.ejs", {
+                changelogs: logList
+            });
         });
     });
 
     // FAQs page
-    app.get("/faqs", function (req, res) {
-        res.render("pages/faqs");
+    app.get("/faqs", function(req, res) {
+        renderPage(res, req, "faqs.ejs");
     });
 
     // Commands page
-    app.get("/commands", function (req, res) {
-        res.render("pages/commands");
+    app.get("/commands", function(req, res) {
+        renderPage(res, req, "commands.ejs");
     });
 
     // Base dashboard page
-    // app.get("/dashboard", checkAuth, (req, res) => {
-    //     const perms = Discord.EvaluatedPermissions;
-    //     renderPage(res, req, "dashboard.ejs", {perms});
-    // });
+    app.get("/dashboard", checkAuth, (req, res) => {
+        const perms = Discord.EvaluatedPermissions;
+        renderPage(res, req, "dashboard.ejs", {perms});
+    });
 
     // The link to invite the bot
-    app.get("/invite", function (req, res) {
+    app.get("/invite", function(req, res) {
         res.redirect("https://discordapp.com/oauth2/authorize/?permissions=378944&scope=bot&client_id=315739499932024834");
     });
 
     // The link to join the support server
-    app.get("/server", function (req, res) {
+    app.get("/server", function(req, res) {
         res.redirect("https://discord.gg/FfwGvhr");
     });
 
-    app.use(function (err, req, res, next) { // eslint-disable-line no-unused-vars
+    app.use(function(err, req, res, next) { // eslint-disable-line no-unused-vars
         console.error(err.stack);
         res.status(500).send("Something broke!");
     });
 
     // The 404 Route
-    app.use("", function (req, res) {
+    app.use("", function(req, res) {
         res.status(404).send("Error 404: Not Found!");
     });
 
     // Turn the site on
-    app.listen(config.dashboard.port, function () {
+    app.listen(config.dashboard.port, function() {
         console.log(`Site listening on port ${config.dashboard.port}!`);
     });
 };

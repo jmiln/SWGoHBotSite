@@ -10,7 +10,9 @@
     --patreon-color: #f96854;
 }
 html {
-    box-sizing: border-box
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-x: inherit;
 }
 body {
     padding: 0;
@@ -24,10 +26,7 @@ body {
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     font-size: 1rem;
     font-weight: 400;
-}
-html, body {
-    max-width: 100%;
-    overflow-x: inherit;
+    overflow-x: hidden;
 }
 code {
     color: white;
@@ -139,8 +138,8 @@ hr {
     font-weight: bold;
 }
 .logout-btn {
-    color: red;
-    border: 1px solid red;
+    color: orangered;
+    border: 1px solid orangered;
     margin: 0 10px;
 }
 
