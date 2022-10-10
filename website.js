@@ -9,25 +9,13 @@ const app = express();
 // const momentTZ = require("moment-timezone");
 require("moment-duration-format");
 
-// const Sequelize = require("sequelize");
 const config = require("./config.json");
 
-
-
 const initSite = async function() {
-    // const sequelize = new Sequelize(config.database.data, config.database.user, config.database.pass, {
-    //     host: config.database.host,
-    //     dialect: "postgres",
-    //     logging: false
-    // });
-    // const changelogs = sequelize.define("changelogs", {
-    //     logText: Sequelize.TEXT
-    // });
-
     var publicDir = require("path").join(__dirname,"/public");
     app.use(express.static(publicDir));
 
-    // Not used anymore, but could be in the future?
+    // Not used anymore, but could be in the future? (Could probably have the bot save these to a file every hour or something?)
     // let guildCount = await parseInt(fs.readFileSync(path.join(__dirname, path.sep + "/data/guildCount.txt")));
     // setInterval(async () => {
     //     guildCount = await parseInt(fs.readFileSync(path.join(__dirname, path.sep + "/data/guildCount.txt")));
@@ -91,6 +79,9 @@ const initSite = async function() {
     // Commands page
     app.get("/commands",function(req, res) {
         res.render("pages/commands");
+    });
+    app.get("/test-commands",function(req, res) {
+        res.render("pages/test-commands");
     });
 
     // The link to invite the bot
