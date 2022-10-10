@@ -92,6 +92,9 @@ const initSite = async function() {
     app.get("/commands",function(req, res) {
         res.render("pages/commands");
     });
+    app.get("/test-commands",function(req, res) { 
+        res.render("pages/test-commands");        
+    });                                           
 
     // The link to invite the bot
     app.get("/invite", function(req, res) {
