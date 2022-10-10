@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../partials/head") -%>
+
+        <title>SWGoHBot Commands</title>
+    </head>
+
+    <body>
+        <header>
+            <%- include("../partials/nav") -%>
+        </header>
+        <style></style>
+        <script>
+        </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="page-wrapper">
+            <div class="page-commands">
+                <div class="columns centered">
+                    <div class="column w20">
+                        <h3 class="cat-header">Command Categories</h3>
+                        <hr/>
+                        <div class="navigation-menu">
+                            <ul class="menu-list">
+                                <li><a class="nav-link active" id="tab-admin"     href="#admin"    >Admin</a></li>
+                                <li><a class="nav-link"        id="tab-misc"      href="#misc"     >Misc</a></li>
+                                <li><a class="nav-link"        id="tab-star-wars" href="#star-wars">Star Wars</a></li>
+                                <li><a class="nav-link"        id="tab-swgoh"     href="#swgoh"    >SWGoH</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="column w60 tab-content">
+                        <div class="tab-pane active" id="admin">
+                            <table class="fold-table">
+                                <thead>
+                                    <tr>
+                                        <th>Command</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="view">
+                                        <td>Setconf</td>
+                                        <td>Change bot settings for this server</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                Add, remove, or set different options
+                                                <ul>
+                                                    <li><code>/setconf set &lt;key: value&gt;</code></li>
+                                                    <li><code>/setconf add &lt;key: value&gt;</code></li>
+                                                    <li><code>/setconf remove &lt;key: value&gt;</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Showconf</td>
+                                        <td>View the bot settings for this server</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                This will display the what settings are currently set to in your server.
+                                                <ul>
+                                                    <li><code>/showconf</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="misc">
+                            <table class="fold-table">
+                                <thead>
+                                    <tr>
+                                        <th>Command</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="view">
+                                        <td>Acronyms</td>
+                                        <td>Helps to provide a lookup for the acronyms commonly used in Star Wars: Galaxy of Heroes.</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/acronyms &lt;acronymToLookUp&gt;</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Event</td>
+                                        <td>Create, edit, delete, & view scheduled events for your guild</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                This will display the what settings are currently set to in your server.
+                                                <ul>
+                                                    <li><code>/event create &lt;eventName&gt; &lt;eventDay&gt; &lt;eventTime&gt; &lt;eventMessage&gt;</code></li>
+                                                    <li><code>/event create &lt;-json&gt; &lt;jsonEvents&gt;</code></li>
+                                                    <li><code>/event delete &lt;eventName&gt;</code></li>
+                                                    <li><code>/event trigger &lt;eventName&gt;</code></li>
+                                                    <li><code>/event view [eventName]</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Info</td>
+                                        <td>Displays info about the bot</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/info</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Poll</td>
+                                        <td>Create, delete, & view polls</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/poll close</code></li>
+                                                    <li><code>/poll create &lt;question&gt; | &lt;opt1&gt; | &lt;opt2&gt; | [...] | [opt10]</code></li>
+                                                    <li><code>/poll view</code></li>
+                                                    <li><code>/poll vote &lt;option&gt;</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Register</td>
+                                        <td>Register your ally code with your discord ID (Only works if you don't have one registered already).</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/register &lt;allycode&gt; [user]</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Shardtimes</td>
+                                        <td>Add to, remove from, or view the list of currently registered shardmates, and how long until their payouts</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/shardtimes add &lt;me|userID|mention&gt; &lt;timezone&gt; &lt;time_until&gt; [flag]</code></li>
+                                                    <li><code>/shardtimes remove &lt;me|userID|mention&gt;</code></li>
+                                                    <li><code>/shardtimes view</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Time</td>
+                                        <td>Check the time based on the given timezone.</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/time [timezone]</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Userconf</td>
+                                        <td>Update or view your personal bot settings</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/userconf allycode &gt;add|remove|makeprimary&lt; &gt;allycode&lt;</code></li>
+                                                    <li><code>/userconf</code></li>
+                                                    <li><code>/userconf</code></li>
+                                                    <li><code>/userconf</code></li>
+                                                    <li><code>/userconf</code></li>
+                                                    <li><code>/userconf</code></li>
+                                                    <li><code>/userconf</code></li>
+                                                    <li><code>/userconf view</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Info</td>
+                                        <td>Displays info about the bot</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/info</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Info</td>
+                                        <td>Displays info about the bot</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/info</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Info</td>
+                                        <td>Displays info about the bot</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/info</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Info</td>
+                                        <td>Displays info about the bot</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/info</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Info</td>
+                                        <td>Displays info about the bot</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/info</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="view">
+                                        <td>Info</td>
+                                        <td>Displays info about the bot</td>
+                                    </tr>
+                                    <tr class="fold">
+                                        <td colspan="2">
+                                            <div class="fold-content">
+                                                <ul>
+                                                    <li><code>/info</code></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- <div class="command-header-container columns"> -->
+                            <!--     <div class="column w25 command-header">Command</div> -->
+                            <!--     <div class="column w45 command-header hide-mobile">Description</div> -->
+                            <!--     <div class="column w30 command-header hide-mobile">Usage</div> -->
+                            <!-- </div> -->
+                            <!-- <div class="command-container columns multiline"> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">acronyms</div> -->
+                            <!--             <div class="column w45">Helps to provide a lookup for the acronyms commonly used in Star Wars: Galaxy of Heroes.</div> -->
+                            <!--             <div class="column w30">;acronyms <code>&lt;acronymToLookUp&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">event create</div> -->
+                            <!--             <div class="column w45">Create scheduled events.</div> -->
+                            <!--             <div class="column w30">;event create <code>&lt;eventName&gt; &lt;eventDay&gt; &lt;eventTime&gt; &lt;eventMessage&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">event create (JSON)</div> -->
+                            <!--             <div class="column w45">Create events using a json format for input.</div> -->
+                            <!--             <div class="column w30">;event create <code>&lt;-json&gt; &lt;jsonEvents&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">event view</div> -->
+                            <!--             <div class="column w45">See all events that are active</div> -->
+                            <!--             <div class="column w30">;event view</div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">event delete</div> -->
+                            <!--             <div class="column w45">Delete an event.</div> -->
+                            <!--             <div class="column w30">;event delete <code>&lt;eventName&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">event trigger</div> -->
+                            <!--             <div class="column w45">Trigger an event as if it went off, but whenever you want.</div> -->
+                            <!--             <div class="column w30">;event trigger <code>&lt;eventName&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">info</div> -->
+                            <!--             <div class="column w45">Shows useful info pertaining to the bot.</div> -->
+                            <!--             <div class="column w30">;info</div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">poll create</div> -->
+                            <!--             <div class="column w45">Create a poll.</div> -->
+                            <!--             <div class="column w30">;poll create <code>&lt;question&gt; | &lt;opt1&gt; | &lt;opt2&gt; | [...] | [opt10]</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">poll</div> -->
+                            <!--             <div class="column w45">Choose an option in a poll.</div> -->
+                            <!--             <div class="column w30">;poll <code>&lt;choice&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">poll view</div> -->
+                            <!--             <div class="column w45">View the currently active poll.</div> -->
+                            <!--             <div class="column w30">;poll view</div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">poll close</div> -->
+                            <!--             <div class="column w45">Close the currently active poll and view the final results.</div> -->
+                            <!--             <div class="column w30">;poll close</div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">register</div> -->
+                            <!--             <div class="column w45">Register your ally code with your discord ID (Only works if you don't have one registered already).</div> -->
+                            <!--             <div class="column w30">;register <code> [user] &lt;allycode&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">shardtimes</div> -->
+                            <!--             <div class="column w45">View the list of currently registered shardmates.</div> -->
+                            <!--             <div class="column w30">;shardtimes <code>[view]</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">shardtimes add</div> -->
+                            <!--             <div class="column w45">Add a user to the list.</div> -->
+                            <!--             <div class="column w30">;shardtimes add <code>&lt;me|userID|mention&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">shardtimes remove</div> -->
+                            <!--             <div class="column w45">Remove a user from the list.</div> -->
+                            <!--             <div class="column w30">;shardtimes remove <code>&lt;me|userID|mention&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">time</div> -->
+                            <!--             <div class="column w45">Check the time based on the given timezone.</div> -->
+                            <!--             <div class="column w30">;time <code>&lt;timezone;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">userconf view</div> -->
+                            <!--             <div class="column w45">Show your current config options.</div> -->
+                            <!--             <div class="column w30">;userconf <code>view</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">userconf allycode</div> -->
+                            <!--             <div class="column w45">Add/ remove/ edit your registered ally code(s).</div> -->
+                            <!--             <div class="column w30">;userconf <code>&lt;add|remove|makeprimary&gt; &lt;allycode&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">userconf arenaAlert enableDMs <a class="premium" href="https://www.patreon.com/bePatron?u=8423320">(Premium Users)</a></div> -->
+                            <!--             <div class="column w45">Toggle DM alerts for just your primary allycode, all allycodes, or none.</div> -->
+                            <!--             <div class="column w30">;userconf arenaAlert <code>enableDMs &lt;all|primary|off&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">userconf arenaAlert arena <a class="premium" href="https://www.patreon.com/bePatron?u=8423320">(Premium Users)</a></div> -->
+                            <!--             <div class="column w45">Choose which arena's alerts you want.</div> -->
+                            <!--             <div class="column w30">;userconf arenaAlert <code>arena &lt;both|fleet|char&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">userconf arenaAlert payoutResult <a class="premium" href="https://www.patreon.com/bePatron?u=8423320">(Premium Users)</a></div> -->
+                            <!--             <div class="column w45">Send you a DM with your final payout result.</div> -->
+                            <!--             <div class="column w30">;userconf arenaAlert <code>payoutResult &lt;on|off&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">userconf arenaAlert payoutWarning <a class="premium" href="https://www.patreon.com/bePatron?u=8423320">(Premium Users)</a></div> -->
+                            <!--             <div class="column w45">Send you a DM the set number of min before your payout. 0 to turn it off.</div> -->
+                            <!--             <div class="column w30">;userconf arenaAlert <code>payoutWarning &lt;0-1439&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">userconf lang language</div> -->
+                            <!--             <div class="column w45">Set personal localization settings for bot text.</div> -->
+                            <!--             <div class="column w30">;userconf <code>lang language &lt;langChoice&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!--     <div class="command-row w100 column"> -->
+                            <!--         <div class="columns"> -->
+                            <!--             <div class="column w25">userconf lang swgohLanguage</div> -->
+                            <!--             <div class="column w45">Set personal localization settings for game text (character abilities/ names/ etc.</div> -->
+                            <!--             <div class="column w30">;userconf <code>lang swgohLanguage &lt;langChoice&gt;</code></div> -->
+                            <!--         </div> -->
+                            <!--     </div> -->
+                            <!-- </div> -->
+                        </div>
+                        <div class="tab-pane" id="star-wars">
+                            <div class="command-header-container columns">
+                                <div class="column w25 command-header">Command</div>
+                                <div class="column w45 command-header hide-mobile">Description</div>
+                                <div class="column w30 command-header hide-mobile">Usage</div>
+                            </div>
+                            <div class="command-container columns multiline">
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">activities</div>
+                                        <div class="column w45">Shows the daily guild activities</div>
+                                        <div class="column w30">;activities [dayOfWeek]</div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">arenarank</div>
+                                        <div class="column w45">Shows the (approximate) highest rank you can get if you win every arena battle.</div>
+                                        <div class="column w30">;arenarank <code>&lt;currentRank&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">challenges</div>
+                                        <div class="column w45">Shows the daily guild challenges.</div>
+                                        <div class="column w30">;challenges <code>[dayOfWeek]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">character</div>
+                                        <div class="column w45">Shows info for the specified character.</div>
+                                        <div class="column w30">;character <code>&lt;character&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">charactergear</div>
+                                        <div class="column w45">Shows the gear requirements for the specified character/ lvl.</div>
+                                        <div class="column w30">;charactergear <code>&lt;char&gt; [gearLvl]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">faction</div>
+                                        <div class="column w45">Shows the list of characters in the specified faction.</div>
+                                        <div class="column w30">;faction <code>&lt;faction&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">grandarena</div>
+                                        <div class="column w45">Compares 2 players' stats &amp; characters for Grand Area.</div>
+                                        <div class="column w30">;grandarena <code>&lt;allycode1&gt; &lt;allycode2&gt; [-faction faction] [character1] | [character2] | ...</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">mods</div>
+                                        <div class="column w45">Shows some suggested mods for the specified character.</div>
+                                        <div class="column w30">;mods <code>&lt;character&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">modsets</div>
+                                        <div class="column w45">Shows how many of each kind of mod you need for a set.</div>
+                                        <div class="column w30">;modsets</div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">randomchar</div>
+                                        <div class="column w45">Picks up to 5 random characters to form a squad.</div>
+                                        <div class="column w30">;randomchar <code>[numberOfChars]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">ships</div>
+                                        <div class="column w45">Shows the info about the specified ship.	</div>
+                                        <div class="column w30">;ships <code>&lt;ship|character&gt;</code></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="swgoh">
+                            <div class="command-header-container columns">
+                                <div class="column w25 command-header">Command</div>
+                                <div class="column w45 command-header hide-mobile">Description</div>
+                                <div class="column w30 command-header hide-mobile">Usage</div>
+                            </div>
+                            <div class="command-container columns multiline">
+                                <!-- <div class="command-row w100 column"> -->
+                                <!--     <div class="columns"> -->
+                                <!--         <div class="column w25">currentevents</div> -->
+                                <!--         <div class="column w45">Shows up to [num] upcoming events.</div> -->
+                                <!--         <div class="column w30">;currentevents <code>[num]</code></div> -->
+                                <!--     </div> -->
+                                <!-- </div> -->
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">farm</div>
+                                        <div class="column w45">Shows a list of available farming locations for the specified character.</div>
+                                        <div class="column w30">;farm <code>&lt;character&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">guilds</div>
+                                        <div class="column w45">Shows an overview of a guild based on the entered allycode.</div>
+                                        <div class="column w30">;guilds <code>[user]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">guilds -roster</div>
+                                        <div class="column w45">Shows a list of all players in a guild.</div>
+                                        <div class="column w30">;arenarank <code>&lt;-roster&gt; [-sort name|rank|allycode|gp] [-reg]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">guild -roster -allycode</div>
+                                        <div class="column w45">Shows the roster of a guild, but listed with their allycodes.</div>
+                                        <div class="column w30">;challenges <code>&lt;-roster&gt; &lt;-alycode&gt; [-reg]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">guildsearch</div>
+                                        <div class="column w45">Shows the rarity & gp of the selected character for everyone in the guild</div>
+                                        <div class="column w30">;guildsearch <code> [user] &lt;character&gt; [-ship] [-reverse] [-sort name|gp] [starLvl] [-top X]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">guildsearch -stats</div>
+                                        <div class="column w45">Shows the list of characters sorted by the given stat.</div>
+                                        <div class="column w30">;guildsearch <code>[user] &lt;-character&gt; &lt;-stats stat&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">guildsearch -mods</div>
+                                        <div class="column w45">Compare some of the more important mods across your entire guild.</div>
+                                        <div class="column w30">;guildsearch <code>[user] [-sort sortBy]&lt;-mods&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">guildsearch -gear</div>
+                                        <div class="column w45">Compare the count of upper gear levels across your entire guild.</div>
+                                        <div class="column w30">;guildsearch <code>[user] [-sort gearLvl]&lt;-gear&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">guildsearch -stars</div>
+                                        <div class="column w45">Compare the count of upper gear levels across your entire guild.</div>
+                                        <div class="column w30">;guildsearch <code>[user] &lt;-stars&gt; [-sort starLvl] [-ship]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">myarena</div>
+                                        <div class="column w45">Show user's current arena ranks and their squads.</div>
+                                        <div class="column w30">;myarena <code>[user]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">mycharacter</div>
+                                        <div class="column w45">Shows the general stats about the selected character.</div>
+                                        <div class="column w30">;mycharacter <code>[numberOfChars]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">mymods</div>
+                                        <div class="column w45">Shows the mods that you have equipped on the selected character.</div>
+                                        <div class="column w30">;mymods <code>[user] &lt;character&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">mymod -best</div>
+                                        <div class="column w45">Shows the characters with the top X stat from mods.</div>
+                                        <div class="column w30">;mymods <code>[user] &lt;-best stat&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">mymod -total</div>
+                                        <div class="column w45">Shows the characters with the top X stat including mods.</div>
+                                        <div class="column w30">;mymods <code>[user] &lt;-total stat&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">myprofile</div>
+                                        <div class="column w45">Show user's general stats.</div>
+                                        <div class="column w30">;myprofile <code>[user]</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">need</div>
+                                        <div class="column w45">Shows your progress towards 7* characters from a faction or shop.</div>
+                                        <div class="column w30">;need <code>[user] &lt;faction|shop|battle|keyword&gt;</code></div>
+                                    </div>
+                                </div>
+                                <div class="command-row w100 column">
+                                    <div class="columns">
+                                        <div class="column w25">raiddamage</div>
+                                        <div class="column w45">Convert damage percent or amount to the other.</div>
+                                        <div class="column w30">;raiddamage <code>&lt;raid&gt; &lt;phase&gt; &lt;damage&gt;</code></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+		<footer>
+			<%- include("../partials/footer") -%>
+		</footer>
+	</body>
+</html>
+
+    <style>
+
+    table {
+        width: 100%;
+    }
+    table th {
+        text-align: left;
+        border-bottom: 1px solid #ccc;
+    }
+    table th, table td {
+        padding: 0.4em;
+    }
+    table.fold-table > tbody > tr.view td, table.fold-table > tbody > tr.view th {
+        cursor: pointer;
+    }
+    table.fold-table > tbody > tr.view td:first-child, table.fold-table > tbody > tr.view th:first-child {
+        position: relative;
+        padding-left: 20px;
+    }
+    table.fold-table > tbody > tr.view td:first-child:before, table.fold-table > tbody > tr.view th:first-child:before {
+        position: absolute;
+        top: 50%;
+        left: 5px;
+        width: 9px;
+        height: 16px;
+        margin-top: -8px;
+        font: 16px fontawesome;
+        color: #999;
+        content: "\f0d7";
+        transition: all 0.3s ease;
+    }
+    table.fold-table > tbody > tr.view:nth-child(4n-1) {
+        /* background: #eee; */
+        background: var(--gray);
+    }
+    table.fold-table > tbody > tr.view:hover {
+        /* background: #0f0; */
+        background: var(--lightergray);
+        color: black;
+    }
+    table.fold-table > tbody > tr.view.open {
+        background: tomato;
+        color: white;
+    }
+    table.fold-table > tbody > tr.view.open td:first-child:before, table.fold-table > tbody > tr.view.open th:first-child:before {
+        transform: rotate(-180deg);
+        color: #333;
+    }
+    table.fold-table > tbody > tr.fold {
+        display: none;
+    }
+    table.fold-table > tbody > tr.fold.open {
+        display: table-row;
+    }
+    .fold-content {
+        padding: 0.5em;
+    }
+    .fold-content h3 {
+        margin-top: 0;
+    }
+    .fold-content > table {
+        border: 2px solid #ccc;
+    }
+    .fold-content > table > tbody tr:nth-child(even) {
+        background: #eee;
+    }
+    /* code { */
+    /*     font-family: Brown, monospace; */
+    /*     font-size: inherit; */
+    /* } */
+    code {
+        font-family: Consolas,"courier new";
+        color: white;
+        background-color: var(--lightgray);
+        padding: 2px;
+    }
+
+    .nav-tabs .nav-item .nav-link {
+        display: block;
+        padding: .5rem .9rem;
+    }
+</style>
+
+<script type="text/javascript">
+	// If someone it trying to link to a specific tab
+	if (window.location.hash) {
+		var hash = window.location.hash;
+		hash = hash.replace("#", "");
+
+		// Make sure it's a valid id, else just go to the default one
+		if ($("#"+hash).length && $(".nav-link#tab-" + hash).length) {
+			//  First remove class "active" from currently active tab & table
+			$(".nav-link").removeClass('active');
+			$(".tab-pane").removeClass("active");
+
+			// Add the active class to the appropriate ones
+			$(".nav-link#tab-" + hash).addClass("active")
+			$("#" + hash).addClass("active");
+		}
+	}
+
+    // Take care of toggling table rows being expanded
+    const commandTable = document.querySelectorAll(".fold-table tr.view");
+    for (const row of commandTable) {
+        row.addEventListener("click", ({ target }) => {
+            target.parentElement.classList.toggle("open");
+            target.parentElement.nextElementSibling.classList.toggle("open");
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const navMenuList = document.querySelectorAll(".navigation-menu .menu-list a");
+        for (const navMenu of navMenuList) {
+            navMenu.addEventListener("click", ({target}) => {
+                //  Here we get the href value of the selected tab
+                let selectedTabHref = target.getAttribute("href");
+                window.location.hash = selectedTabHref;
+
+                // Grab the table that's going to be shown
+                const selectedTab = document.getElementById(selectedTabHref.replace("#", ""));
+
+                //  First remove class "active" from currently active tab & table
+                const navLinkList = document.querySelectorAll(".nav-link");
+                const tabPaneList = document.querySelectorAll(".tab-pane");
+                for (const navLink of navLinkList) {
+                    navLink.classList.remove("active");
+                }
+                for (const tabPane of tabPaneList) {
+                    tabPane.classList.remove("active");
+                }
+
+                //  Now add class "active" to the selected/clicked tab & table
+                target.classList.add("active");
+                selectedTab.classList.add("active");
+
+                // Return false so it doesn't scroll when clicked
+                return false;
+            });
+        }
+    });
+</script>
