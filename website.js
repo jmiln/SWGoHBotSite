@@ -7,7 +7,7 @@ const path = require("path");
 const express = require("express");
 const app = express();
 // const momentTZ = require("moment-timezone");
-require("moment-duration-format");
+// require("moment-duration-format");
 
 const config = require("./config.json");
 
@@ -35,6 +35,16 @@ const initSite = async function() {
     // About page
     app.get("/about", function(req, res) {
         res.render("pages/about");
+    });
+
+    // ToS page
+    app.get("/tos", function(req, res) {
+        res.render("pages/tos");
+    });
+
+    // Privacy Policy page
+    app.get("/privacyPolicy", function(req, res) {
+        res.render("pages/privacyPolicy");
     });
 
     // // Changelog page
