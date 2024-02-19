@@ -6,10 +6,8 @@ const path = require("path");
 // Express Session
 const express = require("express");
 const app = express();
-// const momentTZ = require("moment-timezone");
-// require("moment-duration-format");
 
-const config = require("./config.json");
+const config = require("./config.js");
 
 const initSite = async function() {
     var publicDir = require("path").join(__dirname,"/public");
@@ -46,40 +44,6 @@ const initSite = async function() {
     app.get("/privacyPolicy", function(req, res) {
         res.render("pages/privacyPolicy");
     });
-
-    // // Changelog page
-    // app.get("/changelog", async function(req, res) {
-    //     await changelogs.findAll().then(function(logs) {
-    //         const logList = [];
-    //         const sortedLogs = logs.sort((p, c) => c.dataValues.createdAt - p.dataValues.createdAt);
-    //         sortedLogs.forEach(log => {
-    //             logList.push(`<strong><font color="gray">${momentTZ.tz(log.dataValues.createdAt, "us/pacific").format("M/D/YYYY [at] h:mm a")}</font></strong></br>${log.dataValues.logText.replace(/\n/g, "</br>")}`);
-    //         });
-    //
-    //         res.render("pages/changelog", {
-    //             changelogs: logList
-    //         });
-    //     });
-    // });
-    //
-    // // Changelog Specific page
-    // app.get("/changelog/:logID", async function(req, res) {
-    //     let id = {};
-    //     if (!parseInt(req.params.logID)) {
-    //         console.log("Broke trying to get log #" + req.params.logID);
-    //     } else {
-    //         id = {id: req.params.logID};
-    //     }
-    //     await changelogs.findAll({where: id}).then(function(logs) {
-    //         const logList = [];
-    //         const sortedLogs = logs.sort((p, c) => c.dataValues.createdAt - p.dataValues.createdAt);
-    //         sortedLogs.forEach(log => {
-    //             logList.push(`<strong><font color="gray">${momentTZ.tz(log.dataValues.createdAt, "us/pacific").format("M/D/YYYY [at] h:mm a")}</font></strong></br>${log.dataValues.logText.replace(/\n/g, "</br>")}`);
-    //         });
-    //
-    //         res.render("pages/changelog");
-    //     });
-    // });
 
     // FAQs page
     app.get("/faqs",function(req, res) {
