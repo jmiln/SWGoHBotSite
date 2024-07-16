@@ -20,7 +20,7 @@ const initSite = async function() {
     // }, 5 * 60 * 1000);
 
     // Set the directory for the views and stuff
-    app.set("views", path.join(__dirname, `..${path.sep}dashboard`));
+    app.set("views", __dirname);
 
     // Set the view engine to ejs
     app.set("view engine", "ejs");
