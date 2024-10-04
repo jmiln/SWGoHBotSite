@@ -1,0 +1,27 @@
+{
+    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+    "organizeImports": {
+        "enabled": true
+    },
+    "formatter": {
+        "enabled": true,
+        "formatWithErrors": false,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 140,
+        "ignore": ["node_modules", "./scripts/**", "./languages/**", "./data/**", "./wipCommands/**", "./test/**", "./oldWip/**"]
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "double",
+            "semicolons": "always"
+        }
+    },
+    "linter": {
+        "enabled": true,
+        "ignore": ["node_modules", "./scripts/**", "./languages/**", "./data/**", "./wipCommands/**", "./test/**", "./oldWip/**"],
+        "rules": {
+            "recommended": true
+        }
+    }
+}
