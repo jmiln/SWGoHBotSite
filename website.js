@@ -25,57 +25,57 @@ const initSite = async () => {
     app.set("view engine", "ejs");
 
     // Index page
-    app.get("/", (req, res) => {
+    app.get("/", (_, res) => {
         res.render("pages/index");
     });
 
     // About page
-    app.get("/about", (req, res) => {
+    app.get("/about", (_, res) => {
         res.render("pages/about");
     });
 
     // ToS page
-    app.get("/tos", (req, res) => {
+    app.get("/tos", (_, res) => {
         res.render("pages/tos");
     });
 
     // Privacy Policy page
-    app.get("/privacyPolicy", (req, res) => {
+    app.get("/privacyPolicy", (_, res) => {
         res.render("pages/privacyPolicy");
     });
 
     // FAQs page
-    app.get("/faqs", (req, res) => {
+    app.get("/faqs", (_, res) => {
         res.render("pages/faqs");
     });
 
     // Commands page
-    app.get("/commands", (req, res) => {
+    app.get("/commands", (_, res) => {
         res.render("pages/commands");
     });
-    app.get("/test-commands", (req, res) => {
+    app.get("/test-commands", (_, res) => {
         res.render("pages/test-commands");
     });
 
     // The link to invite the bot
-    app.get("/invite", (req, res) => {
+    app.get("/invite", (_, res) => {
         res.redirect(
             "https://discord.com/api/oauth2/authorize?client_id=315739499932024834&permissions=277025901632&scope=bot%20applications.commands",
         );
     });
 
     // The link to join the support server
-    app.get("/server", (req, res) => {
+    app.get("/server", (_, res) => {
         res.redirect("https://discord.gg/FfwGvhr");
     });
 
-    app.use((err, req, res, next) => {
+    app.use((err, _, res) => {
         console.error(err.stack);
         res.status(500).send("Something broke!");
     });
 
     // The 404 Route
-    app.use("", (req, res) => {
+    app.use("", (_, res) => {
         res.status(404).send("Error 404: Not Found!");
     });
 

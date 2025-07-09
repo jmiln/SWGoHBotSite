@@ -80,7 +80,6 @@ hr {
     color: white;
     text-align: center;
     padding: 15px 15px;
-    text-decoration: none;
     font-size: 1rem;
     margin: 2px 0px 2px 0px;
 }
@@ -115,7 +114,7 @@ hr {
     border: 1px solid transparent;
     padding: .375rem .75rem;
     font-size: .9rem;
-    font-weight: bold;
+    /* font-weight: bold; */
     border-radius: .25rem;
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
