@@ -69,13 +69,13 @@ const initSite = async () => {
         res.redirect("https://discord.gg/FfwGvhr");
     });
 
-    app.use((err, _, res) => {
+    app.use((err, _, res, _next) => {
         console.error(err.stack);
         res.status(500).send("Something broke!");
     });
 
     // The 404 Route
-    app.use("", (_, res) => {
+    app.use((_, res, _next) => {
         res.status(404).send("Error 404: Not Found!");
     });
 
