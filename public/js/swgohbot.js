@@ -1,3 +1,4 @@
+// biome-ignore lint/correctness/noUnusedVariables: Used in onclick handlers in nav.ejs templates
 function toggleNav() {
     // Toggle the nav in mobile mode
     const menus = document.getElementById("navbar").getElementsByClassName("nav-links");

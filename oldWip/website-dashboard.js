@@ -1,8 +1,8 @@
 // Native Node Imports
-const url = require("url");
-const path = require("path");
+const url = require("node:url");
+const path = require("node:path");
 // const fs = require("fs");
-const join = require("path").join;
+const join = require("node:path").join;
 
 // Used for Permission Resolving...
 const Discord = require("discord.js");
@@ -34,14 +34,14 @@ const helmet = require("helmet");
 // Used to parse Markdown from things like ExtendedHelp
 // const md = require("marked");
 
-const initSite = async function() {
+const initSite = async () => {
     const sequelize = new Sequelize(config.database.data, config.database.user, config.database.pass, {
         host: config.database.host,
         dialect: "postgres",
-        logging: false
+        logging: false,
     });
     const changelogs = sequelize.define("changelogs", {
-        logText: Sequelize.TEXT
+        logText: Sequelize.TEXT,
     });
 
     var publicDir = join(__dirname, "/public");
@@ -79,27 +79,32 @@ const initSite = async function() {
         stuff from the user. See: https://discordapp.com/developers/docs/topics/oauth2
       See config.js.example to set these up.
       */
-    passport.use(new Strategy({
-        clientID: "315739499932024834",
-        clientSecret: config.dashboard.oauthSecret,
-        callbackURL: config.dashboard.callbackURL,
-        scope: ["identify", "guilds"]
-    },
-    (accessToken, refreshToken, profile, done) => {
-        process.nextTick(() => done(null, profile));
-    }));
-
+    passport.use(
+        new Strategy(
+            {
+                clientID: "315739499932024834",
+                clientSecret: config.dashboard.oauthSecret,
+                callbackURL: config.dashboard.callbackURL,
+                scope: ["identify", "guilds"],
+            },
+            (_accessToken, _refreshToken, profile, done) => {
+                process.nextTick(() => done(null, profile));
+            },
+        ),
+    );
 
     // Session data, used for temporary storage of your visitor's session information.
     // the `secret` is in fact a "salt" for the data, and should not be shared publicly.
-    app.use(session({
-        store: new MongoStore({
-            url: config.mongo.url
+    app.use(
+        session({
+            store: new MongoStore({
+                url: config.mongo.url,
+            }),
+            secret: config.dashboard.sessionSecret,
+            resave: false,
+            saveUninitialized: false,
         }),
-        secret: config.dashboard.sessionSecret,
-        resave: false,
-        saveUninitialized: false,
-    }));
+    );
 
     // Initializes passport and session.
     app.use(passport.initialize());
@@ -118,9 +123,12 @@ const initSite = async function() {
     // use in code.
     var bodyParser = require("body-parser");
     app.use(bodyParser.json()); // to support JSON-encoded bodies
-    app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
-        extended: true
-    }));
+    app.use(
+        bodyParser.urlencoded({
+            // to support URL-encoded bodies
+            extended: true,
+        }),
+    );
 
     /*
     Authentication Checks. For each page where the user should be logged in, double-checks
@@ -144,7 +152,7 @@ const initSite = async function() {
     const renderPage = (res, req, page, data = {}) => {
         const baseData = {
             path: req.path,
-            user: req.isAuthenticated() ? req.user : null
+            user: req.isAuthenticated() ? req.user : null,
         };
         if (baseData.user) {
             baseData.user.avatarURL = `https://cdn.discordapp.com/avatars/${baseData.user.id}/${baseData.user.avatar}.png?size=32`;
@@ -154,41 +162,47 @@ const initSite = async function() {
 
     // The login page saves the page the person was on in the session,
     // then throws the user to the Discord OAuth2 login page.
-    app.get("/login", (req, res, next) => {
-        if (req.session.backURL) {
-            // req.session.backURL = req.session.backURL;
-        } else if (req.headers.referer) {
-            const parsed = url.parse(req.headers.referer);
-            if (parsed.hostname === app.locals.domain) {
-                req.session.backURL = parsed.path;
+    app.get(
+        "/login",
+        (req, _res, next) => {
+            if (req.session.backURL) {
+                // req.session.backURL = req.session.backURL;
+            } else if (req.headers.referer) {
+                const parsed = url.parse(req.headers.referer);
+                if (parsed.hostname === app.locals.domain) {
+                    req.session.backURL = parsed.path;
+                }
+            } else {
+                req.session.backURL = "/";
             }
-        } else {
-            req.session.backURL = "/";
-        }
-        next();
-    },
-    passport.authenticate("discord")
+            next();
+        },
+        passport.authenticate("discord"),
     );
 
     // Once the user returns from OAuth2, this endpoint gets called.
     // Here we check if the user was already on the page and redirect them
     // there, mostly.
-    app.get("/callback", passport.authenticate("discord", {
-        failureRedirect: "/autherror"
-    }), (req, res) => {
-        if (req.user.id === "124579977474736129") {
-            req.session.isAdmin = true;
-        } else {
-            req.session.isAdmin = false;
-        }
-        if (req.session.backURL) {
-            const url = req.session.backURL;
-            req.session.backURL = null;
-            res.redirect(url);
-        } else {
-            res.redirect("/");
-        }
-    });
+    app.get(
+        "/callback",
+        passport.authenticate("discord", {
+            failureRedirect: "/autherror",
+        }),
+        (req, res) => {
+            if (req.user.id === "124579977474736129") {
+                req.session.isAdmin = true;
+            } else {
+                req.session.isAdmin = false;
+            }
+            if (req.session.backURL) {
+                const url = req.session.backURL;
+                req.session.backURL = null;
+                res.redirect(url);
+            } else {
+                res.redirect("/");
+            }
+        },
+    );
     // If an error happens during authentication, this is what's displayed.
     app.get("/autherror", (req, res) => {
         // TODO  Need to swap this out since it doesn't exist here
@@ -196,18 +210,15 @@ const initSite = async function() {
     });
 
     // Destroys the session to log out the user.
-    app.get("/logout", function(req, res) {
+    app.get("/logout", (req, res) => {
         req.session.destroy(() => {
             req.logout();
             res.redirect("/"); //Inside a callback… bulletproof!
         });
     });
 
-
-
-
     // Index page
-    app.get("/", function(req, res) {
+    app.get("/", (req, res) => {
         renderPage(res, req, "index.ejs");
     });
 
@@ -217,88 +228,95 @@ const initSite = async function() {
     // });
 
     // About page
-    app.get("/about", function(req, res) {
+    app.get("/about", (req, res) => {
         renderPage(res, req, "about.ejs");
     });
 
     // Changelog page
-    app.get("/changelog", async function(req, res) {
-        await changelogs.findAll().then(function(logs) {
+    app.get("/changelog", async (req, res) => {
+        await changelogs.findAll().then((logs) => {
             const logList = [];
             const sortedLogs = logs.sort((p, c) => c.dataValues.createdAt - p.dataValues.createdAt);
-            sortedLogs.forEach(log => {
-                logList.push(`<strong><font color="gray">${momentTZ.tz(log.dataValues.createdAt, "us/pacific").format("M/D/YYYY [at] h:mm a")}</font></strong></br>${log.dataValues.logText.replace(/\n/g, "</br>")}`);
+            sortedLogs.forEach((log) => {
+                logList.push(
+                    `<strong><font color="gray">${momentTZ.tz(log.dataValues.createdAt, "us/pacific").format("M/D/YYYY [at] h:mm a")}</font></strong></br>${log.dataValues.logText.replace(/\n/g, "</br>")}`,
+                );
             });
 
             renderPage(res, req, "changelog.ejs", {
-                changelogs: logList
+                changelogs: logList,
             });
         });
     });
 
     // Changelog Specific page
-    app.get("/changelog/:logID", async function(req, res) {
+    app.get("/changelog/:logID", async (req, res) => {
         let id = {};
-        if (!parseInt(req.params.logID)) {
-            console.log("Broke trying to get log #" + req.params.logID);
+        if (!Number.parseInt(req.params.logID)) {
+            console.log(`Broke trying to get log #${req.params.logID}`);
         } else {
             id = {
-                id: req.params.logID
+                id: req.params.logID,
             };
         }
-        await changelogs.findAll({
-            where: id
-        }).then(function(logs) {
-            const logList = [];
-            const sortedLogs = logs.sort((p, c) => c.dataValues.createdAt - p.dataValues.createdAt);
-            sortedLogs.forEach(log => {
-                logList.push(`<strong><font color="gray">${momentTZ.tz(log.dataValues.createdAt, "us/pacific").format("M/D/YYYY [at] h:mm a")}</font></strong></br>${log.dataValues.logText.replace(/\n/g, "</br>")}`);
-            });
+        await changelogs
+            .findAll({
+                where: id,
+            })
+            .then((logs) => {
+                const logList = [];
+                const sortedLogs = logs.sort((p, c) => c.dataValues.createdAt - p.dataValues.createdAt);
+                sortedLogs.forEach((log) => {
+                    logList.push(
+                        `<strong><font color="gray">${momentTZ.tz(log.dataValues.createdAt, "us/pacific").format("M/D/YYYY [at] h:mm a")}</font></strong></br>${log.dataValues.logText.replace(/\n/g, "</br>")}`,
+                    );
+                });
 
-            renderPage(res, req, "changelog.ejs", {
-                changelogs: logList
+                renderPage(res, req, "changelog.ejs", {
+                    changelogs: logList,
+                });
             });
-        });
     });
 
     // FAQs page
-    app.get("/faqs", function(req, res) {
+    app.get("/faqs", (req, res) => {
         renderPage(res, req, "faqs.ejs");
     });
 
     // Commands page
-    app.get("/commands", function(req, res) {
+    app.get("/commands", (req, res) => {
         renderPage(res, req, "commands.ejs");
     });
 
     // Base dashboard page
     app.get("/dashboard", checkAuth, (req, res) => {
         const perms = Discord.EvaluatedPermissions;
-        renderPage(res, req, "dashboard.ejs", {perms});
+        renderPage(res, req, "dashboard.ejs", { perms });
     });
 
     // The link to invite the bot
-    app.get("/invite", function(req, res) {
+    app.get("/invite", (_req, res) => {
         res.redirect("https://discordapp.com/oauth2/authorize/?permissions=378944&scope=bot&client_id=315739499932024834");
     });
 
     // The link to join the support server
-    app.get("/server", function(req, res) {
+    app.get("/server", (_req, res) => {
         res.redirect("https://discord.gg/FfwGvhr");
     });
 
-    app.use(function(err, req, res, next) { // eslint-disable-line no-unused-vars
+    app.use((err, _req, res, _next) => {
+        // eslint-disable-line no-unused-vars
         console.error(err.stack);
         res.status(500).send("Something broke!");
     });
 
     // The 404 Route
-    app.use("", function(req, res) {
+    app.use("", (_req, res) => {
         res.status(404).send("Error 404: Not Found!");
     });
 
     // Turn the site on
-    app.listen(config.dashboard.port, function() {
+    app.listen(config.dashboard.port, () => {
         console.log(`Site listening on port ${config.dashboard.port}!`);
     });
 };
