@@ -8,10 +8,15 @@ const express = require("express");
 const app = express();
 
 const config = require("./config.js");
+const commandService = require("./modules/commandService.js");
 
 const initSite = async () => {
     const publicDir = path.join(__dirname, "/public");
     app.use(express.static(publicDir));
+
+    // Initialize command service cache
+    console.log("Loading bot command data...");
+    commandService.initialize();
 
     // Not used anymore, but could be in the future? (Could probably have the bot save these to a file every hour or something?)
     // let guildCount = await parseInt(fs.readFileSync(path.join(__dirname, path.sep + "/data/guildCount.txt")));
@@ -49,9 +54,10 @@ const initSite = async () => {
         res.render("pages/faqs");
     });
 
-    // Commands page
+    // Commands page - dynamic from bot data
     app.get("/commands", (_, res) => {
-        res.render("pages/commands");
+        const commandData = commandService.getCommands();
+        res.render("pages/commands", { commandData });
     });
     app.get("/test-commands", (_, res) => {
         res.render("pages/test-commands");

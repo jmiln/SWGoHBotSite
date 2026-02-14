@@ -312,31 +312,6 @@ hr {
 .columns.multiline {
     flex-wrap: wrap;
 }
-.command-header-container {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    background-color: #454d55;
-    height: 50px;
-    margin-bottom: 0px;
-    padding-left: 24px;
-}
-.command-header {
-    color: white;
-    text-align: left;
-    font-weight: bold;
-    padding-left: 0px;
-}
-.command-container {
-    background-color: #343a40;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-.command-row {
-    padding-left: 24px;
-}
-.command-row:nth-child(even) {
-    background: #3f444a;
-}
 .btn-outline-invite {
     color: var(--success);
     border-color: var(--success);
