@@ -80,10 +80,20 @@
                                                 <div class="command-usage">
                                                     <% if (command.usage && command.usage.length > 0) { %>
                                                         <% for (const usage of command.usage) { %>
-                                                            <span class="usage-example"><%= usage %></span>
+                                                            <%
+                                                            // HTML escape the entire string first
+                                                            const escapedUsage = usage
+                                                                .replace(/&/g, '&amp;')
+                                                                .replace(/</g, '&lt;')
+                                                                .replace(/>/g, '&gt;')
+                                                                .replace(/"/g, '&quot;');
+                                                            // Then replace **/cmd** with bold formatting
+                                                            const formattedUsage = escapedUsage.replace(/\*\*\/([^*]+)\*\*/g, '<strong>/$1</strong>');
+                                                            %>
+                                                            <span class="usage-example"><%- formattedUsage %></span>
                                                         <% } %>
                                                     <% } else { %>
-                                                        <span class="usage-example">/<%= command.name %></span>
+                                                        <span class="usage-example"><strong>/<%= command.name %></strong></span>
                                                     <% } %>
                                                 </div>
                                             </div>
