@@ -7,57 +7,124 @@
     <body>
         <header>
             <%- include("../partials/nav") -%>
-		</header>
-		<div class="page-wrapper">
+        </header>
+        <div class="page-wrapper">
             <div style="text-align: center;">
                 <h2>Frequently Asked Questions</h2>
                 <hr class="w60"/>
             </div>
             <div class="column w80 autoMargin">
 
-				<h4>Adding the bot:</h4>
-				<p>
-					Click this link and Invite the Bot to your Discord Server:
-					<a href="https://discordapp.com/oauth2/authorize?permissions=67619904&scope=bot&client_id=315739499932024834">Invite Link</a>
-				</p>
-				<hr>
-				<h4>Bot Setup:</h4>
-				<p>
-					<strong>Step 1 - Set Admin Role</strong></br>
-					Use command to assign a specific Discord Role if you want a group of users to access the Admin functions of the Bot.</br>
-					Command:   <code>;setconf adminRole add &lt;AdminRoleName&gt;</code></br>
-					Example:   <code>;setconf adminRole add officers</code></br>
-					</br>
-					<strong>Step 2 - Setting Time Zone to match your Guild Zone</strong></br>
-					The list of time zones can be found here: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones </br>
-					Command:   <code>;setconf timezone &lt;timezone&gt;</code></br>
-					Example:   <code>;setconf timezone Europe/Paris</code></br>
-					</br>
-					<strong>Step 3 - Set the Channel</strong></br>
-					Use this command to set the channel for the bot to announce events and welcome messages in.</br>
-					Command:   <code>;setconf announceChan &lt;announcementChannel&gt;</code></br>
-					Example:   <code>;setconf announceChan announcements</code></br>
-					</br>
-				</p>
-				<hr>
-				<h4>Events:</h4>
-				<p>
-					<strong>Setting an Event:</strong></br>
-					The Event Name cannot have spaces but the Event Message can.
-					You can use the "@" to mention specific users or everyone/here as you see fit in the event message.</br>
-					The date format is "dd/mm/yyyy", and the time uses the 24 hr format.</br>
-					Command:  <code>;event [create|view|delete] [eventName] [eventDay="dd/mm/yyyy"] [eventTime] [eventMessage]</code></br>
-					Example:  <code>;event create RANCOR_RAID_STARTING 17/08/2017 21:00 | P1 Opens | @everyone | P1 Hitters: @Reaper @SHOManiac | 24hr No Hit |</code>
+                <section class="faq-item">
+                    <h3>How do I add the bot to my Discord server?</h3>
+                    <p>
+                        Adding SWGoHBot to your server is quick and easy! Click the invite link below and select your server from the dropdown. The bot will request the necessary permissions to function properly.
+                    </p>
+                    <p>
+                        <a href="/invite">Click here to invite SWGoHBot to your server</a>
+                    </p>
+                    <p>
+                        The bot is free to use with optional premium features available through Patreon.
+                    </p>
+                </section>
 
-				</p>
-				<br><br>
-			</div>
+                <hr>
 
-			<hr>
+                <section class="faq-item">
+                    <h3>How do I use the bot's commands?</h3>
+                    <p>
+                        SWGoHBot uses Discord's slash commands. Simply type <code>/</code> in any channel where the bot has access, and Discord will show you available commands.
+                    </p>
+                    <p>
+                        To see all available commands and their descriptions, use the <code>/help</code> command. You can also view the complete command list on our <a href="/commands">commands page</a>.
+                    </p>
+                </section>
 
-			<footer>
-				<%- include("../partials/footer") -%>
-			</footer>
-		</div>
+                <hr>
+
+                <section class="faq-item">
+                    <h3>What's the difference between free and premium features?</h3>
+                    <p>
+                        SWGoHBot offers a robust set of features completely free, including character lookups, guild searches, mod recommendations, and much more.
+                    </p>
+                    <p>
+                        Premium features (available through <a href="https://www.patreon.com/bePatron?u=8423320">Patreon</a>) include:
+                    </p>
+                    <ul>
+                        <li>Arena rank alerts - Get notified when your arena rank drops</li>
+                        <li>Advanced statistics and tracking</li>
+                        <li>Priority support</li>
+                    </ul>
+                    <p>
+                        You can use the bot completely free and upgrade only if you want the premium features!
+                    </p>
+                </section>
+
+                <hr>
+
+                <section class="faq-item">
+                    <h3>How do I set up the bot for my guild?</h3>
+                    <p>
+                        To get started with guild features, you'll need to register your ally code with the bot. This allows the bot to pull your character and guild information from the game.
+                    </p>
+                    <p>
+                        Use the <code>/register</code> command to link your account. Once registered, you can use commands like <code>/profile</code>, <code>/guildsearch</code>, and more.
+                    </p>
+                    <p>
+                        For server-specific configuration (like setting announcement channels or time zones), server administrators can use the setup commands. Type <code>/help</code> and look for admin or configuration commands.
+                    </p>
+                </section>
+
+                <hr>
+
+                <section class="faq-item">
+                    <h3>The bot isn't responding to my commands. What should I do?</h3>
+                    <p>
+                        If the bot isn't responding, try these troubleshooting steps:
+                    </p>
+                    <ul>
+                        <li><strong>Check permissions:</strong> Make sure the bot has permission to read messages and send messages in the channel you're using</li>
+                        <li><strong>Verify the bot is online:</strong> Look at the member list - the bot should show as online (green status)</li>
+                        <li><strong>Try the help command:</strong> Type <code>/help</code> to verify the bot can see your commands</li>
+                        <li><strong>Check for Discord outages:</strong> Sometimes Discord has issues with slash commands during outages</li>
+                    </ul>
+                    <p>
+                        If you're still having issues, join our <a href="/server">support server</a> and our community will help you troubleshoot!
+                    </p>
+                </section>
+
+                <hr>
+
+                <section class="faq-item">
+                    <h3>How do I get help or report a bug?</h3>
+                    <p>
+                        For help using the bot or to report issues, join our <a href="/server">Discord support server</a>. Our community and support team are active and ready to help you!
+                    </p>
+                    <p>
+                        If you're a developer and want to contribute to the bot or report technical bugs in the code, you can visit our <a href="https://github.com/jmiln/swgohbot">GitHub repository</a>. However, for general usage questions and support, Discord is the best place to get help quickly.
+                    </p>
+                </section>
+
+                <hr>
+
+                <section class="faq-item">
+                    <h3>Is my data safe? What information does the bot collect?</h3>
+                    <p>
+                        SWGoHBot takes your privacy seriously. The bot only collects information necessary to provide its services, primarily your ally code and associated Discord user ID.
+                    </p>
+                    <p>
+                        All character, guild, and game data is pulled from the public Star Wars Galaxy of Heroes API. The bot does not have access to your EA account credentials or any personal information beyond what you explicitly share through Discord.
+                    </p>
+                    <p>
+                        For complete details on data collection, storage, and usage, please review our <a href="/privacyPolicy">Privacy Policy</a>.
+                    </p>
+                </section>
+
+            </div>
+        </div>
+
+        <footer>
+            <%- include("../partials/footer") -%>
+        </footer>
     </body>
 </html>
