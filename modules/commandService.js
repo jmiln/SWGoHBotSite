@@ -120,7 +120,7 @@ function getCommands() {
  */
 function initialize() {
     console.log("[CommandService] Initializing command service...");
-    loadCommandData();
+    getCommands();
 }
 
 // Export public API
