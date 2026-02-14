@@ -1,9 +1,12 @@
 {
     "name": "dashboard",
     "version": "1.0.0",
+    "type": "module",
+    "main": "website.ts",
     "description": "",
-    "main": "website.js",
     "scripts": {
+        "start": "node --env-file=.env website.ts",
+        "dev": "node --env-file=.env --watch website.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {

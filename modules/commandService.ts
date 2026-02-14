@@ -1,5 +1,4 @@
-const fs = require("node:fs");
-const config = require("../config.js");
+import { existsSync, readFileSync } from "node:fs";
 
 /**
  * Command Service Module
@@ -8,8 +7,28 @@ const config = require("../config.js");
  * Provides error handling and automatic cache invalidation.
  */
 
+interface CommandMetadata {
+    totalCommands: number;
+    categories: number;
+}
+
+interface CommandData {
+    metadata: CommandMetadata;
+    error?: string;
+    [key: string]: unknown;
+}
+
+interface CacheData {
+    data: CommandData | null;
+    expiresAt: number | null;
+}
+
 // Cache object to store command data with expiration
-const cache = {
+const cache: CacheData & {
+    isValid(): boolean;
+    set(data: CommandData, ttlHours?: number): void;
+    clear(): void;
+} = {
     data: null,
     expiresAt: null,
 
@@ -17,16 +36,16 @@ const cache = {
      * Check if cached data is still valid
      * @returns {boolean} True if cache exists and hasn't expired
      */
-    isValid() {
+    isValid(): boolean {
         return this.data !== null && this.expiresAt !== null && Date.now() < this.expiresAt;
     },
 
     /**
      * Set cache data with TTL
-     * @param {Object} data - The data to cache
+     * @param {CommandData} data - The data to cache
      * @param {number} ttlHours - Time to live in hours
      */
-    set(data, ttlHours = 24) {
+    set(data: CommandData, ttlHours = 24): void {
         this.data = data;
         this.expiresAt = Date.now() + ttlHours * 60 * 60 * 1000;
     },
@@ -34,7 +53,7 @@ const cache = {
     /**
      * Clear the cache
      */
-    clear() {
+    clear(): void {
         this.data = null;
         this.expiresAt = null;
     },
@@ -42,21 +61,21 @@ const cache = {
 
 /**
  * Load command data from help.json file
- * @returns {Object|null} Command data object or null if loading fails
+ * @returns {CommandData | null} Command data object or null if loading fails
  */
-function loadCommandData() {
+function loadCommandData(): CommandData | null {
     try {
-        const dataPath = config.bot.dataPath;
+        const dataPath = process.env.BOT_DATA_PATH || "/home/j_milner359/testBot/data/help.json";
 
         // Check if file exists
-        if (!fs.existsSync(dataPath)) {
+        if (!existsSync(dataPath)) {
             console.warn(`[CommandService] Warning: help.json not found at ${dataPath}`);
             return null;
         }
 
         // Read and parse the file
-        const fileContent = fs.readFileSync(dataPath, "utf8");
-        const data = JSON.parse(fileContent);
+        const fileContent = readFileSync(dataPath, "utf8");
+        const data = JSON.parse(fileContent) as CommandData;
 
         // Validate structure
         if (!data.metadata || typeof data.metadata.totalCommands !== "number" || typeof data.metadata.categories !== "number") {
@@ -71,15 +90,16 @@ function loadCommandData() {
 
         return data;
     } catch (error) {
+        const err = error as NodeJS.ErrnoException;
         // Handle specific error types
-        if (error.code === "ENOENT") {
-            console.error(`[CommandService] Error: File not found at ${config.bot.dataPath}`);
-        } else if (error.code === "EACCES") {
-            console.error(`[CommandService] Error: Permission denied reading ${config.bot.dataPath}`);
+        if (err.code === "ENOENT") {
+            console.error(`[CommandService] Error: File not found at ${process.env.BOT_DATA_PATH}`);
+        } else if (err.code === "EACCES") {
+            console.error(`[CommandService] Error: Permission denied reading ${process.env.BOT_DATA_PATH}`);
         } else if (error instanceof SyntaxError) {
-            console.error(`[CommandService] Error: Invalid JSON in ${config.bot.dataPath}`);
+            console.error(`[CommandService] Error: Invalid JSON in ${process.env.BOT_DATA_PATH}`);
         } else {
-            console.error(`[CommandService] Error loading command data: ${error.message}`);
+            console.error(`[CommandService] Error loading command data: ${err.message}`);
         }
 
         return null;
@@ -88,12 +108,12 @@ function loadCommandData() {
 
 /**
  * Get command data (from cache or fresh load)
- * @returns {Object} Command data or error object
+ * @returns {CommandData} Command data or error object
  */
-function getCommands() {
+function getCommands(): CommandData {
     // Return cached data if still valid
     if (cache.isValid()) {
-        return cache.data;
+        return cache.data as CommandData;
     }
 
     // Load fresh data
@@ -118,14 +138,17 @@ function getCommands() {
 /**
  * Initialize the service by loading initial cache
  */
-function initialize() {
+function initialize(): void {
     console.log("[CommandService] Initializing command service...");
     getCommands();
 }
 
+/**
+ * Clear the cache
+ */
+function clearCache(): void {
+    cache.clear();
+}
+
 // Export public API
-module.exports = {
-    getCommands,
-    initialize,
-    clearCache: () => cache.clear(),
-};
+export { getCommands, initialize, clearCache };
