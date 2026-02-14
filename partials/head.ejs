@@ -2,21 +2,32 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="A Discord bot to help out with SWGoH.">
+<meta name="description" content="<%= typeof description !== 'undefined' ? description : 'A Discord bot to help out with Star Wars Galaxy of Heroes - Character stats, guild management, and more.' %>">
 <meta name="author" content="Jeff Milner">
+<meta name="theme-color" content="#1a1a1a">
+
+<!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://swgohbot.com/">
-<meta property="og:title" content="SWGoHBot Discord Bot">
-<meta property="og:description" content="A Discord bot to help out with SWGoH.">
+<meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'SWGoHBot Discord Bot' %>">
+<meta property="og:description" content="<%= typeof description !== 'undefined' ? description : 'A Discord bot to help out with Star Wars Galaxy of Heroes - Character stats, guild management, and more.' %>">
 <meta property="og:site_name" content="SWGoHBot">
-<link rel="icon" href="images/botAvatar.png">
-<title>SWGoHBot Site</title>
+<meta property="og:image" content="https://swgohbot.com/images/botAvatar.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : 'SWGoHBot Discord Bot' %>">
+<meta name="twitter:description" content="<%= typeof description !== 'undefined' ? description : 'A Discord bot to help out with Star Wars Galaxy of Heroes - Character stats, guild management, and more.' %>">
+<meta name="twitter:image" content="https://swgohbot.com/images/botAvatar.png">
+
+<link rel="icon" type="image/png" href="/images/botAvatar.png">
+<title><%= typeof title !== 'undefined' ? title : 'SWGoHBot' %></title>
 
 <!-- My css stuff -->
 <link rel="stylesheet" href="/css/swgohbot.css">
 
-<!-- Font-awesome icons & JQuery -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- Font Awesome 6 & jQuery -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <!-- My scripts for navbar stuff & keeping commands tabs linkable -->

@@ -40,7 +40,11 @@ const initSite = async (): Promise<void> => {
 
     // About page
     app.get("/about", (_req: Request, res: Response) => {
-        res.render("pages/about");
+        res.render("pages/about", {
+            title: "About SWGoHBot",
+            description:
+                "Learn about SWGoHBot, a Discord bot for Star Wars Galaxy of Heroes with character stats, guild management, and more.",
+        });
     });
 
     // ToS page

@@ -349,6 +349,27 @@ footer {
     text-align: center;
     color: gray;
 }
+footer .footer-links {
+    margin-bottom: 10px;
+}
+footer .footer-links a {
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+footer .footer-links a:hover {
+    color: #adb5bd;
+    text-decoration: underline;
+}
+footer .separator {
+    margin: 0 8px;
+    color: #495057;
+}
+footer .copyright,
+footer .disclaimer {
+    margin: 5px 0;
+    font-size: 0.9em;
+}
 @media screen and (min-width: 1024px) {
     .columns {
         display: flex;
