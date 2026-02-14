@@ -1,0 +1,21 @@
+{
+    "include": ["**/*.ts", "**/*.js"],
+    "exclude": ["**/node_modules", "**/wipCommands", "**/scripts", "**/*.test.ts", "public"],
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "erasableSyntaxOnly": true,
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "rewriteRelativeImportExtensions": true,
+        "skipLibCheck": true,
+        "target": "ESNext",
+        "verbatimModuleSyntax": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true
+    }
+}
