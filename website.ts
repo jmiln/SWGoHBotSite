@@ -35,7 +35,11 @@ const initSite = async (): Promise<void> => {
 
     // Index page
     app.get("/", (_req: Request, res: Response) => {
-        res.render("pages/index");
+        res.render("pages/index", {
+            title: "SWGoHBot - Discord Bot for Star Wars Galaxy of Heroes",
+            description:
+                "SWGoHBot brings character stats, guild management, arena tracking, and more to your Discord server. Active on over 10,000 servers.",
+        });
     });
 
     // About page
