@@ -1,0 +1,70 @@
+/* About page specific styles */
+
+/* Stat highlight box */
+.stat-highlight {
+    background-color: #2b2b2b;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 300px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.stat-number {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #fff;
+}
+
+.stat-label {
+    font-size: 1.1em;
+    color: #ccc;
+    margin: 5px 0;
+}
+
+/* Section spacing */
+.about-section {
+    margin-bottom: 30px;
+}
+
+.about-section h3 {
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+.about-links {
+    margin-top: 30px;
+}
+
+.about-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.about-links li {
+    margin: 10px 0;
+}
+
+.about-links a {
+    text-decoration: none;
+    color: #4a9eff;
+    transition: color 0.2s;
+}
+
+.about-links a:hover {
+    color: #6bb3ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stat-highlight {
+        max-width: 100%;
+    }
+
+    .stat-number {
+        font-size: 2em;
+    }
+}

@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <%- include("../partials/head") -%>
+        <link rel="stylesheet" href="/css/about.css">
     </head>
 
     <body>
@@ -9,19 +10,72 @@
             <%- include("../partials/nav") -%>
         </header>
 
-        <div class="column w80 autoMargin">
-            <h2>About</h2>
-            <hr>
-            <p>
-                Firstly, <strong>Thank You</strong> to everyone in the SWGoH community who has supported the bot, be it through contributing in any way, or by simply just using it.
-                <br/>
-                <br/>
-                This bot started off  with me trying to make the mods on <a href="apps.crouchingrancor.com/">crouchingrancor.com</a> more accesible to my guild and I, since we were always on Discord anyways. It has since grown way past any expectations I'd had when I started working on it, and grown to be more of an overall info source on the game, making it so you don't have to check the game or <a href="https://swgoh.gg">swgoh.gg</a> as often.
-            </p>
-            <hr>
-            <footer>
-                <%- include("../partials/footer") -%>
-            </footer>
-        </div> <!-- /container -->
+        <div class="page-wrapper">
+            <div style="text-align: center;">
+                <h2>About</h2>
+                <hr class="w60"/>
+            </div>
+            <div class="column w80 autoMargin">
+
+                <section class="about-section">
+                <h3>The Beginning</h3>
+                <p>
+                    When I first started working on this bot, I had a pretty simple goal: make it easier for my guild to check mod data without leaving Discord. We were always on Discord anyway, and having to constantly switch between the game, external websites, and our chat felt clunky.
+                </p>
+                <p>
+                    So I built a quick Discord bot that could pull mod recommendations and character data. It was nothing fancy—just a tool to save my guildmates and me a few clicks. I figured maybe a handful of other guilds might find it useful too.
+                </p>
+            </section>
+
+            <section class="about-section">
+                <h3>Unexpected Growth</h3>
+                <p>
+                    What started as a simple mod lookup tool quickly grew into something much bigger. People started asking for more features: character stats, guild-wide searches, arena tracking, event calendars, and more. Each request made sense—players wanted their SWGoH information accessible right where they were already spending their time.
+                </p>
+                <p>
+                    The bot evolved from a convenience tool into a comprehensive companion for the game. It became a way to reduce how often you needed to check swgoh.gg or boot up the game just to answer a quick question. To be completely honest, I never imagined it would reach the scale it has. Watching it grow from my guild's little helper bot to something used across thousands of servers has been amazing.
+                </p>
+            </section>
+
+            <section class="about-section">
+                <h3>The Community</h3>
+
+                <div class="stat-highlight">
+                    <p class="stat-label">Active on</p>
+                    <p class="stat-number">10,000+</p>
+                    <p class="stat-label">Discord Servers</p>
+                </div>
+
+                <p>
+                    <strong>Thank you</strong> to everyone in the SWGoH community who has supported this project. Whether you've contributed code, reported bugs, suggested features, or simply used the bot—you've all been part of making this what it is.
+                </p>
+                <p>
+                    The fact that over 10,000 servers trust this bot to help their guilds means everything to me. This started as a personal project, but it's become something that belongs to the community. Your feedback, patience with bugs, and creative ideas for new features have shaped every aspect of what the bot has become.
+                </p>
+            </section>
+
+            <section class="about-section">
+                <h3>Looking Ahead</h3>
+                <p>
+                    I'm committed to keeping the bot useful and up-to-date as the game evolves. There are always new features to explore, bugs to squash, and improvements to make. My goal is to continue serving the SWGoH community and making the game more accessible for everyone.
+                </p>
+            </section>
+
+            <section class="about-links">
+                <h3>Get Involved</h3>
+                <ul>
+                    <li><a href="/commands">→ See what the bot can do</a></li>
+                    <li><a href="/server">→ Join our Discord community</a></li>
+                    <li><a href="https://github.com/jmiln/swgohbot">→ Contribute on GitHub</a></li>
+                    <li><a href="https://www.patreon.com/bePatron?u=8423320">→ Support development on Patreon</a></li>
+                </ul>
+            </section>
+
+            </div>
+        </div>
+
+        <footer>
+            <%- include("../partials/footer") -%>
+        </footer>
     </body>
 </html>
