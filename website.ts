@@ -57,6 +57,15 @@ const initSite = async (): Promise<void> => {
         }),
     );
 
+    // Add Permissions-Policy header (not included in helmet by default)
+    app.use((_req: Request, res: Response, next: NextFunction) => {
+        res.setHeader(
+            "Permissions-Policy",
+            "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=()",
+        );
+        next();
+    });
+
     // Serve static files first (no rate limiting needed for CDN-cached assets)
     const publicDir = path.join(__dirname, "/public");
     app.use(express.static(publicDir));
