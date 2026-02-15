@@ -97,6 +97,9 @@
 }
 
 .category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 14px 16px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -331,7 +334,7 @@
     white-space: nowrap;
     vertical-align: baseline;
     border-radius: 4px;
-    margin-left: 8px;
+    min-width: 28px;
 }
 
 .badge.bg-primary {
@@ -371,12 +374,12 @@
         flex-wrap: wrap;
         gap: 8px;
         padding: 12px;
-        background-color: var(--darkgray);
         border-radius: 0 0 8px 8px;
     }
 
     .category-item {
         flex: 0 0 auto;
+        gap: 8px;
         padding: 10px 16px;
         border-radius: 6px;
         border-left: none;
