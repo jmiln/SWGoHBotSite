@@ -350,7 +350,7 @@
    RESPONSIVE DESIGN - MOBILE
    ============================================ */
 
-@media (max-width: 768px) {
+@media (max-width: 800px) {
     /* Stack layout vertically */
     .commands-container {
         grid-template-columns: 1fr;
@@ -483,7 +483,7 @@
    TABLET ADJUSTMENTS
    ============================================ */
 
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (min-width: 801px) and (max-width: 1024px) {
     .commands-container {
         grid-template-columns: 200px 1fr;
     }
