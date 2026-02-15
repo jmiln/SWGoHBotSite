@@ -38,7 +38,7 @@
                             for (const categoryName of categories) {
                                 const category = commandData[categoryName];
                             %>
-                                <li class="category-item" data-category="<%= categoryName %>" tabindex="0" role="button" aria-selected="false">
+                                <li class="category-item" data-category="<%= escapeAttr(categoryName) %>" tabindex="0" role="button" aria-selected="false">
                                     <%= categoryName %>
                                     <span class="badge bg-secondary"><%= category.commands.length %></span>
                                 </li>
@@ -69,7 +69,7 @@
                         for (const categoryName of categories) {
                             const category = commandData[categoryName];
                         %>
-                            <div class="command-grid" data-category="<%= categoryName %>">
+                            <div class="command-grid" data-category="<%= escapeAttr(categoryName) %>">
                                 <!-- Grid Header (desktop only) -->
                                 <div class="grid-header">
                                     <div class="grid-header-cell">Command</div>
@@ -80,7 +80,7 @@
                                 <!-- Grid Body -->
                                 <div class="grid-body">
                                     <% for (const command of category.commands) { %>
-                                        <div class="command-row" data-permlevel="<%= command.permLevel %>" data-contexts="<%= command.contexts.join(',') %>">
+                                        <div class="command-row" data-permlevel="<%= escapeAttr(String(command.permLevel)) %>" data-contexts="<%= escapeAttr(command.contexts.join(',')) %>">
                                             <!-- Name Cell -->
                                             <div class="command-cell" data-label="Command">
                                                 <span class="command-name">/<%= command.name %></span>

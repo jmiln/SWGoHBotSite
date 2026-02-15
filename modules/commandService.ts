@@ -65,7 +65,12 @@ const cache: CacheData & {
  */
 function loadCommandData(): CommandData | null {
     try {
-        const dataPath = process.env.BOT_DATA_PATH || "/home/j_milner359/testBot/data/help.json";
+        const dataPath = process.env.BOT_DATA_PATH;
+
+        if (!dataPath) {
+            console.error("[CommandService] Error: BOT_DATA_PATH environment variable is not set");
+            return null;
+        }
 
         // Check if file exists
         if (!existsSync(dataPath)) {
