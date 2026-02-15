@@ -44,6 +44,22 @@
                                 </li>
                             <% } %>
                         </ul>
+
+                        <!-- Filters Section (inside sidebar) -->
+                        <div class="filters-section">
+                            <div class="sidebar-header">Filters</div>
+                            <div class="filters-content">
+                                <label class="filter-item">
+                                    <input type="checkbox" id="filter-dm">
+                                    <span>Available in DMs</span>
+                                </label>
+                                <label class="filter-item">
+                                    <input type="checkbox" id="filter-admin">
+                                    <span>Admin only</span>
+                                </label>
+                                <button id="reset-filters" class="reset-button" style="display: none;">Reset Filters</button>
+                            </div>
+                        </div>
                     </aside>
 
                     <!-- Commands Content Area -->
@@ -64,7 +80,7 @@
                                 <!-- Grid Body -->
                                 <div class="grid-body">
                                     <% for (const command of category.commands) { %>
-                                        <div class="command-row">
+                                        <div class="command-row" data-permlevel="<%= command.permLevel %>" data-contexts="<%= command.contexts.join(',') %>">
                                             <!-- Name Cell -->
                                             <div class="command-cell" data-label="Command">
                                                 <span class="command-name">/<%= command.name %></span>

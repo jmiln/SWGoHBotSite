@@ -36,8 +36,10 @@
 
 /* Main container */
 .commands-container {
-    display: flex;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    column-gap: 20px;
+    align-items: start;
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
@@ -66,13 +68,15 @@
    ============================================ */
 
 .commands-sidebar {
-    flex: 0 0 250px;
     background-color: var(--sidebar-dark);
     border-radius: 8px;
     padding: 0;
     height: fit-content;
     position: sticky;
     top: 20px;
+    display: flex;
+    flex-direction: column;
+    contain: layout style;
 }
 
 .sidebar-header {
@@ -88,6 +92,7 @@
 .category-list {
     list-style: none;
     padding: 0;
+    padding-bottom: 24px;
     margin: 0;
 }
 
@@ -117,21 +122,91 @@
 }
 
 /* ============================================
+   FILTERS SECTION (inside sidebar)
+   ============================================ */
+
+.filters-section {
+    border-top: 2px solid var(--gray);
+    margin-top: 20px;
+}
+
+.filters-content {
+    padding: 16px;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    cursor: pointer;
+    color: var(--command-desc-color);
+    font-size: 0.95rem;
+}
+
+.filter-item input[type="checkbox"] {
+    margin-right: 10px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.filter-item:hover {
+    color: white;
+}
+
+.reset-button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background-color: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.reset-button:hover {
+    background-color: var(--blue-dark);
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+
+.empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--lightergray);
+    font-size: 1rem;
+    font-style: italic;
+}
+
+/* ============================================
    COMMANDS CONTENT AREA
    ============================================ */
 
 .commands-content {
-    flex: 1;
-    min-width: 0; /* Prevents flex item from overflowing */
+    min-width: 0; /* Prevents grid item from overflowing */
 }
 
 /* Command grid container - hidden by default */
 .command-grid {
-    display: none;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
 }
 
 .command-grid.active {
-    display: block;
+    visibility: visible;
+    height: auto;
+    opacity: 1;
 }
 
 /* Grid header */
@@ -276,7 +351,7 @@
 @media (max-width: 768px) {
     /* Stack layout vertically */
     .commands-container {
-        flex-direction: column;
+        grid-template-columns: 1fr;
         gap: 16px;
         padding: 16px;
     }
@@ -285,7 +360,6 @@
     .commands-sidebar {
         position: static;
         width: 100%;
-        flex: none;
     }
 
     .sidebar-header {
@@ -325,6 +399,28 @@
 
     .category-item:last-child {
         border-radius: 6px;
+    }
+
+    /* Filters sidebar in mobile */
+    .filters-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .filter-item {
+        flex: 1 1 calc(50% - 6px);
+        min-width: 150px;
+        padding: 12px;
+        background-color: var(--darkgray);
+        border-radius: 6px;
+        justify-content: flex-start;
+    }
+
+    .reset-button {
+        flex: 1 1 100%;
+        margin-top: 0;
     }
 
     /* Hide grid header on mobile */
@@ -386,8 +482,8 @@
    ============================================ */
 
 @media (min-width: 769px) and (max-width: 1024px) {
-    .commands-sidebar {
-        flex: 0 0 200px;
+    .commands-container {
+        grid-template-columns: 200px 1fr;
     }
 
     .grid-header {
