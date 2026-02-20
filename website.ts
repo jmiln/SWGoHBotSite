@@ -181,10 +181,6 @@ const initSite = async (): Promise<void> => {
         res.render("pages/commands", { commandData });
     });
 
-    app.get("/test-commands", (_req: Request, res: Response) => {
-        res.render("pages/test-commands");
-    });
-
     // The link to invite the bot
     app.get("/invite", (_req: Request, res: Response) => {
         res.redirect(
@@ -201,7 +197,8 @@ const initSite = async (): Promise<void> => {
     app.get("/login", (req: Request, res: Response) => {
         const state = crypto.randomBytes(16).toString("hex");
         req.session.oauthState = state;
-        req.session.returnTo = (req.query.returnTo as string) || "/dashboard";
+        const rawReturnTo = req.query.returnTo as string;
+        req.session.returnTo = rawReturnTo?.startsWith("/") && !rawReturnTo.startsWith("//") ? rawReturnTo : "/dashboard";
         res.redirect(auth.buildDiscordAuthURL(state));
     });
 
