@@ -4,6 +4,32 @@
         <a class="hide-mobile" href="/">SWGoHBot</a>
     </div>
 
+    <div class="nav-right">
+        <% if (user) { %>
+            <div class="nav-dropdown hide-mobile">
+                <button class="nav-dropdown-toggle" id="nav-user-dropdown" aria-haspopup="true" aria-expanded="false">
+                    <% if (user.avatar) { %>
+                        <img
+                            src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png?size=32"
+                            alt=""
+                            width="20"
+                            height="20"
+                            style="border-radius: 50%; vertical-align: middle; margin-right: 0.4em;"
+                        >
+                    <% } %>
+                    <%= user.username %>
+                    <i class="fa fa-caret-down" aria-hidden="true" style="margin-left: 0.3em;"></i>
+                </button>
+                <div class="nav-dropdown-menu" id="nav-user-menu">
+                    <a href="/dashboard" class="nav-dropdown-item">Config Page</a>
+                    <a href="/logout" class="nav-dropdown-item">Log out</a>
+                </div>
+            </div>
+        <% } else { %>
+            <a class="nav-btn btn-outline-login hide-mobile" href="/login">Login</a>
+        <% } %>
+    </div>
+
     <a class="nav-btn btn-outline-invite hide-mobile"  href="/invite">Invite Bot</a>
     <a class="nav-btn btn-outline-patreon hide-mobile" href="https://www.patreon.com/bePatron?u=8423320">Get Premium</a>
     <a class="nav-links hide-mobile" href="/">Home</a>
@@ -11,7 +37,7 @@
     <a class="nav-links hide-mobile" href="/faqs">FAQs</a>
     <a class="nav-links hide-mobile" href="/about">About</a>
 
-    <button class="navbar-toggle" onclick="toggleNav()" aria-label="Toggle navigation menu" aria-expanded="false">
+    <button class="navbar-toggle" id="navbar-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
         <i class="fa fa-bars" aria-hidden="true"></i>
     </button>
 </nav>

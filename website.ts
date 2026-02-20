@@ -1,13 +1,17 @@
 // Native Node Imports & Express Session
+import crypto from "node:crypto";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import MongoStore from "connect-mongo";
 import type { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import express from "express";
 import rateLimit from "express-rate-limit";
+import session from "express-session";
 import helmet from "helmet";
-
 // Local modules
+import * as auth from "./modules/auth.ts";
 import * as commandService from "./modules/commandService.ts";
+import { env } from "./modules/env.ts";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -22,7 +26,7 @@ app.set("trust proxy", "loopback, linklocal, uniquelocal");
 const initSite = async (): Promise<void> => {
     // HTTPS redirect middleware (only in production)
     app.use((req: Request, res: Response, next: NextFunction) => {
-        if (process.env.NODE_ENV === "production") {
+        if (env.NODE_ENV === "production") {
             // Check if request came through HTTPS (from Cloudflare/nginx)
             const proto = Array.isArray(req.headers["x-forwarded-proto"])
                 ? req.headers["x-forwarded-proto"][0]
@@ -37,13 +41,25 @@ const initSite = async (): Promise<void> => {
         next();
     });
 
+    // Generate a fresh nonce for every request — used in CSP header and script tags
+    app.use((_req: Request, res: Response, next: NextFunction) => {
+        res.locals.nonce = crypto.randomBytes(16).toString("base64");
+        next();
+    });
+
     // Security headers with helmet
     app.use(
         helmet({
             contentSecurityPolicy: {
                 directives: {
                     defaultSrc: ["'self'"],
-                    scriptSrc: ["'self'", "https://code.jquery.com", "https://cdnjs.cloudflare.com"],
+                    scriptSrc: [
+                        "'self'",
+                        "https://code.jquery.com",
+                        "https://cdnjs.cloudflare.com",
+                        "https://static.cloudflareinsights.com",
+                        (_req: unknown, res: unknown) => `'nonce-${(res as Response).locals.nonce as string}'`,
+                    ],
                     styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
                     imgSrc: ["'self'", "https:", "data:"],
                     connectSrc: ["'self'"],
@@ -59,16 +75,35 @@ const initSite = async (): Promise<void> => {
 
     // Add Permissions-Policy header (not included in helmet by default)
     app.use((_req: Request, res: Response, next: NextFunction) => {
-        res.setHeader(
-            "Permissions-Policy",
-            "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=()",
-        );
+        res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=()");
         next();
     });
 
     // Serve static files first (no rate limiting needed for CDN-cached assets)
     const publicDir = path.join(__dirname, "/public");
     app.use(express.static(publicDir));
+
+    // Session middleware (must come after static files, before routes)
+    app.use(
+        session({
+            store: MongoStore.create({ mongoUrl: env.MONGODB_URI }),
+            secret: env.SESSION_SECRET,
+            resave: false,
+            saveUninitialized: false,
+            cookie: {
+                httpOnly: true,
+                secure: env.NODE_ENV === "production",
+                sameSite: "lax",
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            },
+        }),
+    );
+
+    // Expose session user to all EJS templates as `user`
+    app.use((_req: Request, res: Response, next: NextFunction) => {
+        res.locals.user = _req.session.user ?? null;
+        next();
+    });
 
     // Rate limiting middleware
     const limiter = rateLimit({
@@ -162,6 +197,76 @@ const initSite = async (): Promise<void> => {
         res.redirect("https://discord.gg/FfwGvhr");
     });
 
+    // Discord OAuth2 login — generate state, save to session, redirect to Discord
+    app.get("/login", (req: Request, res: Response) => {
+        const state = crypto.randomBytes(16).toString("hex");
+        req.session.oauthState = state;
+        req.session.returnTo = (req.query.returnTo as string) || "/dashboard";
+        res.redirect(auth.buildDiscordAuthURL(state));
+    });
+
+    // Discord OAuth2 callback — verify state, exchange code, fetch user, store in session
+    app.get("/callback", async (req: Request, res: Response) => {
+        const code = req.query.code as string | undefined;
+        const state = req.query.state as string | undefined;
+
+        // CSRF check
+        if (!state || state !== req.session.oauthState) {
+            return res.status(403).render("pages/404", {
+                title: "Forbidden - SWGoHBot",
+                description: "Invalid OAuth state. Please try logging in again.",
+            });
+        }
+        delete req.session.oauthState;
+
+        if (!code) {
+            return res.redirect("/");
+        }
+
+        try {
+            const accessToken = await auth.exchangeCodeForToken(code);
+            const discordUser = await auth.fetchDiscordUser(accessToken);
+            req.session.user = {
+                id: discordUser.id,
+                username: discordUser.username,
+                avatar: discordUser.avatar,
+            };
+            const returnTo = req.session.returnTo ?? "/dashboard";
+            delete req.session.returnTo;
+            res.redirect(returnTo);
+        } catch (err) {
+            console.error("OAuth callback error:", err);
+            res.redirect("/");
+        }
+    });
+
+    // Logout — destroy session and redirect home
+    app.get("/logout", (req: Request, res: Response) => {
+        req.session.destroy(() => {
+            res.redirect("/");
+        });
+    });
+
+    // Dashboard — requires login
+    app.get("/dashboard", (req: Request, res: Response) => {
+        if (!req.session.user) {
+            req.session.returnTo = "/dashboard";
+            return res.redirect("/login");
+        }
+
+        const user = req.session.user;
+        const avatarURL = user.avatar
+            ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`
+            : `https://cdn.discordapp.com/embed/avatars/${Number(BigInt(user.id) % 5n)}.png`;
+
+        res.render("pages/dashboard", {
+            title: "Dashboard - SWGoHBot",
+            description: "Your SWGoHBot dashboard.",
+            user,
+            avatarURL,
+        });
+    });
+
     // 404 handler - MUST come before error handler
     app.use((_req: Request, res: Response) => {
         res.status(404).render("pages/404", {
@@ -173,7 +278,7 @@ const initSite = async (): Promise<void> => {
     // Error handler - MUST be last
     const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
         // Only log stack traces in development
-        if (process.env.NODE_ENV !== "production") {
+        if (env.NODE_ENV !== "production") {
             console.error(err.stack);
         } else {
             // In production, log only the message
@@ -188,7 +293,7 @@ const initSite = async (): Promise<void> => {
     app.use(errorHandler);
 
     // Turn the site on
-    const port = Number.parseInt(process.env.PORT || "3300", 10);
+    const port = Number.parseInt(env.PORT, 10);
     app.listen(port, () => {
         console.log(`Site listening on port ${port}!`);
     });

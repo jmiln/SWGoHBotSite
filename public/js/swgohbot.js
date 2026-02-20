@@ -1,21 +1,37 @@
-// biome-ignore lint/correctness/noUnusedVariables: Used in onclick handlers in nav.ejs templates
-function toggleNav() {
-    // Toggle the nav in mobile mode
-    const menus = document.getElementById("navbar").getElementsByClassName("nav-links");
-    for (let ix = 0; ix < menus.length; ix++) {
-        menus[ix].classList.toggle("hide-mobile");
-    }
-    const buttons = document.getElementById("navbar").getElementsByClassName("nav-btn");
-    for (let ix = 0; ix < buttons.length; ix++) {
-        buttons[ix].classList.toggle("hide-mobile");
-    }
-}
-
 $(document).ready(() => {
+    // User dropdown toggle
+    const $dropdownToggle = $("#nav-user-dropdown");
+    const $dropdownMenu = $("#nav-user-menu");
+
+    $dropdownToggle.on("click", function (e) {
+        e.stopPropagation();
+        const isOpen = $dropdownMenu.hasClass("open");
+        $dropdownMenu.toggleClass("open", !isOpen);
+        $dropdownToggle.attr("aria-expanded", String(!isOpen));
+    });
+
+    $(document).on("click", function () {
+        $dropdownMenu.removeClass("open");
+        $dropdownToggle.attr("aria-expanded", "false");
+    });
+
+    // Navbar toggle (mobile)
+    $("#navbar-toggle").on("click", function () {
+        const navbar = document.getElementById("navbar");
+        const menus = navbar.getElementsByClassName("nav-links");
+        for (let ix = 0; ix < menus.length; ix++) {
+            menus[ix].classList.toggle("hide-mobile");
+        }
+        const buttons = navbar.getElementsByClassName("nav-btn");
+        for (let ix = 0; ix < buttons.length; ix++) {
+            buttons[ix].classList.toggle("hide-mobile");
+        }
+    });
+
+    // Highlight the active nav link
     const currentPage = location.pathname;
     $("#navbar .nav-links").each(function () {
         const $this = $(this);
-        // if the current path is like this link, make it active
         if ($this.attr("href") === currentPage) {
             $this.addClass("active");
         }

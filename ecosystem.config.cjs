@@ -5,7 +5,7 @@ module.exports = {
             interpreter: "node",
             script: "website.ts",
             watch: false,
-            node_args: ["--env-file=.env", "--experimental-strip-types"],
+            node_args: ["--env-file=.env"],
             env: {
                 NODE_ENV: "production",
             },
