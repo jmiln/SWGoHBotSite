@@ -6,19 +6,19 @@
 
     <div class="nav-right">
         <% if (user) { %>
-            <div class="nav-dropdown hide-mobile">
+            <div class="nav-dropdown">
                 <button class="nav-dropdown-toggle" id="nav-user-dropdown" aria-haspopup="true" aria-expanded="false">
                     <% if (user.avatar) { %>
                         <img
-                            src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png?size=32"
+                            src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png?size=64"
                             alt=""
-                            width="20"
-                            height="20"
-                            style="border-radius: 50%; vertical-align: middle; margin-right: 0.4em;"
+                            width="35"
+                            height="35"
+                            style="border-radius: 50%; vertical-align: middle;"
                         >
                     <% } %>
-                    <%= user.username %>
-                    <i class="fa fa-caret-down" aria-hidden="true" style="margin-left: 0.3em;"></i>
+                    <span class="hide-mobile"><%= user.username %></span>
+                    <i class="fa fa-caret-down hide-mobile" aria-hidden="true" style="margin-left: 0.3em;"></i>
                 </button>
                 <div class="nav-dropdown-menu" id="nav-user-menu">
                     <a href="/dashboard" class="nav-dropdown-item">Config Page</a>
@@ -26,7 +26,7 @@
                 </div>
             </div>
         <% } else { %>
-            <a class="nav-btn btn-outline-login hide-mobile" href="/login">Login</a>
+            <a class="nav-btn btn-outline-login" href="/login">Login</a>
         <% } %>
     </div>
 

@@ -24,7 +24,9 @@ $(document).ready(() => {
         }
         const buttons = navbar.getElementsByClassName("nav-btn");
         for (let ix = 0; ix < buttons.length; ix++) {
-            buttons[ix].classList.toggle("hide-mobile");
+            if (!buttons[ix].closest(".nav-right")) {
+                buttons[ix].classList.toggle("hide-mobile");
+            }
         }
     });
 

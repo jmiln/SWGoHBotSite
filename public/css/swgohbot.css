@@ -152,6 +152,9 @@ main {
 .nav-dropdown-toggle:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
+.nav-dropdown-toggle img {
+    margin-right: 0.4em;
+}
 .nav-dropdown-menu {
     display: none;
     position: absolute;
@@ -534,10 +537,19 @@ footer .disclaimer {
     .navbar .nav-right {
         /* display: block; */
         position: absolute;
-        right: 0;
-        top: 0.3rem;
+        right: 5px;
+        top: 7px;
         margin-right: 5px;
         cursor: pointer;
+        width: auto;
+    }
+    .nav-dropdown-toggle {
+        padding: 0;
+    }
+    .nav-dropdown-toggle img {
+        width: 35px;
+        height: 35px;
+        margin-right: 0;
     }
     .navbar {
         border-bottom-left-radius: 10px;
@@ -563,9 +575,17 @@ footer .disclaimer {
         color: white;
         background-color: var(--success);
     }
+    .btn-outline-login {
+        color: white;
+        background-color: #5865f2;
+        border-color: #5865f2;
+    }
     .nav-btn {
         width: 100%;
         border-width: 2px;
+    }
+    .nav-right .nav-btn {
+        width: auto;
     }
     .nav-item {
         padding: 0.15rem 0.35rem;
