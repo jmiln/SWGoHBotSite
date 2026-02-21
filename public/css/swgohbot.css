@@ -657,19 +657,6 @@ footer .disclaimer {
     border-radius: 3px;
     font-weight: bold;
 }
-.config-account {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.4rem 0;
-    border-bottom: 1px solid var(--lightgray);
-}
-.config-account:last-child {
-    border-bottom: none;
-}
-.config-account-name {
-    font-weight: bold;
-}
 .config-table {
     width: 100%;
     border-collapse: collapse;
@@ -684,7 +671,11 @@ footer .disclaimer {
     padding: 0.3rem 0.75rem;
     border-bottom: 1px solid var(--lightgray);
 }
-.config-table th:first-child {
+.config-table th:nth-child(2) {
+    width: 26%;
+}
+.config-table th:nth-child(3),
+.config-table th:nth-child(4) {
     width: 22%;
 }
 .config-table td {
@@ -707,4 +698,35 @@ footer .disclaimer {
 }
 .config-muted {
     color: var(--lightergray);
+}
+.config-sort {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+.config-sort-label {
+    color: var(--lightergray);
+    font-size: 0.85rem;
+    margin-right: 0.2rem;
+}
+.config-sort-btn {
+    background: none;
+    border: 1px solid var(--lightgray);
+    color: var(--lightergray);
+    border-radius: 4px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+.config-sort-btn:hover {
+    border-color: var(--blue);
+    color: white;
+}
+.config-sort-btn.active {
+    background-color: var(--blue);
+    border-color: var(--blue);
+    color: white;
 }

@@ -21,15 +21,32 @@
                     <section class="config-section">
                         <h2>Linked Accounts</h2>
                         <% if (userConfig.accounts && userConfig.accounts.length) { %>
-                            <% userConfig.accounts.forEach(function(acct) { %>
-                                <div class="config-account">
-                                    <span class="config-account-name"><%= acct.name %></span>
-                                    <span class="config-muted"><%= acct.allyCode %></span>
-                                    <% if (acct.primary) { %><span class="badge-primary">Primary</span><% } %>
-                                    <% if (acct.lastCharRank != null) { %><span class="config-muted">Char: #<%= acct.lastCharRank %></span><% } %>
-                                    <% if (acct.lastShipRank != null) { %><span class="config-muted">Ship: #<%= acct.lastShipRank %></span><% } %>
-                                </div>
-                            <% }) %>
+                            <div class="config-sort">
+                                <span class="config-sort-label">Sort by</span>
+                                <button class="config-sort-btn active" data-sort="name">Name</button>
+                                <button class="config-sort-btn" data-sort="char">Char Rank</button>
+                                <button class="config-sort-btn" data-sort="ship">Ship Rank</button>
+                            </div>
+                            <table class="config-table" id="linked-accounts-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Ally Code</th>
+                                        <th>Char Arena</th>
+                                        <th>Ship Arena</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% userConfig.accounts.forEach(function(acct) { %>
+                                    <tr data-name="<%= escapeAttr(acct.name.toLowerCase()) %>" data-char="<%= acct.lastCharRank != null ? acct.lastCharRank : '' %>" data-ship="<%= acct.lastShipRank != null ? acct.lastShipRank : '' %>">
+                                        <td title="<%= escapeAttr(acct.name) %>"><%= acct.name %> <% if (acct.primary) { %><span class="badge-primary">Primary</span><% } %></td>
+                                        <td class="config-muted"><%= acct.allyCode %></td>
+                                        <td><%= acct.lastCharRank != null ? "#" + acct.lastCharRank : "—" %></td>
+                                        <td><%= acct.lastShipRank != null ? "#" + acct.lastShipRank : "—" %></td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
                         <% } else { %>
                             <p class="config-muted">No accounts linked.</p>
                         <% } %>
@@ -85,7 +102,14 @@
                             <span><%= userConfig.arenaWatch && userConfig.arenaWatch.showvs ? "Yes" : "No" %></span>
                         </div>
                         <% if (userConfig.arenaWatch && userConfig.arenaWatch.allycodes && userConfig.arenaWatch.allycodes.length) { %>
-                            <table class="config-table">
+                            <div class="config-sort">
+                                <span class="config-sort-label">Sort by</span>
+                                <button class="config-sort-btn active" data-sort="name">Name</button>
+                                <button class="config-sort-btn" data-sort="char">Char Rank</button>
+                                <button class="config-sort-btn" data-sort="ship">Ship Rank</button>
+                                <button class="config-sort-btn" data-sort="payout">Payout</button>
+                            </div>
+                            <table class="config-table" id="arena-watch-table">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
@@ -97,7 +121,7 @@
                                 <tbody>
                                     <% userConfig.arenaWatch.allycodes.forEach(function(wa) { %>
                                     <% var pt = wa.poOffset != null ? formatPayoutTimes(wa.poOffset) : null; %>
-                                    <tr>
+                                    <tr data-name="<%= escapeAttr(wa.name.toLowerCase()) %>" data-char="<%= wa.lastChar %>" data-ship="<%= wa.lastShip %>" data-po-offset="<%= wa.poOffset != null ? wa.poOffset : '' %>">
                                         <td title="<%= escapeAttr(wa.name) %>"><%= wa.name %></td>
                                         <td class="config-muted"><%= wa.allyCode != null ? wa.allyCode : (wa.allycode != null ? wa.allycode : "—") %></td>
                                         <td>#<%= wa.lastChar %><% if (pt) { %><span class="config-payout"><%= pt.char %></span><% } %></td>
@@ -147,6 +171,7 @@
             </div>
         </div>
 
+        <script src="/js/dashboard.js" nonce="<%= nonce %>"></script>
         <%- include("../partials/footer") -%>
     </body>
 </html>
