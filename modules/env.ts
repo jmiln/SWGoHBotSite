@@ -8,6 +8,7 @@ const envSchema = z.object({
     DISCORD_CLIENT_SECRET: z.string(),
     DISCORD_REDIRECT_URI: z.url(),
     MONGODB_URI: z.string(),
+    MONGODB_BOT_DB: z.string(),
     SESSION_SECRET: z.string().min(16, "SESSION_SECRET must be at least 16 characters"),
 });
 

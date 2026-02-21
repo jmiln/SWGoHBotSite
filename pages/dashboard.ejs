@@ -10,10 +10,140 @@
         </header>
 
         <div class="page-wrapper">
-            <div style="text-align: center; padding-top: 4rem;">
+            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
                 <h1>Welcome, <%= user.username %>!</h1>
-                <p>Bot configuration options are coming soon.</p>
-                <p><a href="/logout">Log out</a></p>
+
+                <% if (!userConfig) { %>
+                    <p>No configuration found — start using the bot in Discord to set up your profile.</p>
+                <% } else { %>
+
+                    <!-- Linked Accounts -->
+                    <section class="config-section">
+                        <h2>Linked Accounts</h2>
+                        <% if (userConfig.accounts && userConfig.accounts.length) { %>
+                            <% userConfig.accounts.forEach(function(acct) { %>
+                                <div class="config-account">
+                                    <span class="config-account-name"><%= acct.name %></span>
+                                    <span class="config-muted"><%= acct.allyCode %></span>
+                                    <% if (acct.primary) { %><span class="badge-primary">Primary</span><% } %>
+                                    <% if (acct.lastCharRank != null) { %><span class="config-muted">Char: #<%= acct.lastCharRank %></span><% } %>
+                                    <% if (acct.lastShipRank != null) { %><span class="config-muted">Ship: #<%= acct.lastShipRank %></span><% } %>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <p class="config-muted">No accounts linked.</p>
+                        <% } %>
+                    </section>
+
+                    <!-- Language -->
+                    <section class="config-section">
+                        <h2>Language</h2>
+                        <div class="config-row">
+                            <span class="config-label">Bot Language</span>
+                            <span><%= userConfig.lang && userConfig.lang.language ? userConfig.lang.language : "Default" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">SWGoH Language</span>
+                            <span><%= userConfig.lang && userConfig.lang.swgohLanguage ? userConfig.lang.swgohLanguage : "Default" %></span>
+                        </div>
+                    </section>
+
+                    <!-- Arena Alerts -->
+                    <section class="config-section">
+                        <h2>Arena Alerts</h2>
+                        <div class="config-row">
+                            <span class="config-label">Rank DMs</span>
+                            <span><%= userConfig.arenaAlert && userConfig.arenaAlert.enableRankDMs === "on" ? "Enabled" : "Disabled" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Arena Type</span>
+                            <span><%= userConfig.arenaAlert && userConfig.arenaAlert.arena ? userConfig.arenaAlert.arena : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Payout Warning</span>
+                            <span><%= userConfig.arenaAlert && userConfig.arenaAlert.payoutWarning != null ? userConfig.arenaAlert.payoutWarning + " min" : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Payout Result</span>
+                            <span><%= userConfig.arenaAlert && userConfig.arenaAlert.enablePayoutResult ? "Enabled" : "Disabled" %></span>
+                        </div>
+                    </section>
+
+                    <!-- Arena Watch -->
+                    <section class="config-section">
+                        <h2>Arena Watch</h2>
+                        <div class="config-row">
+                            <span class="config-label">Status</span>
+                            <span><%= userConfig.arenaWatch && userConfig.arenaWatch.enabled ? "Enabled" : "Disabled" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Report Style</span>
+                            <span><%= userConfig.arenaWatch && userConfig.arenaWatch.report ? userConfig.arenaWatch.report : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Show vs</span>
+                            <span><%= userConfig.arenaWatch && userConfig.arenaWatch.showvs ? "Yes" : "No" %></span>
+                        </div>
+                        <% if (userConfig.arenaWatch && userConfig.arenaWatch.allycodes && userConfig.arenaWatch.allycodes.length) { %>
+                            <table class="config-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Ally Code</th>
+                                        <th>Char Arena</th>
+                                        <th>Ship Arena</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% userConfig.arenaWatch.allycodes.forEach(function(wa) { %>
+                                    <% var pt = wa.poOffset != null ? formatPayoutTimes(wa.poOffset) : null; %>
+                                    <tr>
+                                        <td title="<%= escapeAttr(wa.name) %>"><%= wa.name %></td>
+                                        <td class="config-muted"><%= wa.allyCode != null ? wa.allyCode : (wa.allycode != null ? wa.allycode : "—") %></td>
+                                        <td>#<%= wa.lastChar %><% if (pt) { %><span class="config-payout"><%= pt.char %></span><% } %></td>
+                                        <td>#<%= wa.lastShip %><% if (pt) { %><span class="config-payout"><%= pt.fleet %></span><% } %></td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        <% } %>
+                    </section>
+
+                    <!-- Guild Update -->
+                    <section class="config-section">
+                        <h2>Guild Update</h2>
+                        <div class="config-row">
+                            <span class="config-label">Status</span>
+                            <span><%= userConfig.guildUpdate && userConfig.guildUpdate.enabled ? "Enabled" : "Disabled" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Ally Code</span>
+                            <span><%= userConfig.guildUpdate && userConfig.guildUpdate.allycode != null ? userConfig.guildUpdate.allycode : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Sort By</span>
+                            <span><%= userConfig.guildUpdate && userConfig.guildUpdate.sortBy ? userConfig.guildUpdate.sortBy : "—" %></span>
+                        </div>
+                    </section>
+
+                    <!-- Guild Tickets -->
+                    <section class="config-section">
+                        <h2>Guild Tickets</h2>
+                        <div class="config-row">
+                            <span class="config-label">Status</span>
+                            <span><%= userConfig.guildTickets && userConfig.guildTickets.enabled ? "Enabled" : "Disabled" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Sort By</span>
+                            <span><%= userConfig.guildTickets && userConfig.guildTickets.sortBy ? userConfig.guildTickets.sortBy : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Show Max</span>
+                            <span><%= userConfig.guildTickets && userConfig.guildTickets.showMax ? "Yes" : "No" %></span>
+                        </div>
+                    </section>
+
+                <% } %>
             </div>
         </div>
 

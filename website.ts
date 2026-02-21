@@ -11,7 +11,10 @@ import helmet from "helmet";
 // Local modules
 import * as auth from "./modules/auth.ts";
 import * as commandService from "./modules/commandService.ts";
+import { connectDB } from "./modules/db.ts";
 import { env } from "./modules/env.ts";
+import { formatPayoutTimes } from "./modules/payout.ts";
+import { getUser } from "./modules/users.ts";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -116,7 +119,8 @@ const initSite = async (): Promise<void> => {
 
     app.use(limiter);
 
-    // Add EJS helper for HTML attribute escaping
+    // Add EJS helpers
+    app.locals.formatPayoutTimes = formatPayoutTimes;
     app.locals.escapeAttr = (str: string): string => {
         return String(str)
             .replace(/&/g, "&amp;")
@@ -129,6 +133,9 @@ const initSite = async (): Promise<void> => {
     // Initialize command service cache
     console.log("Loading bot command data...");
     commandService.initialize();
+
+    await connectDB();
+    console.log("Connected to bot database.");
 
     // Not used anymore, but could be in the future? (Could probably have the bot save these to a file every hour or something?)
     // let guildCount = await parseInt(fs.readFileSync(path.join(__dirname, path.sep + "/data/guildCount.txt")));
@@ -245,22 +252,20 @@ const initSite = async (): Promise<void> => {
     });
 
     // Dashboard — requires login
-    app.get("/dashboard", (req: Request, res: Response) => {
+    app.get("/dashboard", async (req: Request, res: Response) => {
         if (!req.session.user) {
             req.session.returnTo = "/dashboard";
             return res.redirect("/login");
         }
 
         const user = req.session.user;
-        const avatarURL = user.avatar
-            ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`
-            : `https://cdn.discordapp.com/embed/avatars/${Number(BigInt(user.id) % 5n)}.png`;
+        const userConfig = await getUser(user.id);
 
         res.render("pages/dashboard", {
             title: "Dashboard - SWGoHBot",
             description: "Your SWGoHBot dashboard.",
             user,
-            avatarURL,
+            userConfig,
         });
     });
 

@@ -623,3 +623,88 @@ footer .disclaimer {
 *:after {
     box-sizing: inherit;
 }
+
+/* Dashboard config sections */
+.config-section {
+    background-color: var(--graybrown);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.config-section h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--lightgray);
+    padding-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+.config-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.3rem 0;
+}
+.config-label {
+    color: var(--lightergray);
+    min-width: 180px;
+    flex-shrink: 0;
+}
+.badge-primary {
+    background-color: var(--blue);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-weight: bold;
+}
+.config-account {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--lightgray);
+}
+.config-account:last-child {
+    border-bottom: none;
+}
+.config-account-name {
+    font-weight: bold;
+}
+.config-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.75rem;
+    table-layout: fixed;
+}
+.config-table th {
+    text-align: left;
+    color: var(--lightergray);
+    font-weight: normal;
+    font-size: 0.9rem;
+    padding: 0.3rem 0.75rem;
+    border-bottom: 1px solid var(--lightgray);
+}
+.config-table th:first-child {
+    width: 22%;
+}
+.config-table td {
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid var(--lightgray);
+    vertical-align: top;
+}
+.config-table td:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.config-table tbody tr:last-child td {
+    border-bottom: none;
+}
+.config-payout {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--lightergray);
+}
+.config-muted {
+    color: var(--lightergray);
+}
