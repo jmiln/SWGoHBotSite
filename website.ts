@@ -261,6 +261,17 @@ const initSite = async (): Promise<void> => {
         const user = req.session.user;
         const userConfig = await getUser(user.id);
 
+        if (userConfig?.accounts) {
+            userConfig.accounts.sort((a: { name: string }, b: { name: string }) =>
+                a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+            );
+        }
+        if (userConfig?.arenaWatch?.allycodes) {
+            userConfig.arenaWatch.allycodes.sort((a: { name: string }, b: { name: string }) =>
+                a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+            );
+        }
+
         res.render("pages/dashboard", {
             title: "Dashboard - SWGoHBot",
             description: "Your SWGoHBot dashboard.",
