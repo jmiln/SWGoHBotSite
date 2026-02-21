@@ -216,7 +216,7 @@ const initSite = async (): Promise<void> => {
 
         // CSRF check
         if (!state || state !== req.session.oauthState) {
-            return res.status(403).render("pages/404", {
+            return res.status(403).render("pages/500", {
                 title: "Forbidden - SWGoHBot",
                 description: "Invalid OAuth state. Please try logging in again.",
             });
@@ -230,13 +230,20 @@ const initSite = async (): Promise<void> => {
         try {
             const accessToken = await auth.exchangeCodeForToken(code);
             const discordUser = await auth.fetchDiscordUser(accessToken);
+            // Save returnTo before regenerating session (regenerate clears session data)
+            const returnTo = req.session.returnTo ?? "/dashboard";
+            // Regenerate session ID to prevent session fixation attacks
+            await new Promise<void>((resolve, reject) => {
+                req.session.regenerate((err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
             req.session.user = {
                 id: discordUser.id,
                 username: discordUser.username,
                 avatar: discordUser.avatar,
             };
-            const returnTo = req.session.returnTo ?? "/dashboard";
-            delete req.session.returnTo;
             res.redirect(returnTo);
         } catch (err) {
             console.error("OAuth callback error:", err);
@@ -244,8 +251,8 @@ const initSite = async (): Promise<void> => {
         }
     });
 
-    // Logout — destroy session and redirect home
-    app.get("/logout", (req: Request, res: Response) => {
+    // Logout — destroy session and redirect home (POST to prevent CSRF logout)
+    app.post("/logout", (req: Request, res: Response) => {
         req.session.destroy(() => {
             res.redirect("/");
         });

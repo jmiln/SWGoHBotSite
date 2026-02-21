@@ -200,6 +200,19 @@ main {
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
 }
+.nav-logout-form {
+    margin: 0;
+    padding: 0;
+}
+.nav-logout-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: inherit;
+    font-family: inherit;
+}
 .nav-item {
     padding: 0.375rem 0.75rem;
     color: white;
