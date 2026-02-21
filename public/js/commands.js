@@ -9,6 +9,15 @@ $(document).ready(() => {
         showCategory(categoryName);
     });
 
+    // Handle category keyboard activation (Enter and Space for role="button")
+    $(".category-item").on("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            const categoryName = $(this).data("category");
+            showCategory(categoryName);
+        }
+    });
+
     // Handle filter changes
     $("#filter-dm, #filter-admin").on("change", applyFilters);
 
@@ -37,8 +46,8 @@ const getDefaultCategory = () => {
  */
 const showCategory = (categoryName) => {
     // Update sidebar active state
-    $(".category-item").removeClass("active");
-    $(`.category-item[data-category="${categoryName}"]`).addClass("active");
+    $(".category-item").removeClass("active").attr("aria-pressed", "false");
+    $(`.category-item[data-category="${categoryName}"]`).addClass("active").attr("aria-pressed", "true");
 
     // Hide all categories and show the selected one using the active class
     $(".command-grid").removeClass("active");

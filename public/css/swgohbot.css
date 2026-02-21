@@ -9,6 +9,25 @@
     --success: #28a745;
     --patreon-color: #f96854;
 }
+:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 3px;
+}
+.skip-link {
+    position: fixed;
+    top: -100%;
+    left: 0;
+    z-index: 9999;
+    padding: 0.5rem 1rem;
+    background: var(--blue);
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 0 0 4px 0;
+}
+.skip-link:focus-visible {
+    top: 0;
+}
 html {
     box-sizing: border-box;
     max-width: 100%;
@@ -719,7 +738,9 @@ footer .disclaimer {
     padding: 0.2rem 0.6rem;
     font-size: 0.8rem;
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
+    transition:
+        border-color 0.15s,
+        color 0.15s;
 }
 .config-sort-btn:hover {
     border-color: var(--blue);

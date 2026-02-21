@@ -1,4 +1,4 @@
-$(function () {
+$(() => {
     function getCharPayoutMs(offset) {
         var now = Date.now();
         var dayMS = 24 * 60 * 60 * 1000;
@@ -15,7 +15,7 @@ $(function () {
         var $tbody = $table.find("tbody");
         var rows = $tbody.find("tr").toArray();
 
-        rows.sort(function (a, b) {
+        rows.sort((a, b) => {
             var $a = $(a);
             var $b = $(b);
 
@@ -23,13 +23,13 @@ $(function () {
                 return $a.data("name").localeCompare($b.data("name"));
             }
             if (sortKey === "char") {
-                var aChar = $a.data("char") !== "" ? parseInt($a.data("char"), 10) : Infinity;
-                var bChar = $b.data("char") !== "" ? parseInt($b.data("char"), 10) : Infinity;
+                var aChar = $a.data("char") !== "" ? Number.parseInt($a.data("char"), 10) : Number.POSITIVE_INFINITY;
+                var bChar = $b.data("char") !== "" ? Number.parseInt($b.data("char"), 10) : Number.POSITIVE_INFINITY;
                 return aChar - bChar;
             }
             if (sortKey === "ship") {
-                var aShip = $a.data("ship") !== "" ? parseInt($a.data("ship"), 10) : Infinity;
-                var bShip = $b.data("ship") !== "" ? parseInt($b.data("ship"), 10) : Infinity;
+                var aShip = $a.data("ship") !== "" ? Number.parseInt($a.data("ship"), 10) : Number.POSITIVE_INFINITY;
+                var bShip = $b.data("ship") !== "" ? Number.parseInt($b.data("ship"), 10) : Number.POSITIVE_INFINITY;
                 return aShip - bShip;
             }
             if (sortKey === "payout") {
@@ -38,12 +38,12 @@ $(function () {
                 if (aOff === "" && bOff === "") return 0;
                 if (aOff === "") return 1;
                 if (bOff === "") return -1;
-                return getCharPayoutMs(parseInt(aOff, 10)) - getCharPayoutMs(parseInt(bOff, 10));
+                return getCharPayoutMs(Number.parseInt(aOff, 10)) - getCharPayoutMs(Number.parseInt(bOff, 10));
             }
             return 0;
         });
 
-        $.each(rows, function (_i, row) {
+        $.each(rows, (_i, row) => {
             $tbody.append(row);
         });
     }
@@ -63,8 +63,8 @@ $(function () {
         var $table = $btn.closest(".config-section").find(".config-table");
         var sortKey = $btn.data("sort");
 
-        $btn.closest(".config-sort").find(".config-sort-btn").removeClass("active");
-        $btn.addClass("active");
+        $btn.closest(".config-sort").find(".config-sort-btn").removeClass("active").attr("aria-pressed", "false");
+        $btn.addClass("active").attr("aria-pressed", "true");
 
         sortTable($table, sortKey);
     });

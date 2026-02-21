@@ -3,14 +3,14 @@ $(document).ready(() => {
     const $dropdownToggle = $("#nav-user-dropdown");
     const $dropdownMenu = $("#nav-user-menu");
 
-    $dropdownToggle.on("click", function (e) {
+    $dropdownToggle.on("click", (e) => {
         e.stopPropagation();
         const isOpen = $dropdownMenu.hasClass("open");
         $dropdownMenu.toggleClass("open", !isOpen);
         $dropdownToggle.attr("aria-expanded", String(!isOpen));
     });
 
-    $(document).on("click", function () {
+    $(document).on("click", () => {
         $dropdownMenu.removeClass("open");
         $dropdownToggle.attr("aria-expanded", "false");
     });
@@ -28,6 +28,8 @@ $(document).ready(() => {
                 buttons[ix].classList.toggle("hide-mobile");
             }
         }
+        const isExpanded = $(this).attr("aria-expanded") === "true";
+        $(this).attr("aria-expanded", String(!isExpanded));
     });
 
     // Highlight the active nav link

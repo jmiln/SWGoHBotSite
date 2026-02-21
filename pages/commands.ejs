@@ -11,7 +11,7 @@
             <%- include("../partials/nav") %>
         </header>
 
-        <div class="container my-5">
+        <main class="container my-5" id="main-content">
             <% if (commandData.error) { %>
                 <!-- Error state -->
                 <div class="alert alert-danger" role="alert">
@@ -38,7 +38,7 @@
                             for (const categoryName of categories) {
                                 const category = commandData[categoryName];
                             %>
-                                <li class="category-item" data-category="<%= escapeAttr(categoryName) %>" tabindex="0" role="button" aria-selected="false">
+                                <li class="category-item" data-category="<%= escapeAttr(categoryName) %>" tabindex="0" role="button" aria-pressed="false">
                                     <%= categoryName %>
                                     <span class="badge bg-secondary"><%= category.commands.length %></span>
                                 </li>
@@ -63,7 +63,7 @@
                     </aside>
 
                     <!-- Commands Content Area -->
-                    <main class="commands-content">
+                    <div class="commands-content">
                         <%
                         // Render each category's commands as a separate grid
                         for (const categoryName of categories) {
@@ -118,10 +118,10 @@
                                 </div>
                             </div>
                         <% } %>
-                    </main>
+                    </div>
                 </div>
             <% } %>
-        </div>
+        </main>
 
         <%- include("../partials/footer") %>
 

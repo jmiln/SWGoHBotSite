@@ -9,7 +9,7 @@
             <%- include("../partials/nav") -%>
         </header>
 
-        <div class="page-wrapper">
+        <main class="page-wrapper" id="main-content">
             <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
                 <h1>Welcome, <%= user.username %>!</h1>
 
@@ -23,17 +23,17 @@
                         <% if (userConfig.accounts && userConfig.accounts.length) { %>
                             <div class="config-sort">
                                 <span class="config-sort-label">Sort by</span>
-                                <button class="config-sort-btn active" data-sort="name">Name</button>
-                                <button class="config-sort-btn" data-sort="char">Char Rank</button>
-                                <button class="config-sort-btn" data-sort="ship">Ship Rank</button>
+                                <button class="config-sort-btn active" data-sort="name" aria-pressed="true">Name</button>
+                                <button class="config-sort-btn" data-sort="char" aria-pressed="false">Char Rank</button>
+                                <button class="config-sort-btn" data-sort="ship" aria-pressed="false">Ship Rank</button>
                             </div>
                             <table class="config-table" id="linked-accounts-table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Ally Code</th>
-                                        <th>Char Arena</th>
-                                        <th>Ship Arena</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Ally Code</th>
+                                        <th scope="col">Char Arena</th>
+                                        <th scope="col">Ship Arena</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -104,18 +104,18 @@
                         <% if (userConfig.arenaWatch && userConfig.arenaWatch.allycodes && userConfig.arenaWatch.allycodes.length) { %>
                             <div class="config-sort">
                                 <span class="config-sort-label">Sort by</span>
-                                <button class="config-sort-btn active" data-sort="name">Name</button>
-                                <button class="config-sort-btn" data-sort="char">Char Rank</button>
-                                <button class="config-sort-btn" data-sort="ship">Ship Rank</button>
-                                <button class="config-sort-btn" data-sort="payout">Payout</button>
+                                <button class="config-sort-btn active" data-sort="name" aria-pressed="true">Name</button>
+                                <button class="config-sort-btn" data-sort="char" aria-pressed="false">Char Rank</button>
+                                <button class="config-sort-btn" data-sort="ship" aria-pressed="false">Ship Rank</button>
+                                <button class="config-sort-btn" data-sort="payout" aria-pressed="false">Payout</button>
                             </div>
                             <table class="config-table" id="arena-watch-table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Ally Code</th>
-                                        <th>Char Arena</th>
-                                        <th>Ship Arena</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Ally Code</th>
+                                        <th scope="col">Char Arena</th>
+                                        <th scope="col">Ship Arena</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -169,7 +169,7 @@
 
                 <% } %>
             </div>
-        </div>
+        </main>
 
         <script src="/js/dashboard.js" nonce="<%= nonce %>"></script>
         <%- include("../partials/footer") -%>
