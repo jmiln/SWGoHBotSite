@@ -101,7 +101,7 @@
                             <span class="config-label">Announce Channel</span>
                             <span>
                                 <% if (announceChan) { %>
-                                    <%= channelMap[announceChan] || announceChan %>
+                                    #<%= channelMap[announceChan] || announceChan %>
                                 <% } else { %>
                                     <span class="config-muted">None</span>
                                 <% } %>
@@ -192,48 +192,62 @@
                     <% if (config.events && config.events.length) { %>
                     <section class="config-section">
                         <h2>Events</h2>
-                        <table class="config-table guild-events-table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Date / Time</th>
-                                    <th scope="col">Message</th>
-                                    <th scope="col">Channel</th>
-                                    <th scope="col">Countdown</th>
-                                    <th scope="col">Repeat</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% config.events.forEach(function(event) { %>
-                                <%
-                                    // Build repeat string — disabled if both repeat fields and repeatDays are all zero/empty
-                                    var repeatStr = "No";
-                                    var r = event.repeat;
-                                    var rd = event.repeatDays;
-                                    if (rd && rd.length) {
-                                        repeatStr = "Days: " + rd.join(", ");
-                                    } else if (r && (r.repeatDay || r.repeatHour || r.repeatMin)) {
-                                        var parts = [];
-                                        if (r.repeatDay)  parts.push(r.repeatDay  + "d");
-                                        if (r.repeatHour) parts.push(r.repeatHour + "h");
-                                        if (r.repeatMin)  parts.push(r.repeatMin  + "m");
-                                        repeatStr = "Every " + parts.join(" ");
-                                    }
-                                    var dateStr = event.eventDT
-                                        ? new Date(event.eventDT).toLocaleString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })
-                                        : "—";
-                                %>
-                                <tr>
-                                    <td title="<%= escapeAttr(event.name) %>"><%= event.name %></td>
-                                    <td class="config-muted"><%= dateStr %></td>
-                                    <td class="config-muted" title="<%= event.message ? escapeAttr(event.message) : '' %>"><%= event.message || "—" %></td>
-                                    <td><%= event.channel ? (channelMap[event.channel] || event.channel) : "—" %></td>
-                                    <td><%= event.countdown ? "Yes" : "No" %></td>
-                                    <td class="config-muted"><%= repeatStr %></td>
-                                </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
+                        <div class="guild-events-list">
+                            <% config.events.forEach(function(event) { %>
+                            <%
+                                var r = event.repeat;
+                                var rd = event.repeatDays;
+                                var hasRepeat = r && (r.repeatDay || r.repeatHour || r.repeatMin);
+                                var hasRepeatDays = rd && rd.length;
+                                var repeatIntervalStr = "";
+                                if (hasRepeat) {
+                                    var parts = [];
+                                    if (r.repeatDay)  parts.push(r.repeatDay  + "d");
+                                    if (r.repeatHour) parts.push(r.repeatHour + "h");
+                                    if (r.repeatMin)  parts.push(r.repeatMin  + "m");
+                                    repeatIntervalStr = "Every " + parts.join(" ");
+                                }
+                                var dateStr = event.eventDT
+                                    ? new Date(event.eventDT).toLocaleString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })
+                                    : "—";
+                            %>
+                            <div class="guild-event-card">
+                                <div class="guild-event-header">
+                                    <span class="guild-event-name"><%= event.name %></span>
+                                    <span class="guild-event-date"><%= dateStr %></span>
+                                </div>
+                                <div class="guild-event-meta">
+                                    <% if (event.channel) { %>
+                                    <span class="guild-event-meta-item">
+                                        <span class="guild-event-meta-label">Channel</span>
+                                        <span>#<%= channelMap[event.channel] || event.channel %></span>
+                                    </span>
+                                    <% } %>
+                                    <% if (event.countdown) { %>
+                                    <span class="guild-event-meta-item">
+                                        <span class="guild-event-meta-label">Countdown</span>
+                                        <span>Yes</span>
+                                    </span>
+                                    <% } %>
+                                    <% if (hasRepeat) { %>
+                                    <span class="guild-event-meta-item">
+                                        <span class="guild-event-meta-label">Repeat</span>
+                                        <span><%= repeatIntervalStr %></span>
+                                    </span>
+                                    <% } %>
+                                    <% if (hasRepeatDays) { %>
+                                    <span class="guild-event-meta-item">
+                                        <span class="guild-event-meta-label">Repeat Days</span>
+                                        <span><%= rd.join(", ") %></span>
+                                    </span>
+                                    <% } %>
+                                </div>
+                                <% if (event.message) { %>
+                                <p class="guild-event-message"><%= event.message %></p>
+                                <% } %>
+                            </div>
+                            <% }) %>
+                        </div>
                     </section>
                     <% } %>
 

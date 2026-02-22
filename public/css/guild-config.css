@@ -130,20 +130,67 @@
     font-size: 0.9rem;
 }
 
-/* Events table — 6-column layout overriding the global 4-column defaults */
+/* Events — card list */
 
-.guild-events-table th:nth-child(1) { width: 18%; }
-.guild-events-table th:nth-child(2) { width: 14%; }
-.guild-events-table th:nth-child(3) { width: 30%; }
-.guild-events-table th:nth-child(4) { width: 18%; }
-.guild-events-table th:nth-child(5) { width: 8%; }
-.guild-events-table th:nth-child(6) { width: 12%; }
+.guild-events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+}
 
-/* Truncate message cell with ellipsis — title attr shows full text on hover */
-.guild-events-table td:nth-child(3) {
-    overflow: hidden;
-    text-overflow: ellipsis;
+.guild-event-card {
+    background: var(--darkgray);
+    border: 1px solid var(--lightgray);
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.guild-event-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.guild-event-name {
+    font-weight: 600;
+}
+
+.guild-event-date {
+    font-size: 0.85rem;
     white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.guild-event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.5rem;
+}
+
+.guild-event-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.guild-event-meta-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--lightergray);
+}
+
+.guild-event-message {
+    margin: 0.1rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    word-break: break-word;
 }
 
 /* Responsive */
