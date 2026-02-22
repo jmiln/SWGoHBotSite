@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../partials/head") -%>
+        <link rel="stylesheet" href="/css/guild-config.css">
+    </head>
+
+    <body>
+        <header>
+            <%- include("../partials/nav") -%>
+        </header>
+
+        <main class="page-wrapper" id="main-content">
+            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
+                <h1>Server Config</h1>
+                <p class="config-muted">Select a server to view its SWGoHBot configuration. Only servers where you have admin access are shown.</p>
+
+                <% if (accessibleGuilds.length === 0) { %>
+                    <p>No accessible servers found. Make sure you have admin permissions or an admin role in a server that uses SWGoHBot.</p>
+                <% } else { %>
+                    <div class="guild-card-grid" role="list">
+                        <% accessibleGuilds.forEach(function(item) { %>
+                        <a href="/guild/<%= item.guild.id %>" class="guild-card" role="listitem">
+                            <% if (item.guild.icon) { %>
+                                <img
+                                    src="https://cdn.discordapp.com/icons/<%= item.guild.id %>/<%= item.guild.icon %>.png?size=64"
+                                    alt=""
+                                    width="48"
+                                    height="48"
+                                    class="guild-card-icon"
+                                >
+                            <% } else { %>
+                                <div class="guild-card-icon guild-card-icon--placeholder" aria-hidden="true">
+                                    <%= item.guild.name.charAt(0).toUpperCase() %>
+                                </div>
+                            <% } %>
+                            <span class="guild-card-name"><%= item.guild.name %></span>
+                            <span class="guild-card-arrow" aria-hidden="true">›</span>
+                        </a>
+                        <% }) %>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+
+        <%- include("../partials/footer") -%>
+    </body>
+</html>

@@ -10,3 +10,7 @@ export async function connectDB(): Promise<void> {
 export function getBotDB() {
     return client.db(env.MONGODB_BOT_DB);
 }
+
+export function getSwapiDB() {
+    return client.db(env.MONGODB_SWAPI_DB);
+}

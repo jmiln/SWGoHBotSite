@@ -7,13 +7,13 @@ export function buildDiscordAuthURL(state: string): string {
         client_id: env.DISCORD_CLIENT_ID,
         redirect_uri: env.DISCORD_REDIRECT_URI,
         response_type: "code",
-        scope: "identify",
+        scope: "identify guilds guilds.members.read",
         state,
     });
     return `https://discord.com/oauth2/authorize?${params.toString()}`;
 }
 
-export async function exchangeCodeForToken(code: string): Promise<string> {
+export async function exchangeCodeForToken(code: string): Promise<{ accessToken: string; expiresIn: number }> {
     const params = new URLSearchParams({
         client_id: env.DISCORD_CLIENT_ID,
         client_secret: env.DISCORD_CLIENT_SECRET,
@@ -33,8 +33,8 @@ export async function exchangeCodeForToken(code: string): Promise<string> {
         throw new Error(`Token exchange failed (${response.status}): ${text}`);
     }
 
-    const data = (await response.json()) as { access_token: string };
-    return data.access_token;
+    const data = (await response.json()) as { access_token: string; expires_in: number };
+    return { accessToken: data.access_token, expiresIn: data.expires_in };
 }
 
 export interface DiscordUser {
@@ -53,4 +53,39 @@ export async function fetchDiscordUser(accessToken: string): Promise<DiscordUser
     }
 
     return response.json() as Promise<DiscordUser>;
+}
+
+export interface DiscordGuild {
+    id: string;
+    name: string;
+    icon: string | null;
+    permissions: string;
+}
+
+export async function fetchUserGuilds(accessToken: string): Promise<DiscordGuild[]> {
+    const response = await fetch(`${DISCORD_API_BASE}/users/@me/guilds`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch user guilds (${response.status})`);
+    }
+
+    return response.json() as Promise<DiscordGuild[]>;
+}
+
+export interface GuildMember {
+    roles: string[];
+}
+
+export async function fetchGuildMember(accessToken: string, guildId: string): Promise<GuildMember> {
+    const response = await fetch(`${DISCORD_API_BASE}/users/@me/guilds/${guildId}/member`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch guild member (${response.status})`);
+    }
+
+    return response.json() as Promise<GuildMember>;
 }

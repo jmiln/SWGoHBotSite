@@ -10,10 +10,13 @@ import session from "express-session";
 import helmet from "helmet";
 // Local modules
 import * as auth from "./modules/auth.ts";
+import * as botApi from "./modules/botApi.ts";
 import * as commandService from "./modules/commandService.ts";
 import { connectDB } from "./modules/db.ts";
 import { env } from "./modules/env.ts";
+import { getGuildConfig, getGuildConfigs } from "./modules/guilds.ts";
 import { formatPayoutTimes } from "./modules/payout.ts";
+import { getUnitNames } from "./modules/units.ts";
 import { getUser } from "./modules/users.ts";
 
 // ES module __dirname equivalent
@@ -228,7 +231,7 @@ const initSite = async (): Promise<void> => {
         }
 
         try {
-            const accessToken = await auth.exchangeCodeForToken(code);
+            const { accessToken } = await auth.exchangeCodeForToken(code);
             const discordUser = await auth.fetchDiscordUser(accessToken);
             // Save returnTo before regenerating session (regenerate clears session data)
             const returnTo = req.session.returnTo ?? "/dashboard";
@@ -244,6 +247,7 @@ const initSite = async (): Promise<void> => {
                 username: discordUser.username,
                 avatar: discordUser.avatar,
             };
+            req.session.accessToken = accessToken;
             res.redirect(returnTo);
         } catch (err) {
             console.error("OAuth callback error:", err);
@@ -285,6 +289,173 @@ const initSite = async (): Promise<void> => {
             user,
             userConfig,
         });
+    });
+
+    // Helper: check if a user can access a guild's config
+    // Allows MANAGE_GUILD (bit 32) or a role in adminRole list
+    async function canAccessGuild(
+        accessToken: string,
+        guildId: string,
+        discordPermissions: string,
+        adminRoles: string[],
+    ): Promise<boolean> {
+        if (BigInt(discordPermissions) & 32n) return true;
+        try {
+            const member = await auth.fetchGuildMember(accessToken, guildId);
+            return member.roles.some((r) => adminRoles.includes(r));
+        } catch {
+            return false;
+        }
+    }
+
+    // Guild Select — list servers the user can manage
+    app.get("/guild-select", async (req: Request, res: Response) => {
+        if (!req.session.user || !req.session.accessToken) {
+            req.session.returnTo = "/guild-select";
+            return res.redirect("/login");
+        }
+
+        const user = req.session.user;
+        const accessToken = req.session.accessToken;
+
+        try {
+            const guilds = await auth.fetchUserGuilds(accessToken);
+            const guildIds = guilds.map((g) => g.id);
+            const configs = await getGuildConfigs(guildIds);
+
+            // Build lookup maps
+            const guildMap = new Map(guilds.map((g) => [g.id, g]));
+            const configMap = new Map(configs.map((c) => [c.guildId, c]));
+
+            type AccessibleGuild = { guild: auth.DiscordGuild; config: Awaited<ReturnType<typeof getGuildConfig>> };
+            const accessibleGuilds: AccessibleGuild[] = [];
+
+            // Path 1: guilds that have a DB config — check MANAGE_GUILD or adminRole
+            for (const config of configs) {
+                const guild = guildMap.get(config.guildId);
+                if (!guild) continue;
+                const adminRoles = config.settings?.adminRole ?? [];
+                const allowed = await canAccessGuild(accessToken, config.guildId, guild.permissions, adminRoles);
+                if (allowed) {
+                    accessibleGuilds.push({ guild, config });
+                }
+            }
+
+            // Path 2: guilds with MANAGE_GUILD but no DB config — check if bot is present
+            const managedWithoutConfig = guilds.filter((g) => BigInt(g.permissions) & 32n && !configMap.has(g.id));
+            const botChecks = await Promise.all(
+                managedWithoutConfig.map((g) => botApi.isBotInGuild(g.id).then((inGuild) => ({ guild: g, inGuild }))),
+            );
+            for (const { guild, inGuild } of botChecks) {
+                if (inGuild) {
+                    accessibleGuilds.push({ guild, config: null });
+                }
+            }
+
+            res.render("pages/guild-select", {
+                title: "Server Config — SWGoHBot",
+                description: "Select a server to view its SWGoHBot configuration.",
+                user,
+                accessibleGuilds,
+            });
+        } catch (err: unknown) {
+            if (err instanceof Error && err.message.includes("401")) {
+                req.session.returnTo = "/guild-select";
+                return res.redirect("/login");
+            }
+            console.error("Guild select error:", err);
+            res.status(500).render("pages/500", {
+                title: "Server Error — SWGoHBot",
+                description: "Something went wrong loading your servers.",
+            });
+        }
+    });
+
+    // Guild Config — view config for a specific server
+    app.get("/guild/:id", async (req: Request, res: Response) => {
+        if (!req.session.user || !req.session.accessToken) {
+            req.session.returnTo = `/guild/${req.params.id}`;
+            return res.redirect("/login");
+        }
+
+        const user = req.session.user;
+        const accessToken = req.session.accessToken;
+        const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+
+        try {
+            // Fetch user's guilds and config in parallel
+            const [config, guilds] = await Promise.all([getGuildConfig(guildId), auth.fetchUserGuilds(accessToken)]);
+
+            const guild = guilds.find((g) => g.id === guildId);
+
+            if (!guild) {
+                return res.status(403).render("pages/500", {
+                    title: "Access Denied — SWGoHBot",
+                    description: "You do not have access to this server's configuration.",
+                });
+            }
+
+            // Access check: MANAGE_GUILD or adminRole (from config if present)
+            const adminRoles = config?.settings?.adminRole ?? [];
+            const allowed = await canAccessGuild(accessToken, guildId, guild.permissions, adminRoles);
+
+            if (!allowed) {
+                return res.status(403).render("pages/500", {
+                    title: "Access Denied — SWGoHBot",
+                    description: "You do not have access to this server's configuration.",
+                });
+            }
+
+            if (!config) {
+                return res.render("pages/guild-config", {
+                    title: `${guild.name} Config — SWGoHBot`,
+                    description: `SWGoHBot configuration for ${guild.name}.`,
+                    user,
+                    guild,
+                    config: null,
+                    roleMap: {},
+                    channelMap: {},
+                    unitNameMap: {},
+                });
+            }
+
+            // Collect all defIds from twList and aliases for a single bulk DB lookup
+            const twDefIds = [
+                ...(config.settings?.twList?.light ?? []),
+                ...(config.settings?.twList?.dark ?? []),
+                ...Object.values(config.settings?.aliases ?? {}),
+            ];
+
+            const [roles, channels, unitNameMap] = await Promise.all([
+                botApi.fetchGuildRoles(guildId),
+                botApi.fetchGuildChannels(guildId),
+                getUnitNames(twDefIds),
+            ]);
+
+            const roleMap: Record<string, string> = Object.fromEntries(roles.map((r) => [r.id, r.name]));
+            const channelMap: Record<string, string> = Object.fromEntries(channels.map((c) => [c.id, c.name]));
+
+            res.render("pages/guild-config", {
+                title: `${guild.name} Config — SWGoHBot`,
+                description: `SWGoHBot configuration for ${guild.name}.`,
+                user,
+                guild,
+                config,
+                roleMap,
+                channelMap,
+                unitNameMap,
+            });
+        } catch (err: unknown) {
+            if (err instanceof Error && err.message.includes("401")) {
+                req.session.returnTo = `/guild/${guildId}`;
+                return res.redirect("/login");
+            }
+            console.error("Guild config error:", err);
+            res.status(500).render("pages/500", {
+                title: "Server Error — SWGoHBot",
+                description: "Something went wrong loading this server's configuration.",
+            });
+        }
     });
 
     // 404 handler - MUST come before error handler

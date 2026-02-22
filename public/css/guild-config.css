@@ -1,0 +1,159 @@
+/* Guild Select — server chooser grid */
+
+.guild-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.guild-card {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.9rem 1rem;
+    background: var(--darkgray);
+    border: 1px solid var(--lightgray);
+    border-radius: 6px;
+    color: inherit;
+    text-decoration: none;
+    transition:
+        border-color 0.15s,
+        background 0.15s;
+}
+
+.guild-card:hover,
+.guild-card:focus-visible {
+    border-color: var(--blue);
+    background: var(--lightgray);
+    outline: none;
+}
+
+.guild-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+
+.guild-card-icon--placeholder {
+    background: var(--gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.guild-card-name {
+    flex: 1;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.guild-card-arrow {
+    color: var(--lightergray);
+    font-size: 1.4rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+/* Guild Config — page header */
+
+.guild-back-link {
+    display: inline-block;
+    color: var(--lightergray);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.guild-back-link:hover,
+.guild-back-link:focus-visible {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.guild-header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.guild-header h1 {
+    margin: 0;
+}
+
+/* Message preview (welcome/leave) */
+
+.guild-msg-preview {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* TW List two-column grid */
+
+.guild-tw-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.guild-tw-side-heading {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    color: var(--lightergray);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.guild-tw-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.guild-tw-list li {
+    font-size: 0.9rem;
+}
+
+/* Events table — 6-column layout overriding the global 4-column defaults */
+
+.guild-events-table th:nth-child(1) { width: 18%; }
+.guild-events-table th:nth-child(2) { width: 14%; }
+.guild-events-table th:nth-child(3) { width: 30%; }
+.guild-events-table th:nth-child(4) { width: 18%; }
+.guild-events-table th:nth-child(5) { width: 8%; }
+.guild-events-table th:nth-child(6) { width: 12%; }
+
+/* Truncate message cell with ellipsis — title attr shows full text on hover */
+.guild-events-table td:nth-child(3) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Responsive */
+
+@media (max-width: 800px) {
+    .guild-card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .guild-tw-grid {
+        grid-template-columns: 1fr;
+    }
+}

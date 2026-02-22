@@ -10,6 +10,8 @@ const envSchema = z.object({
     MONGODB_URI: z.string(),
     MONGODB_BOT_DB: z.string(),
     SESSION_SECRET: z.string().min(16, "SESSION_SECRET must be at least 16 characters"),
+    DISCORD_BOT_TOKEN: z.string(),
+    MONGODB_SWAPI_DB: z.string(),
 });
 
 const parsed = envSchema.safeParse(process.env);

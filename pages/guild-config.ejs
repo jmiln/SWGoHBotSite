@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../partials/head") -%>
+        <link rel="stylesheet" href="/css/guild-config.css">
+    </head>
+
+    <body>
+        <header>
+            <%- include("../partials/nav") -%>
+        </header>
+
+        <main class="page-wrapper" id="main-content">
+            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
+                <a href="/guild-select" class="guild-back-link">← Back to Server List</a>
+
+                <% if (!config) { %>
+                    <h1>Server Config</h1>
+                    <p class="config-muted">No configuration has been set up for this server yet. Use the bot in Discord to configure it.</p>
+                <% } else { %>
+
+                    <% if (typeof guild !== 'undefined' && guild) { %>
+                        <div class="guild-header">
+                            <% if (guild.icon) { %>
+                                <img
+                                    src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png?size=64"
+                                    alt=""
+                                    width="48"
+                                    height="48"
+                                    class="guild-card-icon"
+                                >
+                            <% } else { %>
+                                <div class="guild-card-icon guild-card-icon--placeholder" aria-hidden="true">
+                                    <%= guild.name.charAt(0).toUpperCase() %>
+                                </div>
+                            <% } %>
+                            <h1><%= guild.name %></h1>
+                        </div>
+                    <% } else { %>
+                        <h1>Server Config</h1>
+                    <% } %>
+
+                    <%
+                        // Defaults mirror the bot's defaultGuildConf
+                        var s = config.settings || {};
+                        var adminRole       = s.adminRole;
+                        var timezone        = s.timezone        ?? "America/Los_Angeles";
+                        var language        = s.language        ?? "en_US";
+                        var swgohLanguage   = s.swgohLanguage   ?? "ENG_US";
+                        var useEventPages   = s.useEventPages   ?? false;
+                        var shardtimeVert   = s.shardtimeVertical ?? false;
+                        var announceChan    = s.announceChan    ?? "";
+                        var eventCountdown  = s.eventCountdown  ?? [2880, 1440, 720, 360, 180, 120, 60, 30, 10, 5];
+                        var enableWelcome   = s.enableWelcome   ?? false;
+                        var welcomeMessage  = s.welcomeMessage  ?? "Say hello to {{user}}, everyone! We all need a warm welcome sometimes :D";
+                        var enablePart      = s.enablePart      ?? false;
+                        var partMessage     = s.partMessage     ?? "Goodbye {{user}}, thanks for stopping by!";
+                    %>
+
+                    <!-- Settings Section -->
+                    <section class="config-section">
+                        <h2>Settings</h2>
+
+                        <!-- Admin Roles -->
+                        <div class="config-row">
+                            <span class="config-label">Admin Roles</span>
+                            <span>
+                                <% if (adminRole === undefined) { %>
+                                    Administrator <span class="config-muted">(default)</span>
+                                <% } else if (!adminRole.length) { %>
+                                    <span class="config-muted">None</span>
+                                <% } else { %>
+                                    <%= adminRole.map(function(id) { return roleMap[id] || id; }).join(", ") %>
+                                <% } %>
+                            </span>
+                        </div>
+
+                        <div class="config-row">
+                            <span class="config-label">Timezone</span>
+                            <span><%= timezone %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Bot Language</span>
+                            <span><%= language %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">SWGoH Language</span>
+                            <span><%= swgohLanguage %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Use Event Pages</span>
+                            <span><%= useEventPages ? "Yes" : "No" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Shardtime Vertical</span>
+                            <span><%= shardtimeVert ? "Yes" : "No" %></span>
+                        </div>
+
+                        <!-- Announce Channel -->
+                        <div class="config-row">
+                            <span class="config-label">Announce Channel</span>
+                            <span>
+                                <% if (announceChan) { %>
+                                    <%= channelMap[announceChan] || announceChan %>
+                                <% } else { %>
+                                    <span class="config-muted">None</span>
+                                <% } %>
+                            </span>
+                        </div>
+
+                        <!-- Event Countdown -->
+                        <div class="config-row">
+                            <span class="config-label">Event Countdown (min)</span>
+                            <span><%= eventCountdown.join(", ") %></span>
+                        </div>
+
+                        <!-- Welcome Message -->
+                        <div class="config-row">
+                            <span class="config-label">Welcome</span>
+                            <span>
+                                <%= enableWelcome ? "Enabled" : "Disabled" %>
+                                <span class="config-muted guild-msg-preview"><%= welcomeMessage %></span>
+                            </span>
+                        </div>
+
+                        <!-- Part/Leave Message -->
+                        <div class="config-row">
+                            <span class="config-label">Leave Message</span>
+                            <span>
+                                <%= enablePart ? "Enabled" : "Disabled" %>
+                                <span class="config-muted guild-msg-preview"><%= partMessage %></span>
+                            </span>
+                        </div>
+                    </section>
+
+                    <!-- TW List Section -->
+                    <% if (config.settings && config.settings.twList && (
+                        (config.settings.twList.light && config.settings.twList.light.length) ||
+                        (config.settings.twList.dark && config.settings.twList.dark.length)
+                    )) { %>
+                    <section class="config-section">
+                        <h2>TW List</h2>
+                        <div class="guild-tw-grid">
+                            <% if (config.settings.twList.light && config.settings.twList.light.length) { %>
+                            <div>
+                                <h3 class="guild-tw-side-heading">Light Side</h3>
+                                <ul class="guild-tw-list">
+                                    <% config.settings.twList.light.forEach(function(defId) { %>
+                                        <li><%= unitNameMap[defId] || defId %></li>
+                                    <% }) %>
+                                </ul>
+                            </div>
+                            <% } %>
+                            <% if (config.settings.twList.dark && config.settings.twList.dark.length) { %>
+                            <div>
+                                <h3 class="guild-tw-side-heading">Dark Side</h3>
+                                <ul class="guild-tw-list">
+                                    <% config.settings.twList.dark.forEach(function(defId) { %>
+                                        <li><%= unitNameMap[defId] || defId %></li>
+                                    <% }) %>
+                                </ul>
+                            </div>
+                            <% } %>
+                        </div>
+                    </section>
+                    <% } %>
+
+                    <!-- Aliases Section -->
+                    <% if (config.settings && config.settings.aliases && Object.keys(config.settings.aliases).length) { %>
+                    <section class="config-section">
+                        <h2>Aliases</h2>
+                        <table class="config-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Alias</th>
+                                    <th scope="col">Unit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% Object.entries(config.settings.aliases).forEach(function([alias, defId]) { %>
+                                <tr>
+                                    <td><%= alias %></td>
+                                    <td><%= unitNameMap[defId] || defId %></td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </section>
+                    <% } %>
+
+                    <!-- Events Section -->
+                    <% if (config.events && config.events.length) { %>
+                    <section class="config-section">
+                        <h2>Events</h2>
+                        <table class="config-table guild-events-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Date / Time</th>
+                                    <th scope="col">Message</th>
+                                    <th scope="col">Channel</th>
+                                    <th scope="col">Countdown</th>
+                                    <th scope="col">Repeat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% config.events.forEach(function(event) { %>
+                                <%
+                                    // Build repeat string — disabled if both repeat fields and repeatDays are all zero/empty
+                                    var repeatStr = "No";
+                                    var r = event.repeat;
+                                    var rd = event.repeatDays;
+                                    if (rd && rd.length) {
+                                        repeatStr = "Days: " + rd.join(", ");
+                                    } else if (r && (r.repeatDay || r.repeatHour || r.repeatMin)) {
+                                        var parts = [];
+                                        if (r.repeatDay)  parts.push(r.repeatDay  + "d");
+                                        if (r.repeatHour) parts.push(r.repeatHour + "h");
+                                        if (r.repeatMin)  parts.push(r.repeatMin  + "m");
+                                        repeatStr = "Every " + parts.join(" ");
+                                    }
+                                    var dateStr = event.eventDT
+                                        ? new Date(event.eventDT).toLocaleString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })
+                                        : "—";
+                                %>
+                                <tr>
+                                    <td title="<%= escapeAttr(event.name) %>"><%= event.name %></td>
+                                    <td class="config-muted"><%= dateStr %></td>
+                                    <td class="config-muted" title="<%= event.message ? escapeAttr(event.message) : '' %>"><%= event.message || "—" %></td>
+                                    <td><%= event.channel ? (channelMap[event.channel] || event.channel) : "—" %></td>
+                                    <td><%= event.countdown ? "Yes" : "No" %></td>
+                                    <td class="config-muted"><%= repeatStr %></td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </section>
+                    <% } %>
+
+                <% } %>
+            </div>
+        </main>
+
+        <%- include("../partials/footer") -%>
+    </body>
+</html>
