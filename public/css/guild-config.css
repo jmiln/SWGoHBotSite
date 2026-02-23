@@ -62,6 +62,18 @@
     flex-shrink: 0;
 }
 
+/* Channel links */
+
+.guild-channel-link {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.guild-channel-link:hover,
+.guild-channel-link:focus-visible {
+    text-decoration: underline;
+}
+
 /* Guild Config — page header */
 
 .guild-back-link {

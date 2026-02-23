@@ -101,7 +101,7 @@
                             <span class="config-label">Announce Channel</span>
                             <span>
                                 <% if (announceChan) { %>
-                                    #<%= channelMap[announceChan] || announceChan %>
+                                    <a href="https://discord.com/channels/<%= config.guildId %>/<%= announceChan %>" class="guild-channel-link" target="_blank" rel="noopener noreferrer">#<%= channelMap[announceChan] || announceChan %></a>
                                 <% } else { %>
                                     <span class="config-muted">None</span>
                                 <% } %>
@@ -220,7 +220,7 @@
                                     <% if (event.channel) { %>
                                     <span class="guild-event-meta-item">
                                         <span class="guild-event-meta-label">Channel</span>
-                                        <span>#<%= channelMap[event.channel] || event.channel %></span>
+                                        <a href="https://discord.com/channels/<%= config.guildId %>/<%= event.channel %>" class="guild-channel-link" target="_blank" rel="noopener noreferrer">#<%= channelMap[event.channel] || event.channel %></a>
                                     </span>
                                     <% } %>
                                     <% if (event.countdown) { %>

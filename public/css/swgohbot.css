@@ -6,6 +6,7 @@
     --lightgray: #3f444a;
     --lightergray: #7f8c99;
     --blue: #007bff;
+    --link-color: #5ba3f5;
     --success: #28a745;
     --patreon-color: #f96854;
 }
@@ -48,6 +49,9 @@ body {
     font-size: 1rem;
     font-weight: 400;
     overflow-x: hidden;
+}
+a {
+    color: var(--link-color);
 }
 code {
     color: white;
