@@ -98,12 +98,12 @@
 
                         <!-- Announce Channel -->
                         <div class="config-row">
-                            <span class="config-label">Announce Channel</span>
+                            <span class="config-label">Announcement Channel</span>
                             <span>
                                 <% if (announceChan) { %>
                                     <a href="https://discord.com/channels/<%= config.guildId %>/<%= announceChan %>" class="guild-channel-link" target="_blank" rel="noopener noreferrer">#<%= channelMap[announceChan] || announceChan %></a>
                                 <% } else { %>
-                                    <span class="config-muted">None</span>
+                                    <span>None</span>
                                 <% } %>
                             </span>
                         </div>
@@ -116,19 +116,17 @@
 
                         <!-- Welcome Message -->
                         <div class="config-row">
-                            <span class="config-label">Welcome</span>
+                            <span class="config-label">Join Message (<%= enableWelcome ? "Enabled" : "Disabled" %>)</span>
                             <span>
-                                <%= enableWelcome ? "Enabled" : "Disabled" %>
-                                <span class="config-muted guild-msg-preview"><%= welcomeMessage %></span>
+                                <span class="guild-msg-preview"><%= welcomeMessage %></span>
                             </span>
                         </div>
 
                         <!-- Part/Leave Message -->
                         <div class="config-row">
-                            <span class="config-label">Leave Message</span>
+                            <span class="config-label">Part Message (<%= enablePart ? "Enabled" : "Disabled" %>)</span>
                             <span>
-                                <%= enablePart ? "Enabled" : "Disabled" %>
-                                <span class="config-muted guild-msg-preview"><%= partMessage %></span>
+                                <span class="guild-msg-preview"><%= partMessage %></span>
                             </span>
                         </div>
                     </section>

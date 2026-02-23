@@ -677,13 +677,19 @@ footer .disclaimer {
 .config-row {
     display: flex;
     align-items: baseline;
-    gap: 1rem;
+    gap: 0.4rem 1rem;
     padding: 0.3rem 0;
+    flex-wrap: wrap;
 }
 .config-label {
     color: var(--lightergray);
     min-width: 180px;
     flex-shrink: 0;
+}
+.config-row > span:not(.config-label) {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
 }
 .badge-primary {
     background-color: var(--blue);

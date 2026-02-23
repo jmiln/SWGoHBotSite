@@ -216,3 +216,10 @@
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 500px) {
+    .config-label {
+        min-width: unset;
+        width: 100%;
+    }
+}
