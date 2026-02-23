@@ -30,7 +30,7 @@
                 </div>
             </div>
         <% } else { %>
-            <a class="nav-btn btn-outline-login" href="/login">Login</a>
+            <a class="nav-btn btn-outline-login" href="/login?returnTo=<%= encodeURIComponent(currentPath) %>">Login</a>
         <% } %>
     </div>
 

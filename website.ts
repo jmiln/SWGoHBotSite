@@ -105,9 +105,10 @@ const initSite = async (): Promise<void> => {
         }),
     );
 
-    // Expose session user to all EJS templates as `user`
-    app.use((_req: Request, res: Response, next: NextFunction) => {
-        res.locals.user = _req.session.user ?? null;
+    // Expose session user and current path to all EJS templates
+    app.use((req: Request, res: Response, next: NextFunction) => {
+        res.locals.user = req.session.user ?? null;
+        res.locals.currentPath = req.path;
         next();
     });
 
