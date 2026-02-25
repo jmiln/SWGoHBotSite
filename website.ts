@@ -249,6 +249,14 @@ const initSite = async (): Promise<void> => {
                 avatar: discordUser.avatar,
             };
             req.session.accessToken = accessToken;
+            // Explicitly save before redirecting — after regenerate(), the new session
+            // is not guaranteed to flush to MongoDB before the client follows the redirect.
+            await new Promise<void>((resolve, reject) => {
+                req.session.save((err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
             res.redirect(returnTo);
         } catch (err) {
             console.error("OAuth callback error:", err);
