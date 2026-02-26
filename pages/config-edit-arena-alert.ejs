@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../partials/head") -%>
+        <link rel="stylesheet" href="/css/config-edit.css">
+    </head>
+
+    <body>
+        <header>
+            <%- include("../partials/nav") -%>
+        </header>
+
+        <main class="page-wrapper" id="main-content">
+            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
+                <h1>Arena Alert Settings</h1>
+
+                <form method="POST" action="/config/arena-alert" class="edit-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <div class="form-group">
+                        <label for="enableRankDMs" class="form-label">Rank DMs</label>
+                        <select id="enableRankDMs" name="enableRankDMs" class="form-select">
+                            <option value="off" <%= !userConfig || !userConfig.arenaAlert || userConfig.arenaAlert.enableRankDMs === 'off' ? 'selected' : '' %>>Off</option>
+                            <option value="primary" <%= userConfig && userConfig.arenaAlert && userConfig.arenaAlert.enableRankDMs === 'primary' ? 'selected' : '' %>>Primary account only</option>
+                            <option value="all" <%= userConfig && userConfig.arenaAlert && userConfig.arenaAlert.enableRankDMs === 'all' ? 'selected' : '' %>>All accounts</option>
+                        </select>
+                        <p class="form-hint">Receive DMs when your arena rank changes.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="arena" class="form-label">Arena Type</label>
+                        <select id="arena" name="arena" class="form-select">
+                            <option value="both" <%= !userConfig || !userConfig.arenaAlert || userConfig.arenaAlert.arena === 'both' ? 'selected' : '' %>>Both</option>
+                            <option value="char" <%= userConfig && userConfig.arenaAlert && userConfig.arenaAlert.arena === 'char' ? 'selected' : '' %>>Character arena only</option>
+                            <option value="fleet" <%= userConfig && userConfig.arenaAlert && userConfig.arenaAlert.arena === 'fleet' ? 'selected' : '' %>>Fleet arena only</option>
+                            <option value="none" <%= userConfig && userConfig.arenaAlert && userConfig.arenaAlert.arena === 'none' ? 'selected' : '' %>>None</option>
+                        </select>
+                        <p class="form-hint">Which arena type to watch for rank changes.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payoutWarning" class="form-label">Payout Warning (minutes)</label>
+                        <input
+                            type="number"
+                            id="payoutWarning"
+                            name="payoutWarning"
+                            class="form-input"
+                            min="0"
+                            max="60"
+                            value="<%= userConfig && userConfig.arenaAlert && userConfig.arenaAlert.payoutWarning != null ? userConfig.arenaAlert.payoutWarning : 0 %>"
+                        >
+                        <p class="form-hint">Minutes before payout to send a warning DM (0–60). Set to 0 to disable.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-checkbox-row">
+                            <input
+                                type="checkbox"
+                                id="enablePayoutResult"
+                                name="enablePayoutResult"
+                                class="form-checkbox"
+                                <%= userConfig && userConfig.arenaAlert && userConfig.arenaAlert.enablePayoutResult ? 'checked' : '' %>
+                            >
+                            <label for="enablePayoutResult" class="form-checkbox-label">Enable Payout Result DM</label>
+                        </div>
+                        <p class="form-hint">Receive a DM with your final arena rank after payout.</p>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">Save</button>
+                        <a href="/config" class="btn-cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <%- include("../partials/footer") -%>
+    </body>
+</html>

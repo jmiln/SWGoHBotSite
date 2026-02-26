@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../partials/head") -%>
+        <link rel="stylesheet" href="/css/config-edit.css">
+    </head>
+
+    <body>
+        <header>
+            <%- include("../partials/nav") -%>
+        </header>
+
+        <main class="page-wrapper" id="main-content">
+            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
+                <h1>Arena Watch Settings</h1>
+
+                <form method="POST" action="/config/arena-watch" class="edit-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <div class="form-group">
+                        <div class="form-checkbox-row">
+                            <input
+                                type="checkbox"
+                                id="enabled"
+                                name="enabled"
+                                class="form-checkbox"
+                                <%= userConfig && userConfig.arenaWatch && userConfig.arenaWatch.enabled ? 'checked' : '' %>
+                            >
+                            <label for="enabled" class="form-checkbox-label">Enable Arena Watch</label>
+                        </div>
+                        <p class="form-hint">Watch ally codes for arena rank changes and log them to a channel.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="report" class="form-label">Report Style</label>
+                        <select id="report" name="report" class="form-select">
+                            <option value="both" <%= !userConfig || !userConfig.arenaWatch || userConfig.arenaWatch.report === 'both' ? 'selected' : '' %>>Both (climbs and drops)</option>
+                            <option value="climb" <%= userConfig && userConfig.arenaWatch && userConfig.arenaWatch.report === 'climb' ? 'selected' : '' %>>Climbs only</option>
+                            <option value="drop" <%= userConfig && userConfig.arenaWatch && userConfig.arenaWatch.report === 'drop' ? 'selected' : '' %>>Drops only</option>
+                        </select>
+                        <p class="form-hint">Which rank changes to report.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-checkbox-row">
+                            <input
+                                type="checkbox"
+                                id="showvs"
+                                name="showvs"
+                                class="form-checkbox"
+                                <%= userConfig && userConfig.arenaWatch && userConfig.arenaWatch.showvs ? 'checked' : '' %>
+                            >
+                            <label for="showvs" class="form-checkbox-label">Show vs. Player</label>
+                        </div>
+                        <p class="form-hint">Include the opponent's name in arena rank change reports.</p>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">Save</button>
+                        <a href="/config" class="btn-cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <%- include("../partials/footer") -%>
+    </body>
+</html>

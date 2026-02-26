@@ -16,7 +16,7 @@ Built with Express.js, EJS templates, and TypeScript. Features a public informat
 
 ### Prerequisites
 
-- Node.js 22+ (uses native TypeScript support via `--experimental-strip-types`)
+- Node.js 25.2+ (native TypeScript support — no build step required)
 - MongoDB instance (shared with the bot)
 - A Discord application with OAuth2 configured
 

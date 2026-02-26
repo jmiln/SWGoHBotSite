@@ -686,7 +686,7 @@ footer .disclaimer {
     min-width: 180px;
     flex-shrink: 0;
 }
-.config-row > span:not(.config-label) {
+.config-row > span:not(.config-label):not(.config-badge-sm) {
     flex: 1;
     min-width: 0;
     overflow-wrap: break-word;

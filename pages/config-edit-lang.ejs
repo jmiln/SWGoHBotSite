@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../partials/head") -%>
+        <link rel="stylesheet" href="/css/config-edit.css">
+    </head>
+
+    <body>
+        <header>
+            <%- include("../partials/nav") -%>
+        </header>
+
+        <main class="page-wrapper" id="main-content">
+            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
+                <h1>Language Settings</h1>
+
+                <form method="POST" action="/config/lang" class="edit-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <div class="form-group">
+                        <label for="language" class="form-label">Bot Language</label>
+                        <select id="language" name="language" class="form-select">
+                            <option value="" <%= !userConfig || !userConfig.lang || !userConfig.lang.language ? 'selected' : '' %>>Default (English)</option>
+                            <option value="en_US" <%= userConfig && userConfig.lang && userConfig.lang.language === 'en_US' ? 'selected' : '' %>>English (en_US)</option>
+                            <option value="de_DE" <%= userConfig && userConfig.lang && userConfig.lang.language === 'de_DE' ? 'selected' : '' %>>German (de_DE)</option>
+                            <option value="es_SP" <%= userConfig && userConfig.lang && userConfig.lang.language === 'es_SP' ? 'selected' : '' %>>Spanish (es_SP)</option>
+                            <option value="ko_KR" <%= userConfig && userConfig.lang && userConfig.lang.language === 'ko_KR' ? 'selected' : '' %>>Korean (ko_KR)</option>
+                            <option value="pt_BR" <%= userConfig && userConfig.lang && userConfig.lang.language === 'pt_BR' ? 'selected' : '' %>>Portuguese Brazil (pt_BR)</option>
+                        </select>
+                        <p class="form-hint">The language the bot uses for its responses.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="swgohLanguage" class="form-label">SWGoH Language</label>
+                        <select id="swgohLanguage" name="swgohLanguage" class="form-select">
+                            <option value="" <%= !userConfig || !userConfig.lang || !userConfig.lang.swgohLanguage ? 'selected' : '' %>>Default (English)</option>
+                            <option value="ENG_US" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'ENG_US' ? 'selected' : '' %>>English (ENG_US)</option>
+                            <option value="GER_DE" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'GER_DE' ? 'selected' : '' %>>German (GER_DE)</option>
+                            <option value="SPA_XM" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'SPA_XM' ? 'selected' : '' %>>Spanish (SPA_XM)</option>
+                            <option value="FRE_FR" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'FRE_FR' ? 'selected' : '' %>>French (FRE_FR)</option>
+                            <option value="RUS_RU" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'RUS_RU' ? 'selected' : '' %>>Russian (RUS_RU)</option>
+                            <option value="POR_BR" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'POR_BR' ? 'selected' : '' %>>Portuguese Brazil (POR_BR)</option>
+                            <option value="KOR_KR" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'KOR_KR' ? 'selected' : '' %>>Korean (KOR_KR)</option>
+                            <option value="ITA_IT" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'ITA_IT' ? 'selected' : '' %>>Italian (ITA_IT)</option>
+                            <option value="TUR_TR" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'TUR_TR' ? 'selected' : '' %>>Turkish (TUR_TR)</option>
+                            <option value="CHS_CN" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'CHS_CN' ? 'selected' : '' %>>Chinese Simplified (CHS_CN)</option>
+                            <option value="CHT_CN" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'CHT_CN' ? 'selected' : '' %>>Chinese Traditional (CHT_CN)</option>
+                            <option value="IND_ID" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'IND_ID' ? 'selected' : '' %>>Indonesian (IND_ID)</option>
+                            <option value="JPN_JP" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'JPN_JP' ? 'selected' : '' %>>Japanese (JPN_JP)</option>
+                            <option value="THA_TH" <%= userConfig && userConfig.lang && userConfig.lang.swgohLanguage === 'THA_TH' ? 'selected' : '' %>>Thai (THA_TH)</option>
+                        </select>
+                        <p class="form-hint">The language used for character and unit names from SWGOH.</p>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">Save</button>
+                        <a href="/config" class="btn-cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <%- include("../partials/footer") -%>
+    </body>
+</html>

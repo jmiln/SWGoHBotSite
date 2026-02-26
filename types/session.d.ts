@@ -10,5 +10,7 @@ declare module "express-session" {
         oauthState?: string;
         returnTo?: string;
         accessToken?: string;
+        csrfToken?: string;
+        flash?: { type: "success" | "error"; message: string };
     }
 }

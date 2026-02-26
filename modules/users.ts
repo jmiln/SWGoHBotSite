@@ -19,6 +19,7 @@ export interface ArenaWatchAccount {
 
 export interface UserConfig {
     id: string;
+    patreonAmountCents?: number;
     accounts: UserAccount[];
     lang: {
         language?: string;
@@ -33,17 +34,34 @@ export interface UserConfig {
     arenaWatch: {
         enabled: boolean;
         allycodes: ArenaWatchAccount[];
+        channel?: string;
+        arena?: {
+            char?: { channel: string; enabled: boolean };
+            fleet?: { channel: string; enabled: boolean };
+        };
+        payout?: {
+            char?: { enabled: boolean; channel: string; msgID: string };
+            fleet?: { enabled: boolean; channel: string; msgID: string };
+        };
+        useEmotesInLog?: boolean;
+        useMarksInLog?: boolean;
         report: string;
         showvs: boolean;
     };
     guildUpdate: {
         enabled: boolean;
+        channel?: string;
         allycode: number;
         sortBy: string;
     };
     guildTickets: {
         enabled: boolean;
+        channel?: string;
+        allyCode?: number;
         sortBy: string;
+        msgId?: string;
+        tickets?: number;
+        updateType?: string;
         showMax: boolean;
     };
 }
@@ -54,4 +72,9 @@ async function getUser(discordId: string): Promise<UserConfig | null> {
     return user as UserConfig | null;
 }
 
-export { getUser };
+async function updateUser(discordId: string, config: Partial<UserConfig>): Promise<void> {
+    const db = getBotDB();
+    await db.collection("users").updateOne({ id: discordId }, { $set: config }, { upsert: false });
+}
+
+export { getUser, updateUser };

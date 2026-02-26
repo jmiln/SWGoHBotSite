@@ -12,12 +12,13 @@ import helmet from "helmet";
 import * as auth from "./modules/auth.ts";
 import * as botApi from "./modules/botApi.ts";
 import * as commandService from "./modules/commandService.ts";
+import { generateCsrfToken, verifyCsrfToken } from "./modules/csrf.ts";
 import { connectDB } from "./modules/db.ts";
 import { env } from "./modules/env.ts";
 import { getGuildConfig, getGuildConfigs } from "./modules/guilds.ts";
 import { formatPayoutTimes } from "./modules/payout.ts";
 import { getUnitNames } from "./modules/units.ts";
-import { getUser } from "./modules/users.ts";
+import { getUser, updateUser } from "./modules/users.ts";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -104,6 +105,16 @@ const initSite = async (): Promise<void> => {
             },
         }),
     );
+
+    // Parse URL-encoded form bodies (for POST form submissions)
+    app.use(express.urlencoded({ extended: false }));
+
+    // Flash message middleware: expose flash to templates then clear it
+    app.use((req: Request, res: Response, next: NextFunction) => {
+        res.locals.flash = req.session.flash ?? null;
+        delete req.session.flash;
+        next();
+    });
 
     // Expose session user and current path to all EJS templates
     app.use((req: Request, res: Response, next: NextFunction) => {
@@ -209,7 +220,7 @@ const initSite = async (): Promise<void> => {
         const state = crypto.randomBytes(16).toString("hex");
         req.session.oauthState = state;
         const rawReturnTo = req.query.returnTo as string;
-        req.session.returnTo = rawReturnTo?.startsWith("/") && !rawReturnTo.startsWith("//") ? rawReturnTo : "/dashboard";
+        req.session.returnTo = rawReturnTo?.startsWith("/") && !rawReturnTo.startsWith("//") ? rawReturnTo : "/config";
         res.redirect(auth.buildDiscordAuthURL(state));
     });
 
@@ -271,10 +282,15 @@ const initSite = async (): Promise<void> => {
         });
     });
 
-    // Dashboard — requires login
-    app.get("/dashboard", async (req: Request, res: Response) => {
+    // Legacy redirect: /dashboard → /config
+    app.get("/dashboard", (_req: Request, res: Response) => {
+        res.redirect(301, "/config");
+    });
+
+    // My Config page — requires login
+    app.get("/config", async (req: Request, res: Response) => {
         if (!req.session.user) {
-            req.session.returnTo = "/dashboard";
+            req.session.returnTo = "/config";
             return res.redirect("/login");
         }
 
@@ -292,12 +308,376 @@ const initSite = async (): Promise<void> => {
             );
         }
 
-        res.render("pages/dashboard", {
-            title: "Dashboard - SWGoHBot",
-            description: "Your SWGoHBot dashboard.",
+        const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
+
+        res.render("pages/config", {
+            title: "My Config — SWGoHBot",
+            description: "Your SWGoHBot configuration.",
             user,
             userConfig,
+            isPatreon,
         });
+    });
+
+    // GET /config/edit/lang — edit language settings
+    app.get("/config/edit/lang", async (req: Request, res: Response) => {
+        if (!req.session.user) {
+            req.session.returnTo = "/config/edit/lang";
+            return res.redirect("/login");
+        }
+        const user = req.session.user;
+        const userConfig = await getUser(user.id);
+        const csrfToken = generateCsrfToken(req);
+        res.render("pages/config-edit-lang", {
+            title: "Edit Language Settings — SWGoHBot",
+            description: "Edit your SWGoHBot language settings.",
+            user,
+            userConfig,
+            csrfToken,
+        });
+    });
+
+    // POST /config/lang — save language settings
+    app.post("/config/lang", async (req: Request, res: Response) => {
+        if (!req.session.user) return res.redirect("/login");
+        if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
+
+        const user = req.session.user;
+        try {
+            const userConfig = await getUser(user.id);
+            if (!userConfig) {
+                req.session.flash = { type: "error", message: "Config not found." };
+                return res.redirect("/config");
+            }
+
+            const VALID_LANGUAGES = ["en_US", "de_DE", "es_SP", "ko_KR", "pt_BR"];
+            const VALID_SWGOH_LANGUAGES = [
+                "ENG_US",
+                "GER_DE",
+                "SPA_XM",
+                "FRE_FR",
+                "RUS_RU",
+                "POR_BR",
+                "KOR_KR",
+                "ITA_IT",
+                "TUR_TR",
+                "CHS_CN",
+                "CHT_CN",
+                "IND_ID",
+                "JPN_JP",
+                "THA_TH",
+            ];
+
+            const language = req.body.language as string | undefined;
+            const swgohLanguage = req.body.swgohLanguage as string | undefined;
+
+            if (language !== undefined && language !== "" && !VALID_LANGUAGES.includes(language)) {
+                req.session.flash = { type: "error", message: "Invalid bot language selected." };
+                return res.redirect("/config/edit/lang");
+            }
+            if (swgohLanguage !== undefined && swgohLanguage !== "" && !VALID_SWGOH_LANGUAGES.includes(swgohLanguage)) {
+                req.session.flash = { type: "error", message: "Invalid SWGoH language selected." };
+                return res.redirect("/config/edit/lang");
+            }
+
+            await updateUser(user.id, {
+                lang: {
+                    language: language || undefined,
+                    swgohLanguage: swgohLanguage || undefined,
+                },
+            });
+
+            req.session.flash = { type: "success", message: "Language settings saved." };
+            res.redirect("/config");
+        } catch (err) {
+            console.error("Config update error (lang):", err);
+            req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
+            res.redirect("/config");
+        }
+    });
+
+    // GET /config/edit/arena-alert — edit arena alert settings (Patreon required)
+    app.get("/config/edit/arena-alert", async (req: Request, res: Response) => {
+        if (!req.session.user) {
+            req.session.returnTo = "/config/edit/arena-alert";
+            return res.redirect("/login");
+        }
+        const user = req.session.user;
+        const userConfig = await getUser(user.id);
+        const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
+        if (!isPatreon) {
+            req.session.flash = { type: "error", message: "This feature requires an active Patreon subscription." };
+            return res.redirect("/config");
+        }
+        const csrfToken = generateCsrfToken(req);
+        res.render("pages/config-edit-arena-alert", {
+            title: "Edit Arena Alert Settings — SWGoHBot",
+            description: "Edit your SWGoHBot arena alert settings.",
+            user,
+            userConfig,
+            csrfToken,
+        });
+    });
+
+    // POST /config/arena-alert — save arena alert settings (Patreon required)
+    app.post("/config/arena-alert", async (req: Request, res: Response) => {
+        if (!req.session.user) return res.redirect("/login");
+        if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
+
+        const user = req.session.user;
+        try {
+            const userConfig = await getUser(user.id);
+            if (!userConfig) {
+                req.session.flash = { type: "error", message: "Config not found." };
+                return res.redirect("/config");
+            }
+            if ((userConfig.patreonAmountCents ?? 0) <= 0) {
+                return res.status(403).send("Forbidden");
+            }
+
+            const VALID_RANK_DMS = ["all", "primary", "off"];
+            const VALID_ARENA = ["char", "fleet", "both", "none"];
+
+            const enableRankDMs = req.body.enableRankDMs as string | undefined;
+            const arena = req.body.arena as string | undefined;
+            const payoutWarningRaw = req.body.payoutWarning as string | undefined;
+            const enablePayoutResult = req.body.enablePayoutResult === "on";
+
+            if (enableRankDMs && !VALID_RANK_DMS.includes(enableRankDMs)) {
+                req.session.flash = { type: "error", message: "Invalid rank DMs value." };
+                return res.redirect("/config/edit/arena-alert");
+            }
+            if (arena && !VALID_ARENA.includes(arena)) {
+                req.session.flash = { type: "error", message: "Invalid arena type selected." };
+                return res.redirect("/config/edit/arena-alert");
+            }
+
+            const payoutWarning = payoutWarningRaw !== undefined ? Number.parseInt(payoutWarningRaw, 10) : undefined;
+            if (payoutWarning !== undefined && (Number.isNaN(payoutWarning) || payoutWarning < 0 || payoutWarning > 60)) {
+                req.session.flash = { type: "error", message: "Payout warning must be between 0 and 60 minutes." };
+                return res.redirect("/config/edit/arena-alert");
+            }
+
+            await updateUser(user.id, {
+                arenaAlert: {
+                    enableRankDMs: enableRankDMs ?? userConfig.arenaAlert?.enableRankDMs ?? "off",
+                    arena: arena ?? userConfig.arenaAlert?.arena ?? "both",
+                    payoutWarning: payoutWarning ?? userConfig.arenaAlert?.payoutWarning ?? 0,
+                    enablePayoutResult,
+                },
+            });
+
+            req.session.flash = { type: "success", message: "Arena alert settings saved." };
+            res.redirect("/config");
+        } catch (err) {
+            console.error("Config update error (arena-alert):", err);
+            req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
+            res.redirect("/config");
+        }
+    });
+
+    // GET /config/edit/arena-watch — edit arena watch settings (Patreon required)
+    app.get("/config/edit/arena-watch", async (req: Request, res: Response) => {
+        if (!req.session.user) {
+            req.session.returnTo = "/config/edit/arena-watch";
+            return res.redirect("/login");
+        }
+        const user = req.session.user;
+        const userConfig = await getUser(user.id);
+        const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
+        if (!isPatreon) {
+            req.session.flash = { type: "error", message: "This feature requires an active Patreon subscription." };
+            return res.redirect("/config");
+        }
+        const csrfToken = generateCsrfToken(req);
+        res.render("pages/config-edit-arena-watch", {
+            title: "Edit Arena Watch Settings — SWGoHBot",
+            description: "Edit your SWGoHBot arena watch settings.",
+            user,
+            userConfig,
+            csrfToken,
+        });
+    });
+
+    // POST /config/arena-watch — save arena watch settings (Patreon required)
+    app.post("/config/arena-watch", async (req: Request, res: Response) => {
+        if (!req.session.user) return res.redirect("/login");
+        if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
+
+        const user = req.session.user;
+        try {
+            const userConfig = await getUser(user.id);
+            if (!userConfig) {
+                req.session.flash = { type: "error", message: "Config not found." };
+                return res.redirect("/config");
+            }
+            if ((userConfig.patreonAmountCents ?? 0) <= 0) {
+                return res.status(403).send("Forbidden");
+            }
+
+            const VALID_REPORT = ["climb", "drop", "both"];
+
+            const enabled = req.body.enabled === "on";
+            const report = req.body.report as string | undefined;
+            const showvs = req.body.showvs === "on";
+
+            if (report && !VALID_REPORT.includes(report)) {
+                req.session.flash = { type: "error", message: "Invalid report style selected." };
+                return res.redirect("/config/edit/arena-watch");
+            }
+
+            await updateUser(user.id, {
+                arenaWatch: {
+                    enabled,
+                    allycodes: userConfig.arenaWatch?.allycodes ?? [],
+                    report: report ?? userConfig.arenaWatch?.report ?? "both",
+                    showvs,
+                },
+            });
+
+            req.session.flash = { type: "success", message: "Arena watch settings saved." };
+            res.redirect("/config");
+        } catch (err) {
+            console.error("Config update error (arena-watch):", err);
+            req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
+            res.redirect("/config");
+        }
+    });
+
+    // GET /config/edit/guild-update — edit guild update settings (Patreon required)
+    app.get("/config/edit/guild-update", async (req: Request, res: Response) => {
+        if (!req.session.user) {
+            req.session.returnTo = "/config/edit/guild-update";
+            return res.redirect("/login");
+        }
+        const user = req.session.user;
+        const userConfig = await getUser(user.id);
+        const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
+        if (!isPatreon) {
+            req.session.flash = { type: "error", message: "This feature requires an active Patreon subscription." };
+            return res.redirect("/config");
+        }
+        const csrfToken = generateCsrfToken(req);
+        res.render("pages/config-edit-guild-update", {
+            title: "Edit Guild Update Settings — SWGoHBot",
+            description: "Edit your SWGoHBot guild update settings.",
+            user,
+            userConfig,
+            csrfToken,
+        });
+    });
+
+    // POST /config/guild-update — save guild update settings (Patreon required)
+    app.post("/config/guild-update", async (req: Request, res: Response) => {
+        if (!req.session.user) return res.redirect("/login");
+        if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
+
+        const user = req.session.user;
+        try {
+            const userConfig = await getUser(user.id);
+            if (!userConfig) {
+                req.session.flash = { type: "error", message: "Config not found." };
+                return res.redirect("/config");
+            }
+            if ((userConfig.patreonAmountCents ?? 0) <= 0) {
+                return res.status(403).send("Forbidden");
+            }
+
+            const enabled = req.body.enabled === "on";
+            const allycodeRaw = req.body.allycode as string | undefined;
+            const sortBy = req.body.sortBy as string | undefined;
+
+            let allycode: number | undefined;
+            if (allycodeRaw !== undefined && allycodeRaw !== "") {
+                allycode = Number.parseInt(allycodeRaw, 10);
+                if (Number.isNaN(allycode) || !/^\d{9}$/.test(allycodeRaw)) {
+                    req.session.flash = { type: "error", message: "Ally code must be exactly 9 digits." };
+                    return res.redirect("/config/edit/guild-update");
+                }
+            }
+
+            await updateUser(user.id, {
+                guildUpdate: {
+                    enabled,
+                    allycode: allycode ?? userConfig.guildUpdate?.allycode ?? 0,
+                    sortBy: sortBy ?? userConfig.guildUpdate?.sortBy ?? "",
+                },
+            });
+
+            req.session.flash = { type: "success", message: "Guild update settings saved." };
+            res.redirect("/config");
+        } catch (err) {
+            console.error("Config update error (guild-update):", err);
+            req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
+            res.redirect("/config");
+        }
+    });
+
+    // GET /config/edit/guild-tickets — edit guild tickets settings (Patreon required)
+    app.get("/config/edit/guild-tickets", async (req: Request, res: Response) => {
+        if (!req.session.user) {
+            req.session.returnTo = "/config/edit/guild-tickets";
+            return res.redirect("/login");
+        }
+        const user = req.session.user;
+        const userConfig = await getUser(user.id);
+        const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
+        if (!isPatreon) {
+            req.session.flash = { type: "error", message: "This feature requires an active Patreon subscription." };
+            return res.redirect("/config");
+        }
+        const csrfToken = generateCsrfToken(req);
+        res.render("pages/config-edit-guild-tickets", {
+            title: "Edit Guild Tickets Settings — SWGoHBot",
+            description: "Edit your SWGoHBot guild tickets settings.",
+            user,
+            userConfig,
+            csrfToken,
+        });
+    });
+
+    // POST /config/guild-tickets — save guild tickets settings (Patreon required)
+    app.post("/config/guild-tickets", async (req: Request, res: Response) => {
+        if (!req.session.user) return res.redirect("/login");
+        if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
+
+        const user = req.session.user;
+        try {
+            const userConfig = await getUser(user.id);
+            if (!userConfig) {
+                req.session.flash = { type: "error", message: "Config not found." };
+                return res.redirect("/config");
+            }
+            if ((userConfig.patreonAmountCents ?? 0) <= 0) {
+                return res.status(403).send("Forbidden");
+            }
+
+            const VALID_SORT_BY = ["tickets", "name"];
+
+            const enabled = req.body.enabled === "on";
+            const sortBy = req.body.sortBy as string | undefined;
+            const showMax = req.body.showMax === "on";
+
+            if (sortBy && !VALID_SORT_BY.includes(sortBy)) {
+                req.session.flash = { type: "error", message: "Invalid sort by value selected." };
+                return res.redirect("/config/edit/guild-tickets");
+            }
+
+            await updateUser(user.id, {
+                guildTickets: {
+                    enabled,
+                    sortBy: sortBy ?? userConfig.guildTickets?.sortBy ?? "tickets",
+                    showMax,
+                },
+            });
+
+            req.session.flash = { type: "success", message: "Guild tickets settings saved." };
+            res.redirect("/config");
+        } catch (err) {
+            console.error("Config update error (guild-tickets):", err);
+            req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
+            res.redirect("/config");
+        }
     });
 
     // Helper: check if a user can access a guild's config

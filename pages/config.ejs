@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../partials/head") -%>
+        <link rel="stylesheet" href="/css/config-edit.css">
+    </head>
+
+    <body>
+        <header>
+            <%- include("../partials/nav") -%>
+        </header>
+
+        <main class="page-wrapper" id="main-content">
+            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
+                <h1>Welcome, <%= user.username %>!</h1>
+
+                <% if (flash) { %>
+                    <div class="flash flash-<%= flash.type %>"><%= flash.message %></div>
+                <% } %>
+
+                <% if (!userConfig) { %>
+                    <p>No configuration found — start using the bot in Discord to set up your profile.</p>
+                <% } else { %>
+
+                    <!-- Linked Accounts -->
+                    <section class="config-section">
+                        <h2>Linked Accounts</h2>
+                        <% if (userConfig.accounts && userConfig.accounts.length) { %>
+                            <div class="config-sort">
+                                <span class="config-sort-label">Sort by</span>
+                                <button class="config-sort-btn active" data-sort="name" aria-pressed="true">Name</button>
+                                <button class="config-sort-btn" data-sort="char" aria-pressed="false">Char Rank</button>
+                                <button class="config-sort-btn" data-sort="ship" aria-pressed="false">Ship Rank</button>
+                            </div>
+                            <table class="config-table" id="linked-accounts-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Ally Code</th>
+                                        <th scope="col">Char Arena</th>
+                                        <th scope="col">Ship Arena</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% userConfig.accounts.forEach(function(acct) { %>
+                                    <tr data-name="<%= escapeAttr(acct.name.toLowerCase()) %>" data-char="<%= acct.lastCharRank != null ? acct.lastCharRank : '' %>" data-ship="<%= acct.lastShipRank != null ? acct.lastShipRank : '' %>">
+                                        <td title="<%= escapeAttr(acct.name) %>"><%= acct.name %> <% if (acct.primary) { %><span class="badge-primary">Primary</span><% } %></td>
+                                        <td class="config-muted"><%= acct.allyCode %></td>
+                                        <td><%= acct.lastCharRank != null ? "#" + acct.lastCharRank : "—" %></td>
+                                        <td><%= acct.lastShipRank != null ? "#" + acct.lastShipRank : "—" %></td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        <% } else { %>
+                            <p class="config-muted">No accounts linked.</p>
+                        <% } %>
+                    </section>
+
+                    <!-- Language -->
+                    <section class="config-section">
+                        <div class="config-section-header">
+                            <h2>Language</h2>
+                            <a href="/config/edit/lang" class="btn-edit" aria-label="Edit language settings">Edit</a>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Bot Language</span>
+                            <span><%= userConfig.lang && userConfig.lang.language ? userConfig.lang.language : "Default" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">SWGoH Language</span>
+                            <span><%= userConfig.lang && userConfig.lang.swgohLanguage ? userConfig.lang.swgohLanguage : "Default" %></span>
+                        </div>
+                    </section>
+
+                    <!-- Arena Alerts -->
+                    <section class="config-section">
+                        <div class="config-section-header">
+                            <h2>Arena Alerts</h2>
+                            <% if (isPatreon) { %>
+                                <a href="/config/edit/arena-alert" class="btn-edit" aria-label="Edit arena alert settings">Edit</a>
+                            <% } else { %>
+                                <a href="https://www.patreon.com/bePatron?u=8423320" class="btn-patreon-lock" target="_blank" rel="noopener" aria-label="Patreon required for arena alert settings">Patreon Only</a>
+                            <% } %>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Rank DMs</span>
+                            <span><%= userConfig.arenaAlert && userConfig.arenaAlert.enableRankDMs && userConfig.arenaAlert.enableRankDMs !== "off" ? userConfig.arenaAlert.enableRankDMs : "Disabled" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Arena Type</span>
+                            <span><%= userConfig.arenaAlert && userConfig.arenaAlert.arena ? userConfig.arenaAlert.arena : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Payout Warning</span>
+                            <span><%= userConfig.arenaAlert && userConfig.arenaAlert.payoutWarning != null ? userConfig.arenaAlert.payoutWarning + " min" : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Payout Result</span>
+                            <span><%= userConfig.arenaAlert && userConfig.arenaAlert.enablePayoutResult ? "Enabled" : "Disabled" %></span>
+                        </div>
+                    </section>
+
+                    <!-- Arena Watch -->
+                    <section class="config-section">
+                        <div class="config-section-header">
+                            <h2>Arena Watch</h2>
+                            <% if (isPatreon) { %>
+                                <a href="/config/edit/arena-watch" class="btn-edit" aria-label="Edit arena watch settings">Edit</a>
+                            <% } else { %>
+                                <a href="https://www.patreon.com/bePatron?u=8423320" class="btn-patreon-lock" target="_blank" rel="noopener" aria-label="Patreon required for arena watch settings">Patreon Only</a>
+                            <% } %>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Status</span>
+                            <span><%= userConfig.arenaWatch && userConfig.arenaWatch.enabled ? "Enabled" : "Disabled" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Report Style</span>
+                            <span><%= userConfig.arenaWatch && userConfig.arenaWatch.report ? userConfig.arenaWatch.report : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Show vs</span>
+                            <span><%= userConfig.arenaWatch && userConfig.arenaWatch.showvs ? "Yes" : "No" %></span>
+                        </div>
+                        <% if (userConfig.arenaWatch) { %>
+                            <% var aw = userConfig.arenaWatch; %>
+                            <div class="config-row">
+                                <span class="config-label">Log Channel</span>
+                                <span class="config-muted config-id"><%= aw.channel ? aw.channel : "—" %></span>
+                            </div>
+                            <div class="config-row">
+                                <span class="config-label">Char Arena Channel</span>
+                                <% if (aw.arena && aw.arena.char) { %><span class="config-badge-sm <%= aw.arena.char.enabled ? 'badge-on' : 'badge-off' %>"><%= aw.arena.char.enabled ? "on" : "off" %></span><% } %>
+                                <span class="config-muted config-id"><%= aw.arena && aw.arena.char && aw.arena.char.channel ? aw.arena.char.channel : "—" %></span>
+                            </div>
+                            <div class="config-row">
+                                <span class="config-label">Fleet Arena Channel</span>
+                                <% if (aw.arena && aw.arena.fleet) { %><span class="config-badge-sm <%= aw.arena.fleet.enabled ? 'badge-on' : 'badge-off' %>"><%= aw.arena.fleet.enabled ? "on" : "off" %></span><% } %>
+                                <span class="config-muted config-id"><%= aw.arena && aw.arena.fleet && aw.arena.fleet.channel ? aw.arena.fleet.channel : "—" %></span>
+                            </div>
+                            <div class="config-row">
+                                <span class="config-label">Char Payout Channel</span>
+                                <% if (aw.payout && aw.payout.char) { %><span class="config-badge-sm <%= aw.payout.char.enabled ? 'badge-on' : 'badge-off' %>"><%= aw.payout.char.enabled ? "on" : "off" %></span><% } %>
+                                <span class="config-muted config-id"><%= aw.payout && aw.payout.char && aw.payout.char.channel ? aw.payout.char.channel : "—" %></span>
+                            </div>
+                            <div class="config-row">
+                                <span class="config-label">Fleet Payout Channel</span>
+                                <% if (aw.payout && aw.payout.fleet) { %><span class="config-badge-sm <%= aw.payout.fleet.enabled ? 'badge-on' : 'badge-off' %>"><%= aw.payout.fleet.enabled ? "on" : "off" %></span><% } %>
+                                <span class="config-muted config-id"><%= aw.payout && aw.payout.fleet && aw.payout.fleet.channel ? aw.payout.fleet.channel : "—" %></span>
+                            </div>
+                        <% } %>
+                        <% if (userConfig.arenaWatch && userConfig.arenaWatch.allycodes && userConfig.arenaWatch.allycodes.length) { %>
+                            <div class="config-sort">
+                                <span class="config-sort-label">Sort by</span>
+                                <button class="config-sort-btn active" data-sort="name" aria-pressed="true">Name</button>
+                                <button class="config-sort-btn" data-sort="char" aria-pressed="false">Char Rank</button>
+                                <button class="config-sort-btn" data-sort="ship" aria-pressed="false">Ship Rank</button>
+                                <button class="config-sort-btn" data-sort="payout" aria-pressed="false">Payout</button>
+                            </div>
+                            <table class="config-table" id="arena-watch-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Ally Code</th>
+                                        <th scope="col">Char Arena</th>
+                                        <th scope="col">Ship Arena</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% userConfig.arenaWatch.allycodes.forEach(function(wa) { %>
+                                    <% var pt = wa.poOffset != null ? formatPayoutTimes(wa.poOffset) : null; %>
+                                    <tr data-name="<%= escapeAttr(wa.name.toLowerCase()) %>" data-char="<%= wa.lastChar %>" data-ship="<%= wa.lastShip %>" data-po-offset="<%= wa.poOffset != null ? wa.poOffset : '' %>">
+                                        <td title="<%= escapeAttr(wa.name) %>"><%= wa.name %></td>
+                                        <td class="config-muted"><%= wa.allyCode != null ? wa.allyCode : (wa.allycode != null ? wa.allycode : "—") %></td>
+                                        <td>#<%= wa.lastChar %><% if (pt) { %><span class="config-payout"><%= pt.char %></span><% } %></td>
+                                        <td>#<%= wa.lastShip %><% if (pt) { %><span class="config-payout"><%= pt.fleet %></span><% } %></td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        <% } %>
+                    </section>
+
+                    <!-- Guild Update -->
+                    <section class="config-section">
+                        <div class="config-section-header">
+                            <h2>Guild Update</h2>
+                            <% if (isPatreon) { %>
+                                <a href="/config/edit/guild-update" class="btn-edit" aria-label="Edit guild update settings">Edit</a>
+                            <% } else { %>
+                                <a href="https://www.patreon.com/bePatron?u=8423320" class="btn-patreon-lock" target="_blank" rel="noopener" aria-label="Patreon required for guild update settings">Patreon Only</a>
+                            <% } %>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Status</span>
+                            <span><%= userConfig.guildUpdate && userConfig.guildUpdate.enabled ? "Enabled" : "Disabled" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Channel</span>
+                            <span class="config-muted config-id"><%= userConfig.guildUpdate && userConfig.guildUpdate.channel ? userConfig.guildUpdate.channel : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Ally Code</span>
+                            <span><%= userConfig.guildUpdate && userConfig.guildUpdate.allycode != null ? userConfig.guildUpdate.allycode : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Sort By</span>
+                            <span><%= userConfig.guildUpdate && userConfig.guildUpdate.sortBy ? userConfig.guildUpdate.sortBy : "—" %></span>
+                        </div>
+                    </section>
+
+                    <!-- Guild Tickets -->
+                    <section class="config-section">
+                        <div class="config-section-header">
+                            <h2>Guild Tickets</h2>
+                            <% if (isPatreon) { %>
+                                <a href="/config/edit/guild-tickets" class="btn-edit" aria-label="Edit guild tickets settings">Edit</a>
+                            <% } else { %>
+                                <a href="https://www.patreon.com/bePatron?u=8423320" class="btn-patreon-lock" target="_blank" rel="noopener" aria-label="Patreon required for guild tickets settings">Patreon Only</a>
+                            <% } %>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Status</span>
+                            <span><%= userConfig.guildTickets && userConfig.guildTickets.enabled ? "Enabled" : "Disabled" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Channel</span>
+                            <span class="config-muted config-id"><%= userConfig.guildTickets && userConfig.guildTickets.channel ? userConfig.guildTickets.channel : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Ally Code</span>
+                            <span><%= userConfig.guildTickets && userConfig.guildTickets.allyCode != null ? userConfig.guildTickets.allyCode : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Sort By</span>
+                            <span><%= userConfig.guildTickets && userConfig.guildTickets.sortBy ? userConfig.guildTickets.sortBy : "—" %></span>
+                        </div>
+                        <div class="config-row">
+                            <span class="config-label">Show Max</span>
+                            <span><%= userConfig.guildTickets && userConfig.guildTickets.showMax ? "Yes" : "No" %></span>
+                        </div>
+                        <% if (userConfig.guildTickets && userConfig.guildTickets.tickets != null) { %>
+                            <div class="config-row">
+                                <span class="config-label">Current Tickets</span>
+                                <span><%= userConfig.guildTickets.tickets %></span>
+                            </div>
+                        <% } %>
+                    </section>
+
+                <% } %>
+            </div>
+        </main>
+
+        <script src="/js/dashboard.js" nonce="<%= nonce %>"></script>
+        <%- include("../partials/footer") -%>
+    </body>
+</html>
