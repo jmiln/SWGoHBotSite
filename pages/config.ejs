@@ -124,7 +124,7 @@
                             <span><%= userConfig.arenaWatch && userConfig.arenaWatch.showvs ? "Yes" : "No" %></span>
                         </div>
                         <% if (userConfig.arenaWatch) { %>
-                            <% var aw = userConfig.arenaWatch; %>
+                            <% const aw = userConfig.arenaWatch; %>
                             <div class="config-row">
                                 <span class="config-label">Log Channel</span>
                                 <span class="config-muted config-id"><%= aw.channel ? aw.channel : "—" %></span>
@@ -170,13 +170,22 @@
                                 </thead>
                                 <tbody>
                                     <% userConfig.arenaWatch.allyCodes.forEach(function(wa) { %>
-                                    <% var pt = wa.poOffset != null ? formatPayoutTimes(wa.poOffset) : null; %>
-                                    <tr data-name="<%= escapeAttr(wa.name.toLowerCase()) %>" data-char="<%= wa.lastChar %>" data-ship="<%= wa.lastShip %>" data-po-offset="<%= wa.poOffset != null ? wa.poOffset : '' %>">
-                                        <td title="<%= escapeAttr(wa.name) %>"><%= wa.name %></td>
-                                        <td class="config-muted"><%= wa.allyCode != null ? wa.allyCode : (wa.allycode != null ? wa.allycode : "—") %></td>
-                                        <td>#<%= wa.lastChar %><% if (pt) { %><span class="config-payout"><%= pt.char %></span><% } %></td>
-                                        <td>#<%= wa.lastShip %><% if (pt) { %><span class="config-payout"><%= pt.fleet %></span><% } %></td>
-                                    </tr>
+                                        <%
+                                           const pt = wa.poOffset != null ? formatPayoutTimes(wa.poOffset) : null;
+                                           const charTs = wa.poOffset != null ? getTimeLeft(wa.poOffset, ARENA_OFFSETS.char) : 0;
+                                           const fleetTs = wa.poOffset != null ? getTimeLeft(wa.poOffset, ARENA_OFFSETS.fleet) : 0;
+                                        %>
+                                        <tr data-name="<%= wa.name.toLowerCase() %>"
+                                            data-char="<%= wa.lastChar %>"
+                                            data-ship="<%= wa.lastShip %>"
+                                            data-char-payout="<%= charTs %>"
+                                            data-fleet-payout="<%= fleetTs %>">
+
+                                            <td><%= wa.name %></td>
+                                            <td class="config-muted"><%= wa.allyCode || "—" %></td>
+                                            <td>#<%= wa.lastChar %><% if (pt) { %><span class="config-payout"><%= pt.char %></span><% } %></td>
+                                            <td>#<%= wa.lastShip %><% if (pt) { %><span class="config-payout"><%= pt.fleet %></span><% } %></td>
+                                        </tr>
                                     <% }) %>
                                 </tbody>
                             </table>
@@ -253,7 +262,7 @@
             </div>
         </main>
 
-        <script src="/js/dashboard.js" nonce="<%= nonce %>"></script>
+        <script src="/js/userConfig.js" nonce="<%= nonce %>"></script>
         <%- include("../partials/footer") -%>
     </body>
 </html>

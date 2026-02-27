@@ -2,18 +2,23 @@ const dayMS = 24 * 60 * 60 * 1000;
 const hrMS = 60 * 60 * 1000;
 const minMS = 60 * 1000;
 
-const ARENA_OFFSETS = { char: 6, fleet: 5 } as const;
+export const ARENA_OFFSETS = { char: 18, fleet: 19 } as const;
 
-function getUTCFromOffset(offset: number): number {
-    const date = new Date();
-    return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - offset * minMS;
-}
-
-function getTimeLeft(offset: number, hrDiff: number): number {
+export function getTimeLeft(poOffset: number, arenaOffset: number): number {
     const now = Date.now();
-    let then = dayMS - 1 + getUTCFromOffset(offset) - hrDiff * hrMS;
-    if (then < now) then += dayMS;
-    return then - now;
+    const date = new Date();
+
+    // Establish "Today's" payout time in UTC
+    // We use the player's PO offset and the specific arena offset
+    const midnight = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+    let payout = midnight - poOffset * 60000 - arenaOffset * 3600000;
+
+    // If that time has already passed today, add a day
+    while (payout < now) {
+        payout += dayMS;
+    }
+
+    return payout - now;
 }
 
 function formatMs(ms: number): string {

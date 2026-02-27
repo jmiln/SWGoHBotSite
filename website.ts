@@ -16,7 +16,7 @@ import { generateCsrfToken, verifyCsrfToken } from "./modules/csrf.ts";
 import { connectDB } from "./modules/db.ts";
 import { env } from "./modules/env.ts";
 import { getGuildConfig, getGuildConfigs } from "./modules/guilds.ts";
-import { formatPayoutTimes } from "./modules/payout.ts";
+import { ARENA_OFFSETS, formatPayoutTimes, getTimeLeft } from "./modules/payout.ts";
 import { getUnitNames } from "./modules/units.ts";
 import { getUser, updateUser } from "./modules/users.ts";
 
@@ -136,6 +136,8 @@ const initSite = async (): Promise<void> => {
 
     // Add EJS helpers
     app.locals.formatPayoutTimes = formatPayoutTimes;
+    app.locals.getTimeLeft = getTimeLeft;
+    app.locals.ARENA_OFFSETS = ARENA_OFFSETS;
     app.locals.escapeAttr = (str: string): string => {
         return String(str)
             .replace(/&/g, "&amp;")
@@ -151,12 +153,6 @@ const initSite = async (): Promise<void> => {
 
     await connectDB();
     console.log("Connected to bot database.");
-
-    // Not used anymore, but could be in the future? (Could probably have the bot save these to a file every hour or something?)
-    // let guildCount = await parseInt(fs.readFileSync(path.join(__dirname, path.sep + "/data/guildCount.txt")));
-    // setInterval(async () => {
-    //     guildCount = await parseInt(fs.readFileSync(path.join(__dirname, path.sep + "/data/guildCount.txt")));
-    // }, 5 * 60 * 1000);
 
     // Set the directory for the views and stuff
     app.set("views", __dirname);
