@@ -11,10 +11,18 @@ import helmet from "helmet";
 // Local modules
 import * as auth from "./modules/auth.ts";
 import * as botApi from "./modules/botApi.ts";
+import { formatValidationError } from "./modules/botSchemas.ts";
 import * as commandService from "./modules/commandService.ts";
 import { generateCsrfToken, verifyCsrfToken } from "./modules/csrf.ts";
 import { connectDB } from "./modules/db.ts";
 import { env } from "./modules/env.ts";
+import {
+    ArenaAlertFormSchema,
+    ArenaWatchFormSchema,
+    GuildTicketsFormSchema,
+    GuildUpdateFormSchema,
+    LangFormSchema,
+} from "./modules/formSchemas.ts";
 import { getGuildConfig, getGuildConfigs } from "./modules/guilds.ts";
 import { ARENA_OFFSETS, formatPayoutTimes, getTimeLeft } from "./modules/payout.ts";
 import { getUnitNames } from "./modules/units.ts";
@@ -346,42 +354,17 @@ const initSite = async (): Promise<void> => {
                 return res.redirect("/config");
             }
 
-            const VALID_LANGUAGES = ["en_US", "de_DE", "es_SP", "ko_KR", "pt_BR"];
-            const VALID_SWGOH_LANGUAGES = [
-                "ENG_US",
-                "GER_DE",
-                "SPA_XM",
-                "FRE_FR",
-                "RUS_RU",
-                "POR_BR",
-                "KOR_KR",
-                "ITA_IT",
-                "TUR_TR",
-                "CHS_CN",
-                "CHT_CN",
-                "IND_ID",
-                "JPN_JP",
-                "THA_TH",
-            ];
-
-            const language = req.body.language as string | undefined;
-            const swgohLanguage = req.body.swgohLanguage as string | undefined;
-
-            if (language !== undefined && language !== "" && !VALID_LANGUAGES.includes(language)) {
-                req.session.flash = { type: "error", message: "Invalid bot language selected." };
-                return res.redirect("/config/edit/lang");
-            }
-            if (swgohLanguage !== undefined && swgohLanguage !== "" && !VALID_SWGOH_LANGUAGES.includes(swgohLanguage)) {
-                req.session.flash = { type: "error", message: "Invalid SWGoH language selected." };
-                return res.redirect("/config/edit/lang");
-            }
-
-            await updateUser(user.id, {
-                lang: {
-                    language: language || undefined,
-                    swgohLanguage: swgohLanguage || undefined,
-                },
+            const parsed = LangFormSchema.safeParse({
+                language: req.body.language || undefined,
+                swgohLanguage: req.body.swgohLanguage || undefined,
             });
+
+            if (!parsed.success) {
+                req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
+                return res.redirect("/config/edit/lang");
+            }
+
+            await updateUser(user.id, { lang: parsed.data });
 
             req.session.flash = { type: "success", message: "Language settings saved." };
             res.redirect("/config");
@@ -431,35 +414,24 @@ const initSite = async (): Promise<void> => {
                 return res.status(403).send("Forbidden");
             }
 
-            const VALID_RANK_DMS = ["all", "primary", "off"];
-            const VALID_ARENA = ["char", "fleet", "both", "none"];
+            const parsed = ArenaAlertFormSchema.safeParse({
+                enableRankDMs: req.body.enableRankDMs || undefined,
+                arena: req.body.arena || undefined,
+                payoutWarning: req.body.payoutWarning || undefined,
+                enablePayoutResult: req.body.enablePayoutResult === "on",
+            });
 
-            const enableRankDMs = req.body.enableRankDMs as string | undefined;
-            const arena = req.body.arena as string | undefined;
-            const payoutWarningRaw = req.body.payoutWarning as string | undefined;
-            const enablePayoutResult = req.body.enablePayoutResult === "on";
-
-            if (enableRankDMs && !VALID_RANK_DMS.includes(enableRankDMs)) {
-                req.session.flash = { type: "error", message: "Invalid rank DMs value." };
-                return res.redirect("/config/edit/arena-alert");
-            }
-            if (arena && !VALID_ARENA.includes(arena)) {
-                req.session.flash = { type: "error", message: "Invalid arena type selected." };
-                return res.redirect("/config/edit/arena-alert");
-            }
-
-            const payoutWarning = payoutWarningRaw !== undefined ? Number.parseInt(payoutWarningRaw, 10) : undefined;
-            if (payoutWarning !== undefined && (Number.isNaN(payoutWarning) || payoutWarning < 0 || payoutWarning > 60)) {
-                req.session.flash = { type: "error", message: "Payout warning must be between 0 and 60 minutes." };
+            if (!parsed.success) {
+                req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
                 return res.redirect("/config/edit/arena-alert");
             }
 
             await updateUser(user.id, {
                 arenaAlert: {
-                    enableRankDMs: enableRankDMs ?? userConfig.arenaAlert?.enableRankDMs ?? "off",
-                    arena: arena ?? userConfig.arenaAlert?.arena ?? "both",
-                    payoutWarning: payoutWarning ?? userConfig.arenaAlert?.payoutWarning ?? 0,
-                    enablePayoutResult,
+                    enableRankDMs: parsed.data.enableRankDMs ?? userConfig.arenaAlert?.enableRankDMs ?? "off",
+                    arena: parsed.data.arena ?? userConfig.arenaAlert?.arena ?? "both",
+                    payoutWarning: parsed.data.payoutWarning ?? userConfig.arenaAlert?.payoutWarning ?? 0,
+                    enablePayoutResult: parsed.data.enablePayoutResult ?? false,
                 },
             });
 
@@ -511,23 +483,23 @@ const initSite = async (): Promise<void> => {
                 return res.status(403).send("Forbidden");
             }
 
-            const VALID_REPORT = ["climb", "drop", "both"];
+            const parsed = ArenaWatchFormSchema.safeParse({
+                enabled: req.body.enabled === "on",
+                report: req.body.report || undefined,
+                showvs: req.body.showvs === "on",
+            });
 
-            const enabled = req.body.enabled === "on";
-            const report = req.body.report as string | undefined;
-            const showvs = req.body.showvs === "on";
-
-            if (report && !VALID_REPORT.includes(report)) {
-                req.session.flash = { type: "error", message: "Invalid report style selected." };
+            if (!parsed.success) {
+                req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
                 return res.redirect("/config/edit/arena-watch");
             }
 
             await updateUser(user.id, {
                 arenaWatch: {
-                    enabled,
+                    enabled: parsed.data.enabled,
                     allyCodes: userConfig.arenaWatch?.allyCodes ?? [],
-                    report: report ?? userConfig.arenaWatch?.report ?? "both",
-                    showvs,
+                    report: parsed.data.report ?? userConfig.arenaWatch?.report ?? "both",
+                    showvs: parsed.data.showvs,
                 },
             });
 
@@ -579,12 +551,19 @@ const initSite = async (): Promise<void> => {
                 return res.status(403).send("Forbidden");
             }
 
-            const enabled = req.body.enabled === "on";
+            const parsed = GuildUpdateFormSchema.safeParse({
+                enabled: req.body.enabled === "on",
+            });
+
+            if (!parsed.success) {
+                req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
+                return res.redirect("/config/edit/guild-update");
+            }
 
             await updateUser(user.id, {
                 guildUpdate: {
                     ...userConfig.guildUpdate,
-                    enabled,
+                    enabled: parsed.data.enabled,
                 },
             });
 
@@ -636,22 +615,22 @@ const initSite = async (): Promise<void> => {
                 return res.status(403).send("Forbidden");
             }
 
-            const VALID_SORT_BY = ["tickets", "name"];
+            const parsed = GuildTicketsFormSchema.safeParse({
+                enabled: req.body.enabled === "on",
+                sortBy: req.body.sortBy || undefined,
+                showMax: req.body.showMax === "on",
+            });
 
-            const enabled = req.body.enabled === "on";
-            const sortBy = req.body.sortBy as string | undefined;
-            const showMax = req.body.showMax === "on";
-
-            if (sortBy && !VALID_SORT_BY.includes(sortBy)) {
-                req.session.flash = { type: "error", message: "Invalid sort by value selected." };
+            if (!parsed.success) {
+                req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
                 return res.redirect("/config/edit/guild-tickets");
             }
 
             await updateUser(user.id, {
                 guildTickets: {
-                    enabled,
-                    sortBy: sortBy ?? userConfig.guildTickets?.sortBy ?? "tickets",
-                    showMax,
+                    enabled: parsed.data.enabled,
+                    sortBy: parsed.data.sortBy ?? userConfig.guildTickets?.sortBy ?? "tickets",
+                    showMax: parsed.data.showMax,
                 },
             });
 
