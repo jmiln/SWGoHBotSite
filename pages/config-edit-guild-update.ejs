@@ -31,35 +31,6 @@
                         <p class="form-hint">Log gear, relic, level, and ability changes for guild members.</p>
                     </div>
 
-                    <div class="form-group">
-                        <label for="allycode" class="form-label">Ally Code</label>
-                        <input
-                            type="text"
-                            id="allycode"
-                            name="allycode"
-                            class="form-input"
-                            inputmode="numeric"
-                            pattern="[0-9]{9}"
-                            maxlength="9"
-                            placeholder="123456789"
-                            value="<%= userConfig && userConfig.guildUpdate && userConfig.guildUpdate.allycode ? userConfig.guildUpdate.allycode : '' %>"
-                        >
-                        <p class="form-hint">9-digit ally code of any member in the guild to watch.</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sortBy" class="form-label">Sort By</label>
-                        <input
-                            type="text"
-                            id="sortBy"
-                            name="sortBy"
-                            class="form-input"
-                            maxlength="50"
-                            value="<%= userConfig && userConfig.guildUpdate && userConfig.guildUpdate.sortBy ? userConfig.guildUpdate.sortBy : '' %>"
-                        >
-                        <p class="form-hint">Field to sort guild members by in the update report.</p>
-                    </div>
-
                     <div class="form-actions">
                         <button type="submit" class="btn-save">Save</button>
                         <a href="/config" class="btn-cancel">Cancel</a>

@@ -584,23 +584,11 @@ const initSite = async (): Promise<void> => {
             }
 
             const enabled = req.body.enabled === "on";
-            const allycodeRaw = req.body.allycode as string | undefined;
-            const sortBy = req.body.sortBy as string | undefined;
-
-            let allycode: number | undefined;
-            if (allycodeRaw !== undefined && allycodeRaw !== "") {
-                allycode = Number.parseInt(allycodeRaw, 10);
-                if (Number.isNaN(allycode) || !/^\d{9}$/.test(allycodeRaw)) {
-                    req.session.flash = { type: "error", message: "Ally code must be exactly 9 digits." };
-                    return res.redirect("/config/edit/guild-update");
-                }
-            }
 
             await updateUser(user.id, {
                 guildUpdate: {
+                    ...userConfig.guildUpdate,
                     enabled,
-                    allycode: allycode ?? userConfig.guildUpdate?.allycode ?? 0,
-                    sortBy: sortBy ?? userConfig.guildUpdate?.sortBy ?? "",
                 },
             });
 
