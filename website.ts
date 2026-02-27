@@ -302,8 +302,8 @@ const initSite = async (): Promise<void> => {
                 a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
             );
         }
-        if (userConfig?.arenaWatch?.allycodes) {
-            userConfig.arenaWatch.allycodes.sort((a: { name: string }, b: { name: string }) =>
+        if (userConfig?.arenaWatch?.allyCodes) {
+            userConfig.arenaWatch.allyCodes.sort((a: { name: string }, b: { name: string }) =>
                 a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
             );
         }
@@ -529,7 +529,7 @@ const initSite = async (): Promise<void> => {
             await updateUser(user.id, {
                 arenaWatch: {
                     enabled,
-                    allycodes: userConfig.arenaWatch?.allycodes ?? [],
+                    allyCodes: userConfig.arenaWatch?.allyCodes ?? [],
                     report: report ?? userConfig.arenaWatch?.report ?? "both",
                     showvs,
                 },

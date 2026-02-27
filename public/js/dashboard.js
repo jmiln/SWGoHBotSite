@@ -1,12 +1,13 @@
 $(() => {
-    function getCharPayoutMs(offset) {
+    var dayMS = 24 * 60 * 60 * 1000;
+    var hrMS = 60 * 60 * 1000;
+    var minMS = 60 * 1000;
+
+    function getPayoutMs(offset, hrDiff) {
         var now = Date.now();
-        var dayMS = 24 * 60 * 60 * 1000;
-        var hrMS = 60 * 60 * 1000;
-        var minMS = 60 * 1000;
         var d = new Date();
         var utcMidnight = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-        var then = dayMS - 1 + utcMidnight - offset * minMS - 6 * hrMS;
+        var then = dayMS - 1 + utcMidnight - offset * minMS - hrDiff * hrMS;
         if (then < now) then += dayMS;
         return then - now;
     }
@@ -32,13 +33,14 @@ $(() => {
                 var bShip = $b.data("ship") !== "" ? Number.parseInt($b.data("ship"), 10) : Number.POSITIVE_INFINITY;
                 return aShip - bShip;
             }
-            if (sortKey === "payout") {
+            if (sortKey === "char-payout" || sortKey === "fleet-payout") {
+                var hrDiff = sortKey === "char-payout" ? 6 : 5;
                 var aOff = $a.data("po-offset");
                 var bOff = $b.data("po-offset");
                 if (aOff === "" && bOff === "") return 0;
                 if (aOff === "") return 1;
                 if (bOff === "") return -1;
-                return getCharPayoutMs(Number.parseInt(aOff, 10)) - getCharPayoutMs(Number.parseInt(bOff, 10));
+                return getPayoutMs(Number.parseInt(aOff, 10), hrDiff) - getPayoutMs(Number.parseInt(bOff, 10), hrDiff);
             }
             return 0;
         });

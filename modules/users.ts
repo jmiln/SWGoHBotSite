@@ -33,7 +33,7 @@ export interface UserConfig {
     };
     arenaWatch: {
         enabled: boolean;
-        allycodes: ArenaWatchAccount[];
+        allyCodes: ArenaWatchAccount[];
         channel?: string;
         arena?: {
             char?: { channel: string; enabled: boolean };

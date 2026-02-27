@@ -150,13 +150,14 @@
                                 <span class="config-muted config-id"><%= aw.payout && aw.payout.fleet && aw.payout.fleet.channel ? aw.payout.fleet.channel : "—" %></span>
                             </div>
                         <% } %>
-                        <% if (userConfig.arenaWatch && userConfig.arenaWatch.allycodes && userConfig.arenaWatch.allycodes.length) { %>
+                        <% if (userConfig.arenaWatch && userConfig.arenaWatch.allyCodes && userConfig.arenaWatch.allyCodes.length) { %>
                             <div class="config-sort">
                                 <span class="config-sort-label">Sort by</span>
                                 <button class="config-sort-btn active" data-sort="name" aria-pressed="true">Name</button>
                                 <button class="config-sort-btn" data-sort="char" aria-pressed="false">Char Rank</button>
                                 <button class="config-sort-btn" data-sort="ship" aria-pressed="false">Ship Rank</button>
-                                <button class="config-sort-btn" data-sort="payout" aria-pressed="false">Payout</button>
+                                <button class="config-sort-btn" data-sort="char-payout" aria-pressed="false">Char Payout</button>
+                                <button class="config-sort-btn" data-sort="fleet-payout" aria-pressed="false">Fleet Payout</button>
                             </div>
                             <table class="config-table" id="arena-watch-table">
                                 <thead>
@@ -168,7 +169,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% userConfig.arenaWatch.allycodes.forEach(function(wa) { %>
+                                    <% userConfig.arenaWatch.allyCodes.forEach(function(wa) { %>
                                     <% var pt = wa.poOffset != null ? formatPayoutTimes(wa.poOffset) : null; %>
                                     <tr data-name="<%= escapeAttr(wa.name.toLowerCase()) %>" data-char="<%= wa.lastChar %>" data-ship="<%= wa.lastShip %>" data-po-offset="<%= wa.poOffset != null ? wa.poOffset : '' %>">
                                         <td title="<%= escapeAttr(wa.name) %>"><%= wa.name %></td>
