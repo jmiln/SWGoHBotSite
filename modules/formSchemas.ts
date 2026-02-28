@@ -76,17 +76,26 @@ export const GuildSettingsFormSchema = z.object({
     announceChan: z.string().optional(),
     adminRole: z.array(z.string()).optional(),
     eventCountdown: z
-        .preprocess(
-            (val) =>
-                typeof val === "string"
-                    ? val
-                          .split(",")
-                          .map((s) => s.trim())
-                          .filter(Boolean)
-                          .map(Number)
-                          .filter((n) => !Number.isNaN(n))
-                    : [],
-            z.array(z.number().int().positive()),
+        .string()
+        .superRefine((val, ctx) => {
+            const parts = val
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean);
+            const invalid = parts.filter((s) => !/^\d+$/.test(s) || Number(s) <= 0);
+            if (invalid.length > 0) {
+                ctx.addIssue({
+                    code: "custom",
+                    message: `Invalid values: ${invalid.map((s) => `"${s}"`).join(", ")}. Use positive integers only.`,
+                });
+            }
+        })
+        .transform((val) =>
+            val
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+                .map(Number),
         )
         .optional(),
     enableWelcome: z.boolean().optional(),

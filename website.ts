@@ -934,13 +934,13 @@ const initSite = async (): Promise<void> => {
                 timezone: req.body.timezone || undefined,
                 useEventPages: req.body.useEventPages === "on",
                 shardtimeVertical: req.body.shardtimeVertical === "on",
-                announceChan: req.body.announceChan || undefined,
+                announceChan: req.body.announceChan ?? undefined,
                 adminRole: adminRoleArr,
                 eventCountdown: req.body.eventCountdown ?? "",
                 enableWelcome: req.body.enableWelcome === "on",
-                welcomeMessage: req.body.welcomeMessage || undefined,
+                welcomeMessage: req.body.welcomeMessage ?? undefined,
                 enablePart: req.body.enablePart === "on",
-                partMessage: req.body.partMessage || undefined,
+                partMessage: req.body.partMessage ?? undefined,
             });
 
             if (!parsed.success) {
