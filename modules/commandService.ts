@@ -1,11 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-
-/**
- * Command Service Module
- *
- * Handles loading and caching of bot command data from help.json.
- * Provides error handling and automatic cache invalidation.
- */
+import { env } from "./env.ts";
 
 interface CommandMetadata {
     totalCommands: number;
@@ -65,30 +59,21 @@ const cache: CacheData & {
  */
 function loadCommandData(): CommandData | null {
     try {
-        const dataPath = process.env.BOT_DATA_PATH;
+        const dataPath = env.BOT_DATA_PATH;
 
-        if (!dataPath) {
-            console.error("[CommandService] Error: BOT_DATA_PATH environment variable is not set");
-            return null;
-        }
-
-        // Check if file exists
         if (!existsSync(dataPath)) {
             console.warn(`[CommandService] Warning: help.json not found at ${dataPath}`);
             return null;
         }
 
-        // Read and parse the file
         const fileContent = readFileSync(dataPath, "utf8");
         const data = JSON.parse(fileContent) as CommandData;
 
-        // Validate structure
         if (!data.metadata || typeof data.metadata.totalCommands !== "number" || typeof data.metadata.categories !== "number") {
             console.error("[CommandService] Error: Invalid help.json structure - missing or invalid metadata");
             return null;
         }
 
-        // Success - log summary
         console.log(
             `[CommandService] Command data loaded: ${data.metadata.totalCommands} commands in ${data.metadata.categories} categories`,
         );
@@ -96,13 +81,12 @@ function loadCommandData(): CommandData | null {
         return data;
     } catch (error) {
         const err = error as NodeJS.ErrnoException;
-        // Handle specific error types
         if (err.code === "ENOENT") {
-            console.error(`[CommandService] Error: File not found at ${process.env.BOT_DATA_PATH}`);
+            console.error(`[CommandService] Error: File not found at ${env.BOT_DATA_PATH}`);
         } else if (err.code === "EACCES") {
-            console.error(`[CommandService] Error: Permission denied reading ${process.env.BOT_DATA_PATH}`);
+            console.error(`[CommandService] Error: Permission denied reading ${env.BOT_DATA_PATH}`);
         } else if (error instanceof SyntaxError) {
-            console.error(`[CommandService] Error: Invalid JSON in ${process.env.BOT_DATA_PATH}`);
+            console.error(`[CommandService] Error: Invalid JSON in ${env.BOT_DATA_PATH}`);
         } else {
             console.error(`[CommandService] Error loading command data: ${err.message}`);
         }
