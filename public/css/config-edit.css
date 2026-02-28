@@ -259,3 +259,100 @@ textarea.form-input {
     white-space: nowrap;
     flex-shrink: 0;
 }
+
+/* Role picker widget */
+.role-picker {
+    border: 1px solid var(--lightergray);
+    border-radius: 4px;
+    background-color: var(--lightgray);
+    transition: border-color 0.15s;
+}
+.role-picker:focus-within {
+    border-color: var(--blue);
+}
+.role-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0.45rem 0.6rem;
+    min-height: 2.2rem;
+    border-bottom: 1px solid var(--lightergray);
+}
+.role-chips-placeholder {
+    font-size: 0.88rem;
+    color: var(--lightergray);
+    align-self: center;
+}
+.role-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem;
+    background-color: rgba(0, 123, 255, 0.2);
+    border: 1px solid rgba(0, 123, 255, 0.5);
+    border-radius: 3px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+.role-chip-remove {
+    background: none;
+    border: none;
+    color: var(--lightergray);
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.role-chip-remove:hover {
+    color: white;
+}
+.role-picker-search {
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--lightergray);
+    color: white;
+    font-size: 0.9rem;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+.role-picker-search:focus:not(:focus-visible) {
+    outline: none;
+}
+.role-picker-search::placeholder {
+    color: var(--lightergray);
+}
+.role-picker-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 220px;
+    overflow-y: auto;
+}
+.role-picker-list li label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.1s;
+}
+.role-picker-list li label:hover {
+    background-color: var(--darkgray);
+}
+.role-picker-list li label input[type="checkbox"] {
+    accent-color: var(--blue);
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.role-picker-empty {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.88rem;
+    color: var(--lightergray);
+}

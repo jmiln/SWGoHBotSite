@@ -105,13 +105,37 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="adminRole" class="form-label">Admin Roles</label>
-                        <select id="adminRole" name="adminRole" class="form-select" multiple size="5">
-                            <% roles.forEach(function(r) { %>
-                                <option value="<%= r.id %>" <%= (s.adminRole || []).includes(r.id) ? 'selected' : '' %>><%= r.name %></option>
-                            <% }) %>
-                        </select>
-                        <p class="form-hint">Hold Ctrl/Cmd to select multiple. Leave all unselected to use Discord's Administrator permission as the default.</p>
+                        <label class="form-label">Admin Roles</label>
+                        <div class="role-picker" id="adminRolePicker">
+                            <div class="role-chips" id="adminRoleChips">
+                                <span class="role-chips-placeholder">None selected</span>
+                            </div>
+                            <input
+                                type="text"
+                                class="role-picker-search"
+                                id="adminRoleSearch"
+                                placeholder="Filter roles..."
+                                autocomplete="off"
+                                aria-label="Filter roles"
+                            >
+                            <ul class="role-picker-list" id="adminRoleList">
+                                <% roles.forEach(function(r) { %>
+                                    <li>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="adminRole"
+                                                value="<%= r.id %>"
+                                                data-role-name="<%= r.name %>"
+                                                <%= (s.adminRole || []).includes(r.id) ? 'checked' : '' %>
+                                            >
+                                            <%= r.name %>
+                                        </label>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                        <p class="form-hint">Leave all unselected to use Discord's Administrator permission as the default.</p>
                     </div>
 
                     <div class="form-group">
@@ -189,5 +213,6 @@
         </main>
 
         <%- include("../partials/footer") -%>
+        <script src="/js/role-picker.js"></script>
     </body>
 </html>
