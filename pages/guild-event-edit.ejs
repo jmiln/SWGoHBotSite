@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../partials/head") -%>
+        <link rel="stylesheet" href="/css/guild-config.css">
+        <link rel="stylesheet" href="/css/config-edit.css">
+    </head>
+
+    <body>
+        <header>
+            <%- include("../partials/nav") -%>
+        </header>
+
+        <main class="page-wrapper" id="main-content">
+            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
+                <a href="/guild/<%= guild.id %>" class="guild-back-link">&#8592; Back to Server Config</a>
+
+                <div class="guild-header">
+                    <% if (guild.icon) { %>
+                        <img
+                            src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png?size=64"
+                            alt=""
+                            width="48"
+                            height="48"
+                            class="guild-card-icon"
+                        >
+                    <% } else { %>
+                        <div class="guild-card-icon guild-card-icon--placeholder" aria-hidden="true">
+                            <%= guild.name.charAt(0).toUpperCase() %>
+                        </div>
+                    <% } %>
+                    <h1><%= isNew ? "Add Event" : "Edit Event" %>: <%= guild.name %></h1>
+                </div>
+
+                <% if (locals.flash) { %>
+                    <div class="flash flash-<%= flash.type %>"><%= flash.message %></div>
+                <% } %>
+
+                <form id="event-edit-form" method="POST" action="/guild/<%= guild.id %>/event/<%= isNew ? 'new' : (encodeURIComponent(event.name) + '/edit') %>" class="edit-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <div class="form-group">
+                        <label for="name" class="form-label">Event Name <span aria-hidden="true">*</span></label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-input"
+                            maxlength="100"
+                            required
+                            value="<%= isNew ? '' : event.name %>"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventDT" class="form-label">Date &amp; Time <span aria-hidden="true">*</span></label>
+                        <input
+                            type="datetime-local"
+                            id="eventDT"
+                            name="eventDT"
+                            class="form-input"
+                            required
+                            data-utc="<%= isNew || !event.eventDT ? '' : new Date(event.eventDT).toISOString().slice(0, 16) %>"
+                            value="<%= isNew || !event.eventDT ? '' : new Date(event.eventDT).toISOString().slice(0, 16) %>"
+                        >
+                        <p class="form-hint">Uses your local timezone<span id="tzName"></span>.</p>
+                        <p id="dtPastError" class="form-hint" style="display:none; color:#dc3545;">Date &amp; time must be in the future.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="channel" class="form-label">Channel</label>
+                        <select id="channel" name="channel" class="form-select">
+                            <option value="">None</option>
+                            <% channels.forEach(function(ch) { %>
+                                <option value="<%= ch.id %>" <%= (!isNew && event.channel === ch.id) ? 'selected' : '' %>>#<%= ch.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-toggle-row">
+                            <label class="form-toggle">
+                                <input type="checkbox" id="countdown" name="countdown" aria-labelledby="countdownLabel" <%= (!isNew && event.countdown) ? 'checked' : '' %>>
+                                <span class="form-toggle-slider"></span>
+                            </label>
+                            <span id="countdownLabel" class="form-toggle-label">Enable Countdown</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea
+                            id="message"
+                            name="message"
+                            class="form-input"
+                            rows="3"
+                            maxlength="1000"
+                        ><%= isNew ? '' : (event.message || '') %></textarea>
+                        <div class="form-field-footer">
+                            <p class="form-hint">Optional message sent with event announcements.</p>
+                            <span class="form-char-count"><span id="messageCount"><%= isNew ? 0 : (event.message || '').length %></span>/1000</span>
+                        </div>
+                    </div>
+
+                    <h2 style="font-size: 1.1rem; border-bottom: 1px solid var(--lightgray); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">Repeat Schedule</h2>
+                    <p class="form-hint" style="margin-bottom: 1.25rem;">Use Repeat Interval OR Repeat Days — not both.</p>
+
+                    <div class="form-group" id="repeatIntervalGroup">
+                        <label class="form-label">Repeat Interval</label>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 80px;">
+                                <label for="repeatDay" class="form-hint" style="display:block; margin-bottom: 0.25rem;">Days</label>
+                                <input
+                                    type="number"
+                                    id="repeatDay"
+                                    name="repeatDay"
+                                    class="form-input"
+                                    min="0"
+                                    value="<%= isNew ? '' : (event.repeat ? event.repeat.repeatDay : '') %>"
+                                >
+                            </div>
+                            <div style="flex: 1; min-width: 80px;">
+                                <label for="repeatHour" class="form-hint" style="display:block; margin-bottom: 0.25rem;">Hours</label>
+                                <input
+                                    type="number"
+                                    id="repeatHour"
+                                    name="repeatHour"
+                                    class="form-input"
+                                    min="0"
+                                    value="<%= isNew ? '' : (event.repeat ? event.repeat.repeatHour : '') %>"
+                                >
+                            </div>
+                            <div style="flex: 1; min-width: 80px;">
+                                <label for="repeatMin" class="form-hint" style="display:block; margin-bottom: 0.25rem;">Minutes</label>
+                                <input
+                                    type="number"
+                                    id="repeatMin"
+                                    name="repeatMin"
+                                    class="form-input"
+                                    min="0"
+                                    value="<%= isNew ? '' : (event.repeat ? event.repeat.repeatMin : '') %>"
+                                >
+                            </div>
+                        </div>
+                        <p class="form-hint" style="margin-top: 0.35rem;">Leave all blank for no fixed interval repeat.</p>
+                    </div>
+
+                    <div class="form-group" id="repeatDaysGroup">
+                        <label for="repeatDays" class="form-label">Repeat Days</label>
+                        <input
+                            type="text"
+                            id="repeatDays"
+                            name="repeatDays"
+                            class="form-input"
+                            value="<%= isNew ? '' : (event.repeatDays ? event.repeatDays.join(', ') : '') %>"
+                        >
+                        <p class="form-hint">Comma-separated positive integers, e.g. <code>3,6,1,4</code>. Leave blank for none.</p>
+                    </div>
+
+                    <p id="repeatExclusionNote" class="form-hint form-hint--warning" style="display:none;">Clear the locked section to switch repeat types.</p>
+                </form>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem;">
+                    <div class="form-actions">
+                        <button type="submit" form="event-edit-form" class="btn-save">Save</button>
+                        <a href="/guild/<%= guild.id %>" class="btn-cancel">Cancel</a>
+                    </div>
+                    <% if (!isNew) { %>
+                    <form method="POST" action="/guild/<%= guild.id %>/event/<%= encodeURIComponent(event.name) %>/delete" data-event-name="<%= event.name %>">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit" class="btn-danger">Delete Event</button>
+                    </form>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+
+        <%- include("../partials/footer") -%>
+        <script src="/js/guild-event-edit.js"></script>
+    </body>
+</html>

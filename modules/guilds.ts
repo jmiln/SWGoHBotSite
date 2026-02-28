@@ -83,6 +83,11 @@ export async function getGuildConfig(guildId: string): Promise<GuildConfig | nul
     return db.collection<GuildConfig>("guildConfigs").findOne({ guildId });
 }
 
+export async function updateGuildEvents(guildId: string, events: GuildConfig["events"]): Promise<void> {
+    const db = getBotDB();
+    await db.collection<GuildConfig>("guildConfigs").updateOne({ guildId }, { $set: { events } });
+}
+
 export async function updateGuildSettings(
     guildId: string,
     set: Partial<GuildConfig["settings"]>,

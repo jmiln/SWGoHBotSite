@@ -47,6 +47,34 @@ export const GuildTicketsFormSchema = z.object({
     showMax: z.boolean(),
 });
 
+export const GuildEventFormSchema = z
+    .object({
+        name: z.string().min(1).max(100),
+        eventDT: z.string().optional(),
+        channel: z.string().optional(),
+        countdown: z.string().optional(),
+        message: z.string().max(1000).optional(),
+        repeatDay: z.coerce.number().int().min(0).optional(),
+        repeatHour: z.coerce.number().int().min(0).optional(),
+        repeatMin: z.coerce.number().int().min(0).optional(),
+        repeatDays: z.string().optional(),
+    })
+    .refine(
+        (data) => {
+            const hasInterval = data.repeatDay || data.repeatHour || data.repeatMin;
+            const hasDays = data.repeatDays?.trim();
+            return !(hasInterval && hasDays);
+        },
+        { message: "Cannot set both Repeat Interval and Repeat Days. Use only one repeat type." },
+    )
+    .refine(
+        (data) => {
+            if (!data.eventDT) return true;
+            return new Date(data.eventDT).getTime() > Date.now();
+        },
+        { message: "Event date and time must be in the future." },
+    );
+
 const VALID_TIMEZONES = Intl.supportedValuesOf("timeZone");
 
 export const GuildSettingsFormSchema = z.object({

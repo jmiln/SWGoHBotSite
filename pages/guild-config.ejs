@@ -15,6 +15,10 @@
             <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
                 <a href="/guild-select" class="guild-back-link">← Back to Server List</a>
 
+                <% if (locals.flash) { %>
+                    <div class="flash flash-<%= flash.type %>"><%= flash.message %></div>
+                <% } %>
+
                 <% if (!config) { %>
                     <h1>Server Config</h1>
                     <p class="config-muted">No configuration has been set up for this server yet. Use the bot in Discord to configure it.</p>
@@ -191,9 +195,15 @@
                     <% } %>
 
                     <!-- Events Section -->
-                    <% if (config.events && config.events.length) { %>
+                    <% if ((config.events && config.events.length) || canManage) { %>
                     <section class="config-section">
-                        <h2>Events</h2>
+                        <div class="config-section-header">
+                            <h2>Events</h2>
+                            <% if (canManage) { %>
+                                <a href="/guild/<%= config.guildId %>/event/new" class="btn-edit">Add Event</a>
+                            <% } %>
+                        </div>
+                        <% if (config.events && config.events.length) { %>
                         <div class="guild-events-list">
                             <% config.events.forEach(function(event) { %>
                             <%
@@ -212,12 +222,22 @@
                                 var dateStr = event.eventDT
                                     ? new Date(event.eventDT).toLocaleString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })
                                     : "—";
+                                var encodedName = encodeURIComponent(event.name);
                             %>
                             <div class="guild-event-card">
                                 <div class="guild-event-header">
                                     <span class="guild-event-name"><%= event.name %></span>
-                                    <span class="guild-event-date"><%= dateStr %></span>
+                                    <% if (canManage) { %>
+                                    <div class="guild-event-actions">
+                                        <a href="/guild/<%= config.guildId %>/event/<%= encodedName %>/edit" class="btn-edit">Edit</a>
+                                        <form method="POST" action="/guild/<%= config.guildId %>/event/<%= encodedName %>/delete" data-event-name="<%= event.name %>" style="display:inline;">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <button type="submit" class="btn-danger" onclick="return confirmEventDelete(this)">Delete</button>
+                                        </form>
+                                    </div>
+                                    <% } %>
                                 </div>
+                                <span class="guild-event-date"><%= dateStr %></span>
                                 <div class="guild-event-meta">
                                     <% if (event.channel) { %>
                                     <span class="guild-event-meta-item">
@@ -250,6 +270,9 @@
                             </div>
                             <% }) %>
                         </div>
+                        <% } else { %>
+                        <p class="config-muted">No events configured. Use the Add Event button above to create one.</p>
+                        <% } %>
                     </section>
                     <% } %>
 
@@ -258,5 +281,11 @@
         </main>
 
         <%- include("../partials/footer") -%>
+        <script nonce="<%= nonce %>">
+            function confirmEventDelete(btn) {
+                const name = btn.closest("form").dataset.eventName;
+                return confirm(`Delete event "${name}"? This cannot be undone.`);
+            }
+        </script>
     </body>
 </html>

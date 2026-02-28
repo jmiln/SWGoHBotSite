@@ -78,6 +78,26 @@
     background-color: var(--blue);
     color: white;
 }
+.btn-danger {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    border: 1px solid #dc3545;
+    color: white;
+    background-color: #dc3545;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+        background-color 0.15s,
+        border-color 0.15s;
+    white-space: nowrap;
+}
+.btn-danger:hover {
+    background-color: #b02a37;
+    border-color: #b02a37;
+}
 .btn-patreon-lock {
     display: inline-block;
     padding: 0.2rem 0.7rem;
@@ -181,6 +201,36 @@
 }
 .btn-cancel:hover {
     color: white;
+}
+
+/* Dark-mode date/time pickers — color-scheme lets the browser popup match dark UI */
+.form-input[type="datetime-local"],
+.form-input[type="date"],
+.form-input[type="time"] {
+    color-scheme: dark;
+}
+.form-input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.form-input[type="date"]::-webkit-calendar-picker-indicator,
+.form-input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+/* Disabled inputs */
+.form-input:disabled,
+.form-select:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Locked repeat group (label + hint dim with the inputs) */
+.form-group--locked .form-label,
+.form-group--locked .form-hint {
+    opacity: 0.6;
+}
+
+/* Warning hint colour (used for mutual-exclusion note) */
+.form-hint--warning {
+    color: #ffc107;
 }
 
 /* Textarea — inherits form-input styles; allow vertical resize */

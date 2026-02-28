@@ -19,12 +19,20 @@ import { env } from "./modules/env.ts";
 import {
     ArenaAlertFormSchema,
     ArenaWatchFormSchema,
+    GuildEventFormSchema,
     GuildSettingsFormSchema,
     GuildTicketsFormSchema,
     GuildUpdateFormSchema,
     LangFormSchema,
 } from "./modules/formSchemas.ts";
-import { diffFromDefaults, getGuildConfig, getGuildConfigs, updateGuildSettings } from "./modules/guilds.ts";
+import {
+    diffFromDefaults,
+    type GuildConfig,
+    getGuildConfig,
+    getGuildConfigs,
+    updateGuildEvents,
+    updateGuildSettings,
+} from "./modules/guilds.ts";
 import { ARENA_OFFSETS, formatPayoutTimes, getTimeLeft } from "./modules/payout.ts";
 import { getUnitNames } from "./modules/units.ts";
 import { getUser, updateUser } from "./modules/users.ts";
@@ -800,6 +808,8 @@ const initSite = async (): Promise<void> => {
             const roleMap: Record<string, string> = Object.fromEntries(roles.map((r) => [r.id, r.name]));
             const channelMap: Record<string, string> = Object.fromEntries(channels.map((c) => [c.id, c.name]));
 
+            const csrfToken = generateCsrfToken(req);
+
             res.render("pages/guild-config", {
                 title: `${guild.name} Config — SWGoHBot`,
                 description: `SWGoHBot configuration for ${guild.name}.`,
@@ -809,6 +819,8 @@ const initSite = async (): Promise<void> => {
                 roleMap,
                 channelMap,
                 unitNameMap,
+                canManage: allowed,
+                csrfToken,
             });
         } catch (err: unknown) {
             if (err instanceof Error && err.message.includes("401")) {
@@ -957,6 +969,300 @@ const initSite = async (): Promise<void> => {
             console.error("Guild config edit POST error:", err);
             req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
             res.redirect(`/guild/${guildId}/edit`);
+        }
+    });
+
+    function buildEventFromForm(body: import("zod").infer<typeof GuildEventFormSchema>): NonNullable<GuildConfig["events"]>[number] {
+        const event: NonNullable<GuildConfig["events"]>[number] = { name: body.name };
+        if (body.eventDT) event.eventDT = new Date(body.eventDT).getTime();
+        if (body.channel) event.channel = body.channel;
+        event.countdown = body.countdown === "on";
+        if (body.message?.trim()) event.message = body.message.trim();
+        const rd = body.repeatDay;
+        const rh = body.repeatHour;
+        const rm = body.repeatMin;
+        if (rd || rh || rm) event.repeat = { repeatDay: rd ?? 0, repeatHour: rh ?? 0, repeatMin: rm ?? 0 };
+        if (body.repeatDays?.trim()) {
+            const nums = body.repeatDays
+                .split(",")
+                .map((s) => Number.parseInt(s.trim(), 10))
+                .filter((n) => n > 0);
+            if (nums.length) event.repeatDays = nums;
+        }
+        return event;
+    }
+
+    // GET /guild/:id/event/new — add event form
+    app.get("/guild/:id/event/new", async (req: Request, res: Response) => {
+        if (!req.session.user || !req.session.accessToken) {
+            req.session.returnTo = `/guild/${req.params.id}/event/new`;
+            return res.redirect("/login");
+        }
+
+        const accessToken = req.session.accessToken;
+        const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+
+        try {
+            const [config, guilds] = await Promise.all([getGuildConfig(guildId), getCachedUserGuilds(req, accessToken)]);
+
+            const guild = guilds.find((g) => g.id === guildId);
+            if (!guild) {
+                return res.status(403).render("pages/500", {
+                    title: "Access Denied — SWGoHBot",
+                    description: "You do not have access to this server's configuration.",
+                });
+            }
+
+            const adminRoles = config?.settings?.adminRole ?? [];
+            const allowed = await canAccessGuild(accessToken, guildId, guild.permissions, adminRoles);
+            if (!allowed) {
+                return res.status(403).render("pages/500", {
+                    title: "Access Denied — SWGoHBot",
+                    description: "You do not have access to this server's configuration.",
+                });
+            }
+
+            if (!config) return res.redirect(`/guild/${guildId}`);
+
+            const channels = await botApi.fetchGuildChannels(guildId);
+            const csrfToken = generateCsrfToken(req);
+
+            res.render("pages/guild-event-edit", {
+                title: `Add Event — ${guild.name} — SWGoHBot`,
+                description: `Add an event to ${guild.name}.`,
+                user: req.session.user,
+                guild,
+                config,
+                channels,
+                csrfToken,
+                event: null,
+                isNew: true,
+            });
+        } catch (err: unknown) {
+            if (err instanceof Error && err.message.includes("401")) {
+                req.session.returnTo = `/guild/${guildId}/event/new`;
+                return res.redirect("/login");
+            }
+            console.error("Guild event new GET error:", err);
+            res.status(500).render("pages/500", {
+                title: "Server Error — SWGoHBot",
+                description: "Something went wrong.",
+            });
+        }
+    });
+
+    // POST /guild/:id/event/new — save new event
+    app.post("/guild/:id/event/new", async (req: Request, res: Response) => {
+        if (!req.session.user || !req.session.accessToken) return res.redirect("/login");
+
+        const accessToken = req.session.accessToken;
+        const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+
+        if (!verifyCsrfToken(req)) {
+            req.session.flash = { type: "error", message: "Invalid request. Please try again." };
+            return res.redirect(`/guild/${guildId}/event/new`);
+        }
+
+        try {
+            const [config, guilds] = await Promise.all([getGuildConfig(guildId), getCachedUserGuilds(req, accessToken)]);
+
+            const guild = guilds.find((g) => g.id === guildId);
+            if (!guild) return res.status(403).render("pages/500", { title: "Access Denied — SWGoHBot", description: "" });
+
+            const adminRoles = config?.settings?.adminRole ?? [];
+            const allowed = await canAccessGuild(accessToken, guildId, guild.permissions, adminRoles);
+            if (!allowed) return res.status(403).render("pages/500", { title: "Access Denied — SWGoHBot", description: "" });
+            if (!config) return res.redirect(`/guild/${guildId}`);
+
+            const parsed = GuildEventFormSchema.safeParse({
+                name: req.body.name,
+                eventDT: req.body.eventDT || undefined,
+                channel: req.body.channel || undefined,
+                countdown: req.body.countdown,
+                message: req.body.message || undefined,
+                repeatDay: req.body.repeatDay || undefined,
+                repeatHour: req.body.repeatHour || undefined,
+                repeatMin: req.body.repeatMin || undefined,
+                repeatDays: req.body.repeatDays || undefined,
+            });
+
+            if (!parsed.success) {
+                req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
+                return res.redirect(`/guild/${guildId}/event/new`);
+            }
+
+            const events = config.events ?? [];
+            if (events.some((e) => e.name === parsed.data.name)) {
+                req.session.flash = { type: "error", message: `An event named "${parsed.data.name}" already exists.` };
+                return res.redirect(`/guild/${guildId}/event/new`);
+            }
+
+            const newEvent = buildEventFromForm(parsed.data);
+            await updateGuildEvents(guildId, [...events, newEvent]);
+
+            req.session.flash = { type: "success", message: `Event "${newEvent.name}" added.` };
+            res.redirect(`/guild/${guildId}`);
+        } catch (err) {
+            console.error("Guild event new POST error:", err);
+            req.session.flash = { type: "error", message: "Failed to save event. Please try again." };
+            res.redirect(`/guild/${guildId}/event/new`);
+        }
+    });
+
+    // GET /guild/:id/event/:name/edit — edit event form
+    app.get("/guild/:id/event/:name/edit", async (req: Request, res: Response) => {
+        const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const nameParam = Array.isArray(req.params.name) ? req.params.name[0] : req.params.name;
+        const eventName = decodeURIComponent(nameParam);
+
+        if (!req.session.user || !req.session.accessToken) {
+            req.session.returnTo = `/guild/${guildId}/event/${nameParam}/edit`;
+            return res.redirect("/login");
+        }
+
+        const accessToken = req.session.accessToken;
+
+        try {
+            const [config, guilds] = await Promise.all([getGuildConfig(guildId), getCachedUserGuilds(req, accessToken)]);
+
+            const guild = guilds.find((g) => g.id === guildId);
+            if (!guild) return res.status(403).render("pages/500", { title: "Access Denied — SWGoHBot", description: "" });
+
+            const adminRoles = config?.settings?.adminRole ?? [];
+            const allowed = await canAccessGuild(accessToken, guildId, guild.permissions, adminRoles);
+            if (!allowed) return res.status(403).render("pages/500", { title: "Access Denied — SWGoHBot", description: "" });
+            if (!config) return res.redirect(`/guild/${guildId}`);
+
+            const event = config.events?.find((e) => e.name === eventName);
+            if (!event) return res.status(404).render("pages/404", { title: "Not Found — SWGoHBot", description: "" });
+
+            const channels = await botApi.fetchGuildChannels(guildId);
+            const csrfToken = generateCsrfToken(req);
+
+            res.render("pages/guild-event-edit", {
+                title: `Edit Event — ${guild.name} — SWGoHBot`,
+                description: `Edit event "${eventName}" in ${guild.name}.`,
+                user: req.session.user,
+                guild,
+                config,
+                channels,
+                csrfToken,
+                event,
+                isNew: false,
+            });
+        } catch (err: unknown) {
+            if (err instanceof Error && err.message.includes("401")) {
+                req.session.returnTo = `/guild/${guildId}/event/${req.params.name}/edit`;
+                return res.redirect("/login");
+            }
+            console.error("Guild event edit GET error:", err);
+            res.status(500).render("pages/500", { title: "Server Error — SWGoHBot", description: "" });
+        }
+    });
+
+    // POST /guild/:id/event/:name/edit — save edited event
+    app.post("/guild/:id/event/:name/edit", async (req: Request, res: Response) => {
+        if (!req.session.user || !req.session.accessToken) return res.redirect("/login");
+
+        const accessToken = req.session.accessToken;
+        const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const originalName = decodeURIComponent((Array.isArray(req.params.name) ? req.params.name[0] : req.params.name) as string);
+
+        if (!verifyCsrfToken(req)) {
+            req.session.flash = { type: "error", message: "Invalid request. Please try again." };
+            return res.redirect(`/guild/${guildId}/event/${encodeURIComponent(originalName)}/edit`);
+        }
+
+        try {
+            const [config, guilds] = await Promise.all([getGuildConfig(guildId), getCachedUserGuilds(req, accessToken)]);
+
+            const guild = guilds.find((g) => g.id === guildId);
+            if (!guild) return res.status(403).render("pages/500", { title: "Access Denied — SWGoHBot", description: "" });
+
+            const adminRoles = config?.settings?.adminRole ?? [];
+            const allowed = await canAccessGuild(accessToken, guildId, guild.permissions, adminRoles);
+            if (!allowed) return res.status(403).render("pages/500", { title: "Access Denied — SWGoHBot", description: "" });
+            if (!config) return res.redirect(`/guild/${guildId}`);
+
+            const events = config.events ?? [];
+            const idx = events.findIndex((e) => e.name === originalName);
+            if (idx === -1) return res.status(404).render("pages/404", { title: "Not Found — SWGoHBot", description: "" });
+
+            const parsed = GuildEventFormSchema.safeParse({
+                name: req.body.name,
+                eventDT: req.body.eventDT || undefined,
+                channel: req.body.channel || undefined,
+                countdown: req.body.countdown,
+                message: req.body.message || undefined,
+                repeatDay: req.body.repeatDay || undefined,
+                repeatHour: req.body.repeatHour || undefined,
+                repeatMin: req.body.repeatMin || undefined,
+                repeatDays: req.body.repeatDays || undefined,
+            });
+
+            if (!parsed.success) {
+                req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
+                return res.redirect(`/guild/${guildId}/event/${encodeURIComponent(originalName)}/edit`);
+            }
+
+            if (parsed.data.name !== originalName && events.some((e, i) => e.name === parsed.data.name && i !== idx)) {
+                req.session.flash = { type: "error", message: `An event named "${parsed.data.name}" already exists.` };
+                return res.redirect(`/guild/${guildId}/event/${encodeURIComponent(originalName)}/edit`);
+            }
+
+            const updatedEvent = buildEventFromForm(parsed.data);
+            const updatedEvents = [...events];
+            updatedEvents[idx] = updatedEvent;
+            await updateGuildEvents(guildId, updatedEvents);
+
+            req.session.flash = { type: "success", message: `Event "${updatedEvent.name}" saved.` };
+            res.redirect(`/guild/${guildId}`);
+        } catch (err) {
+            console.error("Guild event edit POST error:", err);
+            req.session.flash = { type: "error", message: "Failed to save event. Please try again." };
+            res.redirect(`/guild/${guildId}/event/${encodeURIComponent(originalName)}/edit`);
+        }
+    });
+
+    // POST /guild/:id/event/:name/delete — delete an event
+    app.post("/guild/:id/event/:name/delete", async (req: Request, res: Response) => {
+        if (!req.session.user || !req.session.accessToken) return res.redirect("/login");
+
+        const accessToken = req.session.accessToken;
+        const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const eventName = decodeURIComponent((Array.isArray(req.params.name) ? req.params.name[0] : req.params.name) as string);
+
+        if (!verifyCsrfToken(req)) {
+            req.session.flash = { type: "error", message: "Invalid request. Please try again." };
+            return res.redirect(`/guild/${guildId}`);
+        }
+
+        try {
+            const [config, guilds] = await Promise.all([getGuildConfig(guildId), getCachedUserGuilds(req, accessToken)]);
+
+            const guild = guilds.find((g) => g.id === guildId);
+            if (!guild) return res.status(403).render("pages/500", { title: "Access Denied — SWGoHBot", description: "" });
+
+            const adminRoles = config?.settings?.adminRole ?? [];
+            const allowed = await canAccessGuild(accessToken, guildId, guild.permissions, adminRoles);
+            if (!allowed) return res.status(403).render("pages/500", { title: "Access Denied — SWGoHBot", description: "" });
+            if (!config) return res.redirect(`/guild/${guildId}`);
+
+            const events = config.events ?? [];
+            const idx = events.findIndex((e) => e.name === eventName);
+            if (idx === -1) return res.status(404).render("pages/404", { title: "Not Found — SWGoHBot", description: "" });
+
+            await updateGuildEvents(
+                guildId,
+                events.filter((_, i) => i !== idx),
+            );
+
+            req.session.flash = { type: "success", message: `Event "${eventName}" deleted.` };
+            res.redirect(`/guild/${guildId}`);
+        } catch (err) {
+            console.error("Guild event delete POST error:", err);
+            req.session.flash = { type: "error", message: "Failed to delete event. Please try again." };
+            res.redirect(`/guild/${guildId}`);
         }
     });
 
