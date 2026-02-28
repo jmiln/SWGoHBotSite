@@ -44,3 +44,25 @@ export async function getGuildConfig(guildId: string): Promise<GuildConfig | nul
     const db = getBotDB();
     return db.collection<GuildConfig>("guildConfigs").findOne({ guildId });
 }
+
+export async function updateGuildSettings(
+    guildId: string,
+    set: Partial<GuildConfig["settings"]>,
+    unset?: (keyof GuildConfig["settings"])[],
+): Promise<void> {
+    const db = getBotDB();
+    const setFields: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(set)) {
+        setFields[`settings.${key}`] = value;
+    }
+    const updateOp: Record<string, unknown> = {};
+    if (Object.keys(setFields).length) updateOp.$set = setFields;
+    if (unset?.length) {
+        const unsetFields: Record<string, 1> = {};
+        for (const key of unset) unsetFields[`settings.${key}`] = 1;
+        updateOp.$unset = unsetFields;
+    }
+    if (Object.keys(updateOp).length) {
+        await db.collection<GuildConfig>("guildConfigs").updateOne({ guildId }, updateOp);
+    }
+}

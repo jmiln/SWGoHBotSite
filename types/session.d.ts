@@ -12,5 +12,9 @@ declare module "express-session" {
         accessToken?: string;
         csrfToken?: string;
         flash?: { type: "success" | "error"; message: string };
+        cachedGuilds?: {
+            guilds: { id: string; name: string; icon: string | null; permissions: string }[];
+            expiresAt: number;
+        };
     }
 }

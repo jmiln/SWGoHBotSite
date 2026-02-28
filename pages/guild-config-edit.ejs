@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../partials/head") -%>
+        <link rel="stylesheet" href="/css/config-edit.css">
+    </head>
+
+    <body>
+        <header>
+            <%- include("../partials/nav") -%>
+        </header>
+
+        <main class="page-wrapper" id="main-content">
+            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
+                <a href="/guild/<%= guild.id %>" class="guild-back-link">&#8592; Back to Server Config</a>
+
+                <div class="guild-header">
+                    <% if (guild.icon) { %>
+                        <img
+                            src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png?size=64"
+                            alt=""
+                            width="48"
+                            height="48"
+                            class="guild-card-icon"
+                        >
+                    <% } else { %>
+                        <div class="guild-card-icon guild-card-icon--placeholder" aria-hidden="true">
+                            <%= guild.name.charAt(0).toUpperCase() %>
+                        </div>
+                    <% } %>
+                    <h1>Edit: <%= guild.name %></h1>
+                </div>
+
+                <% if (locals.flash) { %>
+                    <div class="flash flash-<%= flash.type %>"><%= flash.message %></div>
+                <% } %>
+
+                <%
+                    var s = config.settings || {};
+                %>
+
+                <form method="POST" action="/guild/<%= guild.id %>/edit" class="edit-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <h2 style="margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid var(--lightgray); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">Settings</h2>
+
+                    <div class="form-group">
+                        <label for="language" class="form-label">Bot Language</label>
+                        <select id="language" name="language" class="form-select">
+                            <option value="" <%= !s.language ? 'selected' : '' %>>Default (English)</option>
+                            <option value="en_US" <%= s.language === 'en_US' ? 'selected' : '' %>>English (en_US)</option>
+                            <option value="de_DE" <%= s.language === 'de_DE' ? 'selected' : '' %>>German (de_DE)</option>
+                            <option value="es_SP" <%= s.language === 'es_SP' ? 'selected' : '' %>>Spanish (es_SP)</option>
+                            <option value="ko_KR" <%= s.language === 'ko_KR' ? 'selected' : '' %>>Korean (ko_KR)</option>
+                            <option value="pt_BR" <%= s.language === 'pt_BR' ? 'selected' : '' %>>Portuguese Brazil (pt_BR)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="swgohLanguage" class="form-label">SWGoH Language</label>
+                        <select id="swgohLanguage" name="swgohLanguage" class="form-select">
+                            <option value="" <%= !s.swgohLanguage ? 'selected' : '' %>>Default (English)</option>
+                            <option value="ENG_US" <%= s.swgohLanguage === 'ENG_US' ? 'selected' : '' %>>English (ENG_US)</option>
+                            <option value="GER_DE" <%= s.swgohLanguage === 'GER_DE' ? 'selected' : '' %>>German (GER_DE)</option>
+                            <option value="SPA_XM" <%= s.swgohLanguage === 'SPA_XM' ? 'selected' : '' %>>Spanish (SPA_XM)</option>
+                            <option value="FRE_FR" <%= s.swgohLanguage === 'FRE_FR' ? 'selected' : '' %>>French (FRE_FR)</option>
+                            <option value="RUS_RU" <%= s.swgohLanguage === 'RUS_RU' ? 'selected' : '' %>>Russian (RUS_RU)</option>
+                            <option value="POR_BR" <%= s.swgohLanguage === 'POR_BR' ? 'selected' : '' %>>Portuguese Brazil (POR_BR)</option>
+                            <option value="KOR_KR" <%= s.swgohLanguage === 'KOR_KR' ? 'selected' : '' %>>Korean (KOR_KR)</option>
+                            <option value="ITA_IT" <%= s.swgohLanguage === 'ITA_IT' ? 'selected' : '' %>>Italian (ITA_IT)</option>
+                            <option value="TUR_TR" <%= s.swgohLanguage === 'TUR_TR' ? 'selected' : '' %>>Turkish (TUR_TR)</option>
+                            <option value="CHS_CN" <%= s.swgohLanguage === 'CHS_CN' ? 'selected' : '' %>>Chinese Simplified (CHS_CN)</option>
+                            <option value="CHT_CN" <%= s.swgohLanguage === 'CHT_CN' ? 'selected' : '' %>>Chinese Traditional (CHT_CN)</option>
+                            <option value="IND_ID" <%= s.swgohLanguage === 'IND_ID' ? 'selected' : '' %>>Indonesian (IND_ID)</option>
+                            <option value="JPN_JP" <%= s.swgohLanguage === 'JPN_JP' ? 'selected' : '' %>>Japanese (JPN_JP)</option>
+                            <option value="THA_TH" <%= s.swgohLanguage === 'THA_TH' ? 'selected' : '' %>>Thai (THA_TH)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="timezone" class="form-label">Timezone</label>
+                        <input
+                            type="text"
+                            id="timezone"
+                            name="timezone"
+                            class="form-input"
+                            list="timezone-list"
+                            value="<%= s.timezone ?? 'America/Los_Angeles' %>"
+                            autocomplete="off"
+                        >
+                        <datalist id="timezone-list">
+                            <% timezones.forEach(function(tz) { %>
+                                <option value="<%= tz %>">
+                            <% }) %>
+                        </datalist>
+                        <p class="form-hint">IANA timezone name, e.g. America/New_York, Europe/London.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="announceChan" class="form-label">Announcement Channel</label>
+                        <select id="announceChan" name="announceChan" class="form-select">
+                            <option value="" <%= !s.announceChan ? 'selected' : '' %>>None</option>
+                            <% channels.forEach(function(ch) { %>
+                                <option value="<%= ch.id %>" <%= s.announceChan === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adminRole" class="form-label">Admin Roles</label>
+                        <select id="adminRole" name="adminRole" class="form-select" multiple size="5">
+                            <% roles.forEach(function(r) { %>
+                                <option value="<%= r.id %>" <%= (s.adminRole || []).includes(r.id) ? 'selected' : '' %>><%= r.name %></option>
+                            <% }) %>
+                        </select>
+                        <p class="form-hint">Hold Ctrl/Cmd to select multiple. Leave all unselected to use Discord's Administrator permission as the default.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-checkbox-row">
+                            <input type="checkbox" id="useEventPages" name="useEventPages" class="form-checkbox" <%= s.useEventPages ? 'checked' : '' %>>
+                            <label for="useEventPages" class="form-checkbox-label">Use Event Pages</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-checkbox-row">
+                            <input type="checkbox" id="shardtimeVertical" name="shardtimeVertical" class="form-checkbox" <%= s.shardtimeVertical ? 'checked' : '' %>>
+                            <label for="shardtimeVertical" class="form-checkbox-label">Shardtime Vertical Layout</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventCountdown" class="form-label">Event Countdown (minutes)</label>
+                        <input
+                            type="text"
+                            id="eventCountdown"
+                            name="eventCountdown"
+                            class="form-input"
+                            value="<%= (s.eventCountdown || [2880,1440,720,360,180,120,60,30,10,5]).join(', ') %>"
+                        >
+                        <p class="form-hint">Comma-separated list of positive integers, e.g. 60, 30, 10, 5.</p>
+                    </div>
+
+                    <h2 style="font-size: 1.1rem; border-bottom: 1px solid var(--lightgray); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">Welcome &amp; Part Messages</h2>
+
+                    <div class="form-group">
+                        <div class="form-toggle-row">
+                            <label class="form-toggle">
+                                <input type="checkbox" id="enableWelcome" name="enableWelcome" aria-labelledby="enableWelcomeLabel" <%= s.enableWelcome ? 'checked' : '' %>>
+                                <span class="form-toggle-slider"></span>
+                            </label>
+                            <span id="enableWelcomeLabel" class="form-toggle-label">Enable Join Message</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="welcomeMessage" class="form-label">Join Message</label>
+                        <textarea id="welcomeMessage" name="welcomeMessage" class="form-input" rows="3" maxlength="1000" oninput="document.getElementById('welcomeCount').textContent=this.value.length"><%= s.welcomeMessage ?? 'Say hello to {{user}}, everyone! We all need a warm welcome sometimes :D' %></textarea>
+                        <div class="form-field-footer">
+                            <p class="form-hint">Placeholders: <code>{{user}}</code> (username), <code>{{usermention}}</code> (@mention), <code>{{server}}</code> (server name).</p>
+                            <span class="form-char-count"><span id="welcomeCount"><%= (s.welcomeMessage ?? 'Say hello to {{user}}, everyone! We all need a warm welcome sometimes :D').length %></span>/1000</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-toggle-row">
+                            <label class="form-toggle">
+                                <input type="checkbox" id="enablePart" name="enablePart" aria-labelledby="enablePartLabel" <%= s.enablePart ? 'checked' : '' %>>
+                                <span class="form-toggle-slider"></span>
+                            </label>
+                            <span id="enablePartLabel" class="form-toggle-label">Enable Part Message</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="partMessage" class="form-label">Part Message</label>
+                        <textarea id="partMessage" name="partMessage" class="form-input" rows="3" maxlength="1000" oninput="document.getElementById('partCount').textContent=this.value.length"><%= s.partMessage ?? 'Goodbye {{user}}, thanks for stopping by!' %></textarea>
+                        <div class="form-field-footer">
+                            <p class="form-hint">Placeholders: <code>{{user}}</code> (username), <code>{{usermention}}</code> (@mention), <code>{{server}}</code> (server name).</p>
+                            <span class="form-char-count"><span id="partCount"><%= (s.partMessage ?? 'Goodbye {{user}}, thanks for stopping by!').length %></span>/1000</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">Save</button>
+                        <a href="/guild/<%= guild.id %>" class="btn-cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <%- include("../partials/footer") -%>
+    </body>
+</html>

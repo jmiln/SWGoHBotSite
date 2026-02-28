@@ -3,6 +3,7 @@
     <head>
         <%- include("../partials/head") -%>
         <link rel="stylesheet" href="/css/guild-config.css">
+        <link rel="stylesheet" href="/css/config-edit.css">
     </head>
 
     <body>
@@ -59,7 +60,10 @@
 
                     <!-- Settings Section -->
                     <section class="config-section">
-                        <h2>Settings</h2>
+                        <div class="config-section-header">
+                            <h2>Settings</h2>
+                            <a href="/guild/<%= config.guildId %>/edit" class="btn-edit">Edit</a>
+                        </div>
 
                         <!-- Admin Roles -->
                         <div class="config-row">

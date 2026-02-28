@@ -50,8 +50,9 @@ export async function fetchGuildChannels(guildId: string): Promise<DiscordChanne
             return [];
         }
 
-        const data = (await response.json()) as Array<{ id: string; name: string }>;
-        return data.map((c) => ({ id: c.id, name: c.name }));
+        const data = (await response.json()) as Array<{ id: string; name: string; type: number }>;
+        // 0 = GUILD_TEXT, 5 = GUILD_ANNOUNCEMENT
+        return data.filter((c) => c.type === 0 || c.type === 5).map((c) => ({ id: c.id, name: c.name }));
     } catch {
         return [];
     }

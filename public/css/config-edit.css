@@ -101,7 +101,7 @@
     background-color: var(--graybrown);
     border-radius: 8px;
     padding: 1.5rem;
-    max-width: 560px;
+    max-width: 640px;
 }
 .form-group {
     margin-bottom: 1.25rem;
@@ -181,4 +181,81 @@
 }
 .btn-cancel:hover {
     color: white;
+}
+
+/* Textarea — inherits form-input styles; allow vertical resize */
+textarea.form-input {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+/* Toggle switch (styled checkbox) */
+.form-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.form-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.form-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+.form-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #555;
+    border-radius: 24px;
+    transition: background-color 0.2s;
+}
+.form-toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+.form-toggle input:checked + .form-toggle-slider {
+    background-color: var(--blue);
+}
+.form-toggle input:checked + .form-toggle-slider::before {
+    transform: translateX(20px);
+}
+.form-toggle input:focus-visible + .form-toggle-slider {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+.form-toggle-label {
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+/* Textarea field footer: hint on left, char counter on right */
+.form-field-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+}
+.form-field-footer .form-hint {
+    margin: 0;
+}
+.form-char-count {
+    font-size: 0.82rem;
+    color: var(--lightergray);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
