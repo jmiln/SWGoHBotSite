@@ -1,3 +1,4 @@
+import { defaultGuildSettings } from "./botSchemas.ts";
 import { getBotDB } from "./db.ts";
 
 export interface GuildConfig {
@@ -30,6 +31,39 @@ export interface GuildConfig {
         repeat?: { repeatDay: number; repeatHour: number; repeatMin: number };
         repeatDays?: number[];
     }>;
+}
+
+function arraysEqual(a: unknown[], b: unknown[]): boolean {
+    return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+
+export function diffFromDefaults(settings: Partial<GuildConfig["settings"]>): {
+    set: Partial<GuildConfig["settings"]>;
+    unset: (keyof GuildConfig["settings"])[];
+} {
+    const set: Record<string, unknown> = {};
+    const unset: (keyof GuildConfig["settings"])[] = [];
+
+    for (const key of Object.keys(defaultGuildSettings) as (keyof GuildConfig["settings"])[]) {
+        const newVal = settings[key];
+        if (newVal === undefined) continue;
+
+        const defaultVal = defaultGuildSettings[key];
+
+        if (Array.isArray(defaultVal) && Array.isArray(newVal)) {
+            if (arraysEqual(defaultVal, newVal as unknown[])) {
+                unset.push(key);
+            } else {
+                set[key] = newVal;
+            }
+        } else if (defaultVal === newVal) {
+            unset.push(key);
+        } else {
+            set[key] = newVal;
+        }
+    }
+
+    return { set: set as Partial<GuildConfig["settings"]>, unset };
 }
 
 export async function getGuildConfigs(guildIds: string[]): Promise<GuildConfig[]> {

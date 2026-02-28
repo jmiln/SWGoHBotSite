@@ -10,3 +10,4 @@ if (!path.isAbsolute(env.BOT_SCHEMAS_PATH) || !existsSync(env.BOT_SCHEMAS_PATH))
 const schemas = await import(`${env.BOT_SCHEMAS_PATH}/index.ts`);
 
 export const formatValidationError = schemas.formatValidationError;
+export const defaultGuildSettings: Record<string, unknown> = schemas.defaultGuildSettings;

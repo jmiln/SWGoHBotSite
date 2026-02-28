@@ -47,8 +47,7 @@
                     <div class="form-group">
                         <label for="language" class="form-label">Bot Language</label>
                         <select id="language" name="language" class="form-select">
-                            <option value="" <%= !s.language ? 'selected' : '' %>>Default (English)</option>
-                            <option value="en_US" <%= s.language === 'en_US' ? 'selected' : '' %>>English (en_US)</option>
+                            <option value="en_US" <%= !s.language || s.language === 'en_US' ? 'selected' : '' %>>English / Default (en_US)</option>
                             <option value="de_DE" <%= s.language === 'de_DE' ? 'selected' : '' %>>German (de_DE)</option>
                             <option value="es_SP" <%= s.language === 'es_SP' ? 'selected' : '' %>>Spanish (es_SP)</option>
                             <option value="ko_KR" <%= s.language === 'ko_KR' ? 'selected' : '' %>>Korean (ko_KR)</option>
@@ -59,8 +58,7 @@
                     <div class="form-group">
                         <label for="swgohLanguage" class="form-label">SWGoH Language</label>
                         <select id="swgohLanguage" name="swgohLanguage" class="form-select">
-                            <option value="" <%= !s.swgohLanguage ? 'selected' : '' %>>Default (English)</option>
-                            <option value="ENG_US" <%= s.swgohLanguage === 'ENG_US' ? 'selected' : '' %>>English (ENG_US)</option>
+                            <option value="ENG_US" <%= !s.swgohLanguage || s.swgohLanguage === 'ENG_US' ? 'selected' : '' %>>English / Default (ENG_US)</option>
                             <option value="GER_DE" <%= s.swgohLanguage === 'GER_DE' ? 'selected' : '' %>>German (GER_DE)</option>
                             <option value="SPA_XM" <%= s.swgohLanguage === 'SPA_XM' ? 'selected' : '' %>>Spanish (SPA_XM)</option>
                             <option value="FRE_FR" <%= s.swgohLanguage === 'FRE_FR' ? 'selected' : '' %>>French (FRE_FR)</option>

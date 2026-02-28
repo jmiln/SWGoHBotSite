@@ -24,7 +24,7 @@ import {
     GuildUpdateFormSchema,
     LangFormSchema,
 } from "./modules/formSchemas.ts";
-import { getGuildConfig, getGuildConfigs, updateGuildSettings } from "./modules/guilds.ts";
+import { diffFromDefaults, getGuildConfig, getGuildConfigs, updateGuildSettings } from "./modules/guilds.ts";
 import { ARENA_OFFSETS, formatPayoutTimes, getTimeLeft } from "./modules/payout.ts";
 import { getUnitNames } from "./modules/units.ts";
 import { getUser, updateUser } from "./modules/users.ts";
@@ -948,23 +948,8 @@ const initSite = async (): Promise<void> => {
                 return res.redirect(`/guild/${guildId}/edit`);
             }
 
-            const { adminRole: newAdminRole, announceChan: newAnnounceChan, ...rest } = parsed.data;
-            const resetAdminRole = !newAdminRole || newAdminRole.length === 0;
-            const resetAnnounceChan = newAnnounceChan === undefined;
-
-            const unsetFields: (keyof typeof parsed.data)[] = [];
-            if (resetAdminRole) unsetFields.push("adminRole");
-            if (resetAnnounceChan) unsetFields.push("announceChan");
-
-            await updateGuildSettings(
-                guildId,
-                {
-                    ...rest,
-                    ...(resetAdminRole ? {} : { adminRole: newAdminRole }),
-                    ...(resetAnnounceChan ? {} : { announceChan: newAnnounceChan }),
-                },
-                unsetFields.length ? unsetFields : undefined,
-            );
+            const { set, unset } = diffFromDefaults(parsed.data);
+            await updateGuildSettings(guildId, set, unset.length ? unset : undefined);
 
             req.session.flash = { type: "success", message: "Server settings saved." };
             res.redirect(`/guild/${guildId}`);
