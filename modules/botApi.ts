@@ -1,6 +1,7 @@
 import { env } from "./env.ts";
 
 const DISCORD_API_BASE = "https://discord.com/api/v10";
+const DISCORD_API_TIMEOUT_MS = 10_000;
 
 export interface DiscordRole {
     id: string;
@@ -16,6 +17,7 @@ export async function isBotInGuild(guildId: string): Promise<boolean> {
     try {
         const response = await fetch(`${DISCORD_API_BASE}/guilds/${guildId}`, {
             headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
+            signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
         });
         return response.ok;
     } catch {
@@ -27,6 +29,7 @@ export async function fetchGuildRoles(guildId: string): Promise<DiscordRole[]> {
     try {
         const response = await fetch(`${DISCORD_API_BASE}/guilds/${guildId}/roles`, {
             headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
+            signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
         });
 
         if (!response.ok) {
@@ -44,6 +47,7 @@ export async function fetchGuildChannels(guildId: string): Promise<DiscordChanne
     try {
         const response = await fetch(`${DISCORD_API_BASE}/guilds/${guildId}/channels`, {
             headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
+            signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
         });
 
         if (!response.ok) {

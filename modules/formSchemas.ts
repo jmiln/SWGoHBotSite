@@ -1,25 +1,27 @@
 import { z } from "zod";
 
+const languageEnum = z.enum(["en_US", "de_DE", "es_SP", "ko_KR", "pt_BR"]);
+
+const swgohLanguageEnum = z.enum([
+    "ENG_US",
+    "GER_DE",
+    "SPA_XM",
+    "FRE_FR",
+    "RUS_RU",
+    "POR_BR",
+    "KOR_KR",
+    "ITA_IT",
+    "TUR_TR",
+    "CHS_CN",
+    "CHT_CN",
+    "IND_ID",
+    "JPN_JP",
+    "THA_TH",
+]);
+
 export const LangFormSchema = z.object({
-    language: z.enum(["en_US", "de_DE", "es_SP", "ko_KR", "pt_BR"]).optional(),
-    swgohLanguage: z
-        .enum([
-            "ENG_US",
-            "GER_DE",
-            "SPA_XM",
-            "FRE_FR",
-            "RUS_RU",
-            "POR_BR",
-            "KOR_KR",
-            "ITA_IT",
-            "TUR_TR",
-            "CHS_CN",
-            "CHT_CN",
-            "IND_ID",
-            "JPN_JP",
-            "THA_TH",
-        ])
-        .optional(),
+    language: languageEnum.optional(),
+    swgohLanguage: swgohLanguageEnum.optional(),
 });
 
 export const ArenaAlertFormSchema = z.object({
@@ -48,25 +50,8 @@ export const GuildTicketsFormSchema = z.object({
 const VALID_TIMEZONES = Intl.supportedValuesOf("timeZone");
 
 export const GuildSettingsFormSchema = z.object({
-    language: z.enum(["en_US", "de_DE", "es_SP", "ko_KR", "pt_BR"]).optional(),
-    swgohLanguage: z
-        .enum([
-            "ENG_US",
-            "GER_DE",
-            "SPA_XM",
-            "FRE_FR",
-            "RUS_RU",
-            "POR_BR",
-            "KOR_KR",
-            "ITA_IT",
-            "TUR_TR",
-            "CHS_CN",
-            "CHT_CN",
-            "IND_ID",
-            "JPN_JP",
-            "THA_TH",
-        ])
-        .optional(),
+    language: languageEnum.optional(),
+    swgohLanguage: swgohLanguageEnum.optional(),
     timezone: z
         .string()
         .refine((tz) => VALID_TIMEZONES.includes(tz), { message: "Invalid timezone" })
@@ -77,7 +62,7 @@ export const GuildSettingsFormSchema = z.object({
     adminRole: z.array(z.string()).optional(),
     eventCountdown: z
         .string()
-        .superRefine((val, ctx) => {
+        .transform((val, ctx) => {
             const parts = val
                 .split(",")
                 .map((s) => s.trim())
@@ -88,15 +73,10 @@ export const GuildSettingsFormSchema = z.object({
                     code: "custom",
                     message: `Invalid values: ${invalid.map((s) => `"${s}"`).join(", ")}. Use positive integers only.`,
                 });
+                return z.NEVER;
             }
+            return parts.map(Number);
         })
-        .transform((val) =>
-            val
-                .split(",")
-                .map((s) => s.trim())
-                .filter(Boolean)
-                .map(Number),
-        )
         .optional(),
     enableWelcome: z.boolean().optional(),
     welcomeMessage: z.string().max(1000).optional(),

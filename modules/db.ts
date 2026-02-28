@@ -5,6 +5,12 @@ const client = new MongoClient(env.MONGODB_URI);
 
 export async function connectDB(): Promise<void> {
     await client.connect();
+
+    const shutdown = async () => {
+        await client.close();
+    };
+    process.once("SIGTERM", shutdown);
+    process.once("SIGINT", shutdown);
 }
 
 export function getBotDB() {

@@ -132,12 +132,4 @@ function initialize(): void {
     getCommands();
 }
 
-/**
- * Clear the cache
- */
-function clearCache(): void {
-    cache.clear();
-}
-
-// Export public API
-export { getCommands, initialize, clearCache };
+export { getCommands, initialize };

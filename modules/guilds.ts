@@ -37,6 +37,10 @@ function arraysEqual(a: unknown[], b: unknown[]): boolean {
     return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 
+// Computes which settings differ from the bot's defaults so we can $set or $unset them
+// in MongoDB rather than overwriting the full document. Only keys present in
+// defaultGuildSettings are considered — fields without a default (e.g. twList, aliases)
+// are left untouched by this function and must be managed separately.
 export function diffFromDefaults(settings: Partial<GuildConfig["settings"]>): {
     set: Partial<GuildConfig["settings"]>;
     unset: (keyof GuildConfig["settings"])[];

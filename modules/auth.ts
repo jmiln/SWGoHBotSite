@@ -1,6 +1,7 @@
 import { env } from "./env.ts";
 
 const DISCORD_API_BASE = "https://discord.com/api/v10";
+const DISCORD_API_TIMEOUT_MS = 10_000;
 
 export function buildDiscordAuthURL(state: string): string {
     const params = new URLSearchParams({
@@ -26,6 +27,7 @@ export async function exchangeCodeForToken(code: string): Promise<{ accessToken:
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params.toString(),
+        signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
     });
 
     if (!response.ok) {
@@ -46,6 +48,7 @@ export interface DiscordUser {
 export async function fetchDiscordUser(accessToken: string): Promise<DiscordUser> {
     const response = await fetch(`${DISCORD_API_BASE}/users/@me`, {
         headers: { Authorization: `Bearer ${accessToken}` },
+        signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
     });
 
     if (!response.ok) {
@@ -65,6 +68,7 @@ export interface DiscordGuild {
 export async function fetchUserGuilds(accessToken: string): Promise<DiscordGuild[]> {
     const response = await fetch(`${DISCORD_API_BASE}/users/@me/guilds`, {
         headers: { Authorization: `Bearer ${accessToken}` },
+        signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
     });
 
     if (!response.ok) {
@@ -81,6 +85,7 @@ export interface GuildMember {
 export async function fetchGuildMember(accessToken: string, guildId: string): Promise<GuildMember> {
     const response = await fetch(`${DISCORD_API_BASE}/users/@me/guilds/${guildId}/member`, {
         headers: { Authorization: `Bearer ${accessToken}` },
+        signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
     });
 
     if (!response.ok) {
