@@ -19,6 +19,10 @@ const swgohLanguageEnum = z.enum([
     "THA_TH",
 ]);
 
+const discordSnowflake = z.string().regex(/^\d{17,19}$/, "Invalid Discord ID");
+
+const discordSnowflakeOrEmpty = z.string().refine((v) => v === "" || /^\d{17,19}$/.test(v), "Must be a valid Discord ID or empty");
+
 export const LangFormSchema = z.object({
     language: languageEnum.optional(),
     swgohLanguage: swgohLanguageEnum.optional(),
@@ -51,7 +55,7 @@ export const GuildEventFormSchema = z
     .object({
         name: z.string().min(1).max(100),
         eventDT: z.string().optional(),
-        channel: z.string().optional(),
+        channel: discordSnowflake.optional(),
         countdown: z.string().optional(),
         message: z.string().max(1000).optional(),
         repeatDay: z.coerce.number().int().min(0).optional(),
@@ -86,8 +90,8 @@ export const GuildSettingsFormSchema = z.object({
         .optional(),
     useEventPages: z.boolean().optional(),
     shardtimeVertical: z.boolean().optional(),
-    announceChan: z.string().optional(),
-    adminRole: z.array(z.string()).optional(),
+    announceChan: discordSnowflakeOrEmpty.optional(),
+    adminRole: z.array(discordSnowflake).optional(),
     eventCountdown: z
         .string()
         .transform((val, ctx) => {

@@ -13,7 +13,7 @@ import * as auth from "./modules/auth.ts";
 import * as botApi from "./modules/botApi.ts";
 import { formatValidationError } from "./modules/botSchemas.ts";
 import * as commandService from "./modules/commandService.ts";
-import { generateCsrfToken, verifyCsrfToken } from "./modules/csrf.ts";
+import { generateCsrfToken, rotateCsrfToken, verifyCsrfToken } from "./modules/csrf.ts";
 import { connectDB } from "./modules/db.ts";
 import { env } from "./modules/env.ts";
 import {
@@ -150,6 +150,14 @@ const initSite = async (): Promise<void> => {
         message: "Too many requests from this IP, please try again later.",
     });
 
+    const authLimiter = rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 10,
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: "Too many login attempts, please try again later.",
+    });
+
     app.use(limiter);
 
     // Add EJS helpers
@@ -230,7 +238,7 @@ const initSite = async (): Promise<void> => {
     });
 
     // Discord OAuth2 login — generate state, save to session, redirect to Discord
-    app.get("/login", (req: Request, res: Response) => {
+    app.get("/login", authLimiter, (req: Request, res: Response) => {
         const state = crypto.randomBytes(16).toString("hex");
         req.session.oauthState = state;
         const rawReturnTo = req.query.returnTo as string;
@@ -239,7 +247,7 @@ const initSite = async (): Promise<void> => {
     });
 
     // Discord OAuth2 callback — verify state, exchange code, fetch user, store in session
-    app.get("/callback", async (req: Request, res: Response) => {
+    app.get("/callback", authLimiter, async (req: Request, res: Response) => {
         const code = req.query.code as string | undefined;
         const state = req.query.state as string | undefined;
 
@@ -376,6 +384,7 @@ const initSite = async (): Promise<void> => {
 
             await updateUser(user.id, { lang: parsed.data });
 
+            rotateCsrfToken(req);
             req.session.flash = { type: "success", message: "Language settings saved." };
             res.redirect("/config");
         } catch (err) {
@@ -445,6 +454,7 @@ const initSite = async (): Promise<void> => {
                 },
             });
 
+            rotateCsrfToken(req);
             req.session.flash = { type: "success", message: "Arena alert settings saved." };
             res.redirect("/config");
         } catch (err) {
@@ -513,6 +523,7 @@ const initSite = async (): Promise<void> => {
                 },
             });
 
+            rotateCsrfToken(req);
             req.session.flash = { type: "success", message: "Arena watch settings saved." };
             res.redirect("/config");
         } catch (err) {
@@ -577,6 +588,7 @@ const initSite = async (): Promise<void> => {
                 },
             });
 
+            rotateCsrfToken(req);
             req.session.flash = { type: "success", message: "Guild update settings saved." };
             res.redirect("/config");
         } catch (err) {
@@ -644,6 +656,7 @@ const initSite = async (): Promise<void> => {
                 },
             });
 
+            rotateCsrfToken(req);
             req.session.flash = { type: "success", message: "Guild tickets settings saved." };
             res.redirect("/config");
         } catch (err) {
@@ -964,6 +977,7 @@ const initSite = async (): Promise<void> => {
             const { set, unset } = diffFromDefaults(parsed.data);
             await updateGuildSettings(guildId, set, unset.length ? unset : undefined);
 
+            rotateCsrfToken(req);
             req.session.flash = { type: "success", message: "Server settings saved." };
             res.redirect(`/guild/${guildId}`);
         } catch (err) {
@@ -1101,6 +1115,7 @@ const initSite = async (): Promise<void> => {
             const newEvent = buildEventFromForm(parsed.data);
             await updateGuildEvents(guildId, [...events, newEvent]);
 
+            rotateCsrfToken(req);
             req.session.flash = { type: "success", message: `Event "${newEvent.name}" added.` };
             res.redirect(`/guild/${guildId}`);
         } catch (err) {
@@ -1216,6 +1231,7 @@ const initSite = async (): Promise<void> => {
             updatedEvents[idx] = updatedEvent;
             await updateGuildEvents(guildId, updatedEvents);
 
+            rotateCsrfToken(req);
             req.session.flash = { type: "success", message: `Event "${updatedEvent.name}" saved.` };
             res.redirect(`/guild/${guildId}`);
         } catch (err) {
@@ -1258,6 +1274,7 @@ const initSite = async (): Promise<void> => {
                 events.filter((_, i) => i !== idx),
             );
 
+            rotateCsrfToken(req);
             req.session.flash = { type: "success", message: `Event "${eventName}" deleted.` };
             res.redirect(`/guild/${guildId}`);
         } catch (err) {
