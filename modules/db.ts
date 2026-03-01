@@ -20,3 +20,7 @@ export function getBotDB() {
 export function getSwapiDB() {
     return client.db(env.MONGODB_SWAPI_DB);
 }
+
+export async function closeDB(): Promise<void> {
+    await client.close();
+}

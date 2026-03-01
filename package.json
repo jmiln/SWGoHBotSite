@@ -7,7 +7,7 @@
     "scripts": {
         "start": "node --env-file=.env website.ts",
         "dev": "node --env-file=.env --watch website.ts",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "LOG_LEVEL=silent node --test --test-global-setup ./test/setup/globalSetup.ts ./test/**/*.test.ts"
     },
     "repository": {
         "type": "git",
@@ -34,6 +34,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "^2.1.1",
+        "@testcontainers/mongodb": "^11.12.0",
         "@types/ejs": "^3.1.5",
         "@types/express": "^5.0.6",
         "@types/express-session": "^1.18.2",
