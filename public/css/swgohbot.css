@@ -10,10 +10,12 @@
     --success: #28a745;
     --patreon-color: #f96854;
 }
+
 :focus-visible {
     outline: 2px solid white;
     outline-offset: 3px;
 }
+
 .skip-link {
     position: fixed;
     top: -100%;
@@ -26,14 +28,17 @@
     text-decoration: none;
     border-radius: 0 0 4px 0;
 }
+
 .skip-link:focus-visible {
     top: 0;
 }
+
 html {
     box-sizing: border-box;
     max-width: 100%;
     overflow-x: inherit;
 }
+
 body {
     padding: 0;
     padding-top: 50px;
@@ -50,27 +55,34 @@ body {
     font-weight: 400;
     overflow-x: hidden;
 }
+
 a {
     color: var(--link-color);
 }
+
 code {
     color: white;
 }
+
 hr {
     margin-top: 1rem;
     margin-bottom: 1rem;
     border: 0;
     border-top: 1px solid white;
 }
+
 main {
     flex: 1;
 }
+
 .page-wrapper {
     flex: 1;
 }
+
 .page-commands {
     padding-top: 50px;
 }
+
 .centered {
     justify-content: center;
 }
@@ -86,57 +98,63 @@ main {
     align-items: center;
     padding-right: 1rem;
 }
+
 .navbar-brand {
     display: flex;
     align-items: center;
     margin-right: 10px;
 }
+
 .navbar-brand img {
     width: 35px;
     height: 35px;
-    margin: 0px 10px 0px 15px;
+    margin: 0 10px 0 15px;
 }
+
 .navbar-brand a {
     font-size: 20px;
     font-weight: bold;
     text-decoration: none;
     color: white;
 }
+
 .navbar .nav-links {
     border-radius: 5px;
     text-decoration: none;
     color: white;
     text-align: center;
-    padding: 15px 15px;
+    padding: 15px;
     font-size: 1rem;
-    margin: 2px 0px 2px 0px;
+    margin: 2px 0;
 }
+
 .navbar .nav-links:hover:not(.active) {
     background-color: #ddd;
     color: black;
 }
+
 .navbar .active {
     color: lightgray;
     font-weight: bold;
     text-decoration: underline;
 }
+
 .navbar a {
     text-decoration: none;
 }
+
 .navbar-toggle {
     font-size: 30px;
     display: none;
     align-items: center;
 }
+
 .nav-btn {
     display: inline-block;
     font-weight: 400;
     color: #212529;
     text-align: center;
     vertical-align: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
     background-color: transparent;
     border: 1px solid transparent;
@@ -150,15 +168,18 @@ main {
         border-color 0.15s ease-in-out,
         box-shadow 0.15s ease-in-out;
 }
+
 .nav-right {
     display: flex;
     margin-left: auto;
     align-items: center;
     order: 999;
 }
+
 .nav-dropdown {
     position: relative;
 }
+
 .nav-dropdown-toggle {
     background: none;
     border: none;
@@ -172,12 +193,15 @@ main {
     border-radius: 4px;
     transition: background-color 0.15s ease-in-out;
 }
+
 .nav-dropdown-toggle:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
+
 .nav-dropdown-toggle img {
     margin-right: 0.4em;
 }
+
 .nav-dropdown-menu {
     display: none;
     position: absolute;
@@ -190,9 +214,11 @@ main {
     z-index: 100;
     overflow: hidden;
 }
+
 .nav-dropdown-menu.open {
     display: block;
 }
+
 .nav-dropdown-item {
     display: block;
     padding: 0.5rem 1rem;
@@ -200,14 +226,17 @@ main {
     text-decoration: none;
     transition: background-color 0.15s ease-in-out;
 }
+
 .nav-dropdown-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
 }
+
 .nav-logout-form {
     margin: 0;
     padding: 0;
 }
+
 .nav-logout-btn {
     width: 100%;
     background: none;
@@ -217,20 +246,25 @@ main {
     font-size: inherit;
     font-family: inherit;
 }
+
 .nav-item {
     padding: 0.375rem 0.75rem;
     color: white;
 }
+
 .user-avatar {
     font-size: 0.6rem;
 }
+
 .user-avatar img {
     border: 2px solid var(--gray);
     border-radius: 50%;
 }
+
 .username {
     font-weight: bold;
 }
+
 .logout-btn {
     color: orangered;
     border: 1px solid orangered;
@@ -238,6 +272,7 @@ main {
 }
 
 /* Main/ Index page body */
+
 /* Banner */
 .banner {
     display: flex;
@@ -245,28 +280,34 @@ main {
     background-color: var(--graybrown);
     padding-bottom: 25px;
 }
+
 .banner-about {
     text-align: left;
     margin: 0 20px;
 }
+
 .banner-buttons {
     padding: 0.3rem;
     border-radius: 5px;
 }
+
 .banner-buttons ul {
     margin: 0;
     padding: 0;
     line-height: 1.25;
 }
+
 .banner-buttons li {
     text-align: center;
     border-radius: 5px;
     list-style: none;
 }
+
 .banner-buttons a {
     text-decoration: none;
     cursor: pointer;
 }
+
 .banner-buttons a:hover {
     color: black;
 }
@@ -280,16 +321,19 @@ main {
     text-decoration: none;
     cursor: pointer;
     border-radius: 5px;
-    margin: 5px 0px;
+    margin: 5px 0;
 }
+
 .premium-button {
     background-color: var(--patreon-color);
     max-height: 60px;
 }
+
 .premium-button img {
     vertical-align: middle;
     border-style: none;
 }
+
 .github-button {
     background-color: white;
     max-height: 60px;
@@ -298,6 +342,7 @@ main {
     justify-content: center;
     gap: 8px;
 }
+
 .github-button img {
     vertical-align: middle;
     border-style: none;
@@ -361,29 +406,35 @@ main {
     border-radius: 5px;
     background-color: #343a40;
 }
+
 .cat-header {
     margin: 0;
     padding: 0;
     text-align: center;
 }
+
 .navigation-menu ul {
     margin: 0;
     padding: 0;
     line-height: 1.25;
 }
+
 .navigation-menu li {
     text-align: center;
     border-radius: 5px;
     list-style: none;
 }
+
 .navigation-menu li:hover {
     background-color: #454d55;
 }
+
 .navigation-menu li .active {
     background-color: #007bff;
     color: black;
     border-radius: 5px;
 }
+
 .navigation-menu a {
     font-weight: bold;
     display: block;
@@ -397,14 +448,17 @@ main {
 .tab-pane {
     display: none;
 }
+
 .tab-pane.active {
     display: block;
 }
+
 .columns {
     margin-left: -0.75rem;
     margin-right: -0.75rem;
     margin-top: -0.75rem;
 }
+
 .column {
     display: block;
     flex-basis: 0;

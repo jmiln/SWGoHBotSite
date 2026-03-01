@@ -19,13 +19,13 @@ $(document).ready(() => {
     $("#navbar-toggle").on("click", function () {
         const navbar = document.getElementById("navbar");
         const menus = navbar.getElementsByClassName("nav-links");
-        for (let ix = 0; ix < menus.length; ix++) {
-            menus[ix].classList.toggle("hide-mobile");
+        for (const menu of menus) {
+            menu.classList.toggle("hide-mobile");
         }
         const buttons = navbar.getElementsByClassName("nav-btn");
-        for (let ix = 0; ix < buttons.length; ix++) {
-            if (!buttons[ix].closest(".nav-right")) {
-                buttons[ix].classList.toggle("hide-mobile");
+        for (const button of buttons) {
+            if (!button.closest(".nav-right")) {
+                button.classList.toggle("hide-mobile");
             }
         }
         const isExpanded = $(this).attr("aria-expanded") === "true";

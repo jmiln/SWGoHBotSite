@@ -59,7 +59,8 @@ const initSite = async (): Promise<void> => {
             if (proto !== "https") {
                 // Sanitize URL to prevent open redirect attacks (ensure single leading slash)
                 const url = req.url.replace(/^\/+/, "/");
-                return res.redirect(301, `https://${req.hostname}${url}`);
+                res.redirect(301, `https://${req.hostname}${url}`);
+                return;
             }
         }
         next();
