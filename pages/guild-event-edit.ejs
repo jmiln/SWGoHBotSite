@@ -69,12 +69,16 @@
 
                     <div class="form-group">
                         <label for="channel" class="form-label">Channel</label>
-                        <select id="channel" name="channel" class="form-select">
+                        <select id="channel" name="channel" class="form-select" data-required="<%= !config?.settings?.announceChan ? 'true' : 'false' %>">
                             <option value="">None</option>
                             <% channels.forEach(function(ch) { %>
                                 <option value="<%= ch.id %>" <%= (!isNew && event.channel === ch.id) ? 'selected' : '' %>>#<%= ch.name %></option>
                             <% }) %>
                         </select>
+                        <% if (!config?.settings?.announceChan) { %>
+                            <p class="form-hint form-hint--warning">Required — no server-wide announcement channel is set, so each event must have its own.</p>
+                            <p id="channelError" class="form-hint" style="display:none; color:#dc3545;">Please select a channel.</p>
+                        <% } %>
                     </div>
 
                     <div class="form-group">

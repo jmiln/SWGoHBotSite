@@ -30,8 +30,23 @@ if (dtInput?.dataset.utc) {
     dtInput.value = `${utcDate.getFullYear()}-${pad(utcDate.getMonth() + 1)}-${pad(utcDate.getDate())}T${pad(utcDate.getHours())}:${pad(utcDate.getMinutes())}`;
 }
 
+const channelSelect = document.getElementById("channel");
+const channelError = document.getElementById("channelError");
+if (channelSelect && channelError) {
+    channelSelect.addEventListener("change", () => {
+        channelError.style.display = "none";
+    });
+}
+
 // Before submit, validate date is in the future and convert local time to UTC for server storage
 document.getElementById("event-edit-form")?.addEventListener("submit", (e) => {
+    if (channelSelect?.dataset.required === "true" && !channelSelect.value) {
+        e.preventDefault();
+        if (channelError) channelError.style.display = "";
+        channelSelect.focus();
+        return;
+    }
+
     const errEl = document.getElementById("dtPastError");
     if (dtInput?.value) {
         if (new Date(dtInput.value) <= new Date()) {

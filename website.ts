@@ -1106,6 +1106,14 @@ const initSite = async (): Promise<void> => {
                 return res.redirect(`/guild/${guildId}/event/new`);
             }
 
+            if (!config.settings?.announceChan && !parsed.data.channel) {
+                req.session.flash = {
+                    type: "error",
+                    message: "A channel is required for this event because no server-wide announcement channel is set.",
+                };
+                return res.redirect(`/guild/${guildId}/event/new`);
+            }
+
             const events = config.events ?? [];
             if (events.some((e) => e.name === parsed.data.name)) {
                 req.session.flash = { type: "error", message: `An event named "${parsed.data.name}" already exists.` };
@@ -1218,6 +1226,14 @@ const initSite = async (): Promise<void> => {
 
             if (!parsed.success) {
                 req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
+                return res.redirect(`/guild/${guildId}/event/${encodeURIComponent(originalName)}/edit`);
+            }
+
+            if (!config.settings?.announceChan && !parsed.data.channel) {
+                req.session.flash = {
+                    type: "error",
+                    message: "A channel is required for this event because no server-wide announcement channel is set.",
+                };
                 return res.redirect(`/guild/${guildId}/event/${encodeURIComponent(originalName)}/edit`);
             }
 
