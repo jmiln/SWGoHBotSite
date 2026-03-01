@@ -159,6 +159,7 @@
                             value="<%= isNew ? '' : (event.repeatDays ? event.repeatDays.join(', ') : '') %>"
                         >
                         <p class="form-hint">Comma-separated positive integers, e.g. <code>3,6,1,4</code>. Leave blank for none.</p>
+                        <p id="repeatDaysError" class="form-hint" style="display:none; color:#dc3545;">Each value must be a positive integer greater than 0 (e.g. <code>3,6,14</code>).</p>
                     </div>
 
                     <p id="repeatExclusionNote" class="form-hint form-hint--warning" style="display:none;">Clear the locked section to switch repeat types.</p>

@@ -1114,7 +1114,16 @@ const initSite = async (): Promise<void> => {
                 return res.redirect(`/guild/${guildId}/event/new`);
             }
 
+            if (!parsed.data.eventDT) {
+                req.session.flash = { type: "error", message: "A date and time is required to create an event." };
+                return res.redirect(`/guild/${guildId}/event/new`);
+            }
+
             const events = config.events ?? [];
+            if (events.length >= 50) {
+                req.session.flash = { type: "error", message: "This server has reached the maximum of 50 events." };
+                return res.redirect(`/guild/${guildId}/event/new`);
+            }
             if (events.some((e) => e.name === parsed.data.name)) {
                 req.session.flash = { type: "error", message: `An event named "${parsed.data.name}" already exists.` };
                 return res.redirect(`/guild/${guildId}/event/new`);

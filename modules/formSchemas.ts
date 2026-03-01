@@ -77,6 +77,17 @@ export const GuildEventFormSchema = z
             return new Date(data.eventDT).getTime() > Date.now();
         },
         { message: "Event date and time must be in the future." },
+    )
+    .refine(
+        (data) => {
+            if (!data.repeatDays?.trim()) return true;
+            const parts = data.repeatDays
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean);
+            return parts.every((s) => /^\d+$/.test(s) && Number(s) > 0);
+        },
+        { message: "Repeat days must be a comma-separated list of positive integers greater than 0 (e.g. 1,7,14)." },
     );
 
 const VALID_TIMEZONES = Intl.supportedValuesOf("timeZone");
