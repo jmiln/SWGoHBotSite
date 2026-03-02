@@ -14,7 +14,7 @@ import * as botApi from "./modules/botApi.ts";
 import { formatValidationError } from "./modules/botSchemas.ts";
 import * as commandService from "./modules/commandService.ts";
 import { generateCsrfToken, rotateCsrfToken, verifyCsrfToken } from "./modules/csrf.ts";
-import { connectDB } from "./modules/db.ts";
+import { closeDB, connectDB } from "./modules/db.ts";
 import { env } from "./modules/env.ts";
 import {
     ArenaAlertFormSchema,
@@ -1336,9 +1336,34 @@ const initSite = async (): Promise<void> => {
 
     // Turn the site on
     const port = Number.parseInt(env.PORT, 10);
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
         console.log(`Site listening on port ${port}!`);
     });
+
+    // Graceful shutdown — SIGTERM (PM2 restart/stop) and SIGINT (Ctrl-C)
+    let shuttingDown = false;
+    const shutdown = async (signal: string) => {
+        if (shuttingDown) return;
+        shuttingDown = true;
+        console.log(`${signal} received — shutting down gracefully`);
+
+        // Force exit after 10s if drain stalls
+        setTimeout(() => {
+            console.error("Shutdown timed out — forcing exit");
+            process.exit(1);
+        }, 10_000).unref();
+
+        server.close(async () => {
+            await closeDB();
+            process.exit(0);
+        });
+
+        // Drop idle keep-alive connections immediately so server.close() can resolve
+        server.closeAllConnections();
+    };
+
+    process.once("SIGTERM", () => shutdown("SIGTERM"));
+    process.once("SIGINT", () => shutdown("SIGINT"));
 };
 
 initSite();

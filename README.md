@@ -10,7 +10,8 @@ Built with Express.js, EJS templates, and TypeScript. Features a public informat
 - Dynamic commands page loaded from bot data files
 - Discord OAuth2 login
 - User dashboard showing linked accounts and arena watch settings
-- Guild config viewer for server managers (requires Manage Server permission or an admin role)
+- Guild config viewer and editor for server managers (requires Manage Server permission or an admin role)
+- Guild events CRUD — admins can add, edit, and delete scheduled events
 
 ## Setup
 
@@ -36,6 +37,7 @@ MONGODB_BOT_DB=your_bot_db_name
 MONGODB_SWAPI_DB=your_swapi_db_name
 SESSION_SECRET=a_random_secret_at_least_16_chars
 DISCORD_BOT_TOKEN=your_bot_token
+BOT_SCHEMAS_PATH=/path/to/bot/schemas
 ```
 
 ### Running the Application
@@ -49,6 +51,9 @@ npm run dev
 
 # Production
 npm start
+
+# Run integration tests
+npm test
 ```
 
 ### Code Quality
@@ -64,8 +69,9 @@ npx @biomejs/biome check --write .
 ## Architecture
 
 - **website.ts** — Main entry point; all routes and middleware
-- **modules/** — Server-side logic (auth, database, bot API, command service, etc.)
+- **modules/** — Server-side logic (auth, database, bot API, command service, form schemas, etc.)
 - **pages/** — EJS page templates
 - **partials/** — Reusable EJS components (nav, head, footer)
 - **public/** — Static assets (CSS, JS, images)
 - **types/** — TypeScript type declarations
+- **test/** — Integration tests (Node.js built-in test runner + Testcontainers)
