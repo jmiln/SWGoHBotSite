@@ -31,9 +31,7 @@
                     <h1>Edit: <%= guild.name %></h1>
                 </div>
 
-                <% if (locals.flash) { %>
-                    <div class="flash flash-<%= flash.type %>"><%= flash.message %></div>
-                <% } %>
+                <%- include('../partials/flash') %>
 
                 <%
                     var s = config.settings || {};

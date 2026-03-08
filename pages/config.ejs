@@ -14,9 +14,7 @@
             <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
                 <h1>Welcome, <%= user.username %>!</h1>
 
-                <% if (flash) { %>
-                    <div class="flash flash-<%= flash.type %>"><%= flash.message %></div>
-                <% } %>
+                <%- include('../partials/flash') %>
 
                 <% if (!userConfig) { %>
                     <p>No configuration found — start using the bot in Discord to set up your profile.</p>

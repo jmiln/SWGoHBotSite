@@ -15,9 +15,7 @@
             <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
                 <a href="/guild-select" class="guild-back-link">← Back to Server List</a>
 
-                <% if (locals.flash) { %>
-                    <div class="flash flash-<%= flash.type %>"><%= flash.message %></div>
-                <% } %>
+                <%- include('../partials/flash') %>
 
                 <% if (!config) { %>
                     <h1>Server Config</h1>

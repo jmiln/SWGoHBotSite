@@ -32,9 +32,7 @@
                     <h1><%= isNew ? "Add Event" : "Edit Event" %>: <%= guild.name %></h1>
                 </div>
 
-                <% if (locals.flash) { %>
-                    <div class="flash flash-<%= flash.type %>"><%= flash.message %></div>
-                <% } %>
+                <%- include('../partials/flash') %>
 
                 <form id="event-edit-form" method="POST" action="/guild/<%= guild.id %>/event/<%= isNew ? 'new' : (encodeURIComponent(event.name) + '/edit') %>" class="edit-form">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">

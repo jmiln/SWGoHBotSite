@@ -3,7 +3,7 @@ module.exports = {
         {
             name: "website",
             interpreter: "node",
-            script: "website.ts",
+            script: "server.ts",
             watch: false,
             node_args: ["--env-file=.env"],
             env: {
