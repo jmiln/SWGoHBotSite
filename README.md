@@ -68,10 +68,13 @@ npx @biomejs/biome check --write .
 
 ## Architecture
 
-- **website.ts** — Main entry point; all routes and middleware
+- **server.ts** — Entry point; starts HTTP server, handles graceful shutdown
+- **app.ts** — `createApp()` factory; assembles middleware and mounts routes
+- **middleware/** — Rate limiting, Helmet/CSP security, session setup
+- **routes/** — Route handlers split by feature area (public, auth, userConfig, guildSelect, guildConfig, guildEvents)
 - **modules/** — Server-side logic (auth, database, bot API, command service, form schemas, etc.)
 - **pages/** — EJS page templates
-- **partials/** — Reusable EJS components (nav, head, footer)
+- **partials/** — Reusable EJS components (nav, head, footer, flash)
 - **public/** — Static assets (CSS, JS, images)
 - **types/** — TypeScript type declarations
 - **test/** — Integration tests (Node.js built-in test runner + Testcontainers)
