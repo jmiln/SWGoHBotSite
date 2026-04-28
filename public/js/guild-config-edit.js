@@ -1,5 +1,5 @@
 // --- Role picker ---
-(function () {
+(() => {
     const chipsContainer = document.getElementById("adminRoleChips");
     const searchInput = document.getElementById("adminRoleSearch");
     const list = document.getElementById("adminRoleList");
@@ -28,7 +28,7 @@
         btn.className = "role-chip-remove";
         btn.setAttribute("aria-label", `Remove ${name}`);
         btn.textContent = "\u00d7";
-        btn.addEventListener("click", function () {
+        btn.addEventListener("click", () => {
             const cb = list.querySelector(`input[type="checkbox"][value="${CSS.escape(id)}"]`);
             if (cb) {
                 cb.checked = false;
@@ -49,13 +49,13 @@
     }
 
     // Render chips for pre-checked boxes on load
-    list.querySelectorAll('input[type="checkbox"]:checked').forEach(function (cb) {
+    list.querySelectorAll('input[type="checkbox"]:checked').forEach((cb) => {
         addChip(cb.value, cb.dataset.roleName);
     });
     updatePlaceholder();
 
     // Sync chips when a checkbox changes
-    list.addEventListener("change", function (e) {
+    list.addEventListener("change", (e) => {
         if (e.target.type !== "checkbox") return;
         if (e.target.checked) {
             addChip(e.target.value, e.target.dataset.roleName);
@@ -65,11 +65,11 @@
     });
 
     // Filter list on search input
-    searchInput.addEventListener("input", function () {
+    searchInput.addEventListener("input", () => {
         const query = searchInput.value.toLowerCase();
         let visibleCount = 0;
 
-        list.querySelectorAll("li:not(.role-picker-empty)").forEach(function (li) {
+        list.querySelectorAll("li:not(.role-picker-empty)").forEach((li) => {
             const name = li.querySelector("label").textContent.trim().toLowerCase();
             const matches = name.includes(query);
             li.style.display = matches ? "" : "none";
@@ -98,7 +98,7 @@ for (const [textareaId, counterId] of [
     const ta = document.getElementById(textareaId);
     const counter = document.getElementById(counterId);
     if (ta && counter) {
-        ta.addEventListener("input", function () {
+        ta.addEventListener("input", () => {
             counter.textContent = ta.value.length;
         });
     }
