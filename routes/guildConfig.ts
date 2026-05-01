@@ -6,6 +6,7 @@ import { generateCsrfToken, rotateCsrfToken, verifyCsrfToken } from "../modules/
 import { GuildSettingsFormSchema } from "../modules/formSchemas.ts";
 import { canAccessGuild, getCachedUserGuilds } from "../modules/guildHelpers.ts";
 import { diffFromDefaults, getGuildConfig, updateGuildSettings } from "../modules/guilds.ts";
+import logger from "../modules/logger.ts";
 import { getUnitNames } from "../modules/units.ts";
 
 const router = Router();
@@ -87,7 +88,7 @@ router.get("/guild/:id", async (req: Request, res: Response) => {
             req.session.returnTo = `/guild/${guildId}`;
             return res.redirect("/login");
         }
-        console.error("Guild config error:", err);
+        logger.error(`Guild config error: ${err}`);
         res.status(500).render("pages/500", {
             title: "Server Error — SWGoHBot",
             description: "Something went wrong loading this server's configuration.",
@@ -149,7 +150,7 @@ router.get("/guild/:id/edit", async (req: Request, res: Response) => {
             req.session.returnTo = `/guild/${guildId}/edit`;
             return res.redirect("/login");
         }
-        console.error("Guild config edit GET error:", err);
+        logger.error(`Guild config edit GET error: ${err}`);
         res.status(500).render("pages/500", {
             title: "Server Error — SWGoHBot",
             description: "Something went wrong loading this server's configuration.",
@@ -225,7 +226,7 @@ router.post("/guild/:id/edit", async (req: Request, res: Response) => {
         req.session.flash = { type: "success", message: "Server settings saved." };
         res.redirect(`/guild/${guildId}`);
     } catch (err) {
-        console.error("Guild config edit POST error:", err);
+        logger.error(`Guild config edit POST error: ${err}`);
         req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
         res.redirect(`/guild/${guildId}/edit`);
     }

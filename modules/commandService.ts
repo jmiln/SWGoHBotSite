@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { env } from "./env.ts";
+import logger from "./logger.ts";
 
 interface CommandMetadata {
     totalCommands: number;
@@ -62,7 +63,7 @@ function loadCommandData(): CommandData | null {
         const dataPath = env.BOT_DATA_PATH;
 
         if (!existsSync(dataPath)) {
-            console.warn(`[CommandService] Warning: help.json not found at ${dataPath}`);
+            logger.warn(`[CommandService] Warning: help.json not found at ${dataPath}`);
             return null;
         }
 
@@ -70,11 +71,11 @@ function loadCommandData(): CommandData | null {
         const data = JSON.parse(fileContent) as CommandData;
 
         if (!data.metadata || typeof data.metadata.totalCommands !== "number" || typeof data.metadata.categories !== "number") {
-            console.error("[CommandService] Error: Invalid help.json structure - missing or invalid metadata");
+            logger.error("[CommandService] Error: Invalid help.json structure - missing or invalid metadata");
             return null;
         }
 
-        console.log(
+        logger.log(
             `[CommandService] Command data loaded: ${data.metadata.totalCommands} commands in ${data.metadata.categories} categories`,
         );
 
@@ -82,13 +83,13 @@ function loadCommandData(): CommandData | null {
     } catch (error) {
         const err = error as NodeJS.ErrnoException;
         if (err.code === "ENOENT") {
-            console.error(`[CommandService] Error: File not found at ${env.BOT_DATA_PATH}`);
+            logger.error(`[CommandService] Error: File not found at ${env.BOT_DATA_PATH}`);
         } else if (err.code === "EACCES") {
-            console.error(`[CommandService] Error: Permission denied reading ${env.BOT_DATA_PATH}`);
+            logger.error(`[CommandService] Error: Permission denied reading ${env.BOT_DATA_PATH}`);
         } else if (error instanceof SyntaxError) {
-            console.error(`[CommandService] Error: Invalid JSON in ${env.BOT_DATA_PATH}`);
+            logger.error(`[CommandService] Error: Invalid JSON in ${env.BOT_DATA_PATH}`);
         } else {
-            console.error(`[CommandService] Error loading command data: ${err.message}`);
+            logger.error(`[CommandService] Error loading command data: ${err.message}`);
         }
 
         return null;
@@ -128,7 +129,7 @@ function getCommands(): CommandData {
  * Initialize the service by loading initial cache
  */
 function initialize(): void {
-    console.log("[CommandService] Initializing command service...");
+    logger.log("[CommandService] Initializing command service...");
     getCommands();
 }
 

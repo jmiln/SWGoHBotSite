@@ -9,6 +9,7 @@ import {
     GuildUpdateFormSchema,
     LangFormSchema,
 } from "../modules/formSchemas.ts";
+import logger from "../modules/logger.ts";
 import { getUser, updateUser } from "../modules/users.ts";
 
 const router = Router();
@@ -81,7 +82,7 @@ router.post("/config/lang", async (req: Request, res: Response) => {
         req.session.flash = { type: "success", message: "Language settings saved." };
         res.redirect("/config");
     } catch (err) {
-        console.error("Config update error (lang):", err);
+        logger.error(`Config update error (lang): ${err}`);
         req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
         res.redirect("/config");
     }
@@ -146,7 +147,7 @@ router.post("/config/arena-alert", async (req: Request, res: Response) => {
         req.session.flash = { type: "success", message: "Arena alert settings saved." };
         res.redirect("/config");
     } catch (err) {
-        console.error("Config update error (arena-alert):", err);
+        logger.error(`Config update error (arena-alert): ${err}`);
         req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
         res.redirect("/config");
     }
@@ -210,7 +211,7 @@ router.post("/config/arena-watch", async (req: Request, res: Response) => {
         req.session.flash = { type: "success", message: "Arena watch settings saved." };
         res.redirect("/config");
     } catch (err) {
-        console.error("Config update error (arena-watch):", err);
+        logger.error(`Config update error (arena-watch): ${err}`);
         req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
         res.redirect("/config");
     }
@@ -270,7 +271,7 @@ router.post("/config/guild-update", async (req: Request, res: Response) => {
         req.session.flash = { type: "success", message: "Guild update settings saved." };
         res.redirect("/config");
     } catch (err) {
-        console.error("Config update error (guild-update):", err);
+        logger.error(`Config update error (guild-update): ${err}`);
         req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
         res.redirect("/config");
     }
@@ -333,7 +334,7 @@ router.post("/config/guild-tickets", async (req: Request, res: Response) => {
         req.session.flash = { type: "success", message: "Guild tickets settings saved." };
         res.redirect("/config");
     } catch (err) {
-        console.error("Config update error (guild-tickets):", err);
+        logger.error(`Config update error (guild-tickets): ${err}`);
         req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
         res.redirect("/config");
     }

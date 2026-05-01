@@ -24,6 +24,9 @@
                 <div class="nav-dropdown-menu" id="nav-user-menu">
                     <a href="/config" class="nav-dropdown-item">My Config</a>
                     <a href="/guild-select" class="nav-dropdown-item">Servers</a>
+                    <% if (isAdmin) { %>
+                        <a href="/admin/stats" class="nav-dropdown-item">Admin</a>
+                    <% } %>
                     <form method="POST" action="/logout" class="nav-logout-form">
                         <button type="submit" class="nav-dropdown-item nav-logout-btn">Log out</button>
                     </form>

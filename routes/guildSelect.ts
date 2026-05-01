@@ -4,6 +4,7 @@ import type * as auth from "../modules/auth.ts";
 import * as botApi from "../modules/botApi.ts";
 import { canAccessGuild, getCachedUserGuilds } from "../modules/guildHelpers.ts";
 import { type getGuildConfig, getGuildConfigs } from "../modules/guilds.ts";
+import logger from "../modules/logger.ts";
 
 const router = Router();
 
@@ -58,7 +59,7 @@ router.get("/guild-select", async (req: Request, res: Response) => {
             req.session.returnTo = "/guild-select";
             return res.redirect("/login");
         }
-        console.error("Guild select error:", err);
+        logger.error(`Guild select error: ${err}`);
         res.status(500).render("pages/500", {
             title: "Server Error — SWGoHBot",
             description: "Something went wrong loading your servers.",

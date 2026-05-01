@@ -6,6 +6,7 @@ import { generateCsrfToken, rotateCsrfToken, verifyCsrfToken } from "../modules/
 import { GuildEventFormSchema } from "../modules/formSchemas.ts";
 import { buildEventFromForm, canAccessGuild, getCachedUserGuilds } from "../modules/guildHelpers.ts";
 import { getGuildConfig, updateGuildEvents } from "../modules/guilds.ts";
+import logger from "../modules/logger.ts";
 
 const router = Router();
 
@@ -60,7 +61,7 @@ router.get("/guild/:id/event/new", async (req: Request, res: Response) => {
             req.session.returnTo = `/guild/${guildId}/event/new`;
             return res.redirect("/login");
         }
-        console.error("Guild event new GET error:", err);
+        logger.error(`Guild event new GET error: ${err}`);
         res.status(500).render("pages/500", {
             title: "Server Error — SWGoHBot",
             description: "Something went wrong.",
@@ -138,7 +139,7 @@ router.post("/guild/:id/event/new", async (req: Request, res: Response) => {
         req.session.flash = { type: "success", message: `Event "${newEvent.name}" added.` };
         res.redirect(`/guild/${guildId}`);
     } catch (err) {
-        console.error("Guild event new POST error:", err);
+        logger.error(`Guild event new POST error: ${err}`);
         req.session.flash = { type: "error", message: "Failed to save event. Please try again." };
         res.redirect(`/guild/${guildId}/event/new`);
     }
@@ -190,7 +191,7 @@ router.get("/guild/:id/event/:name/edit", async (req: Request, res: Response) =>
             req.session.returnTo = `/guild/${guildId}/event/${req.params.name}/edit`;
             return res.redirect("/login");
         }
-        console.error("Guild event edit GET error:", err);
+        logger.error(`Guild event edit GET error: ${err}`);
         res.status(500).render("pages/500", { title: "Server Error — SWGoHBot", description: "" });
     }
 });
@@ -262,7 +263,7 @@ router.post("/guild/:id/event/:name/edit", async (req: Request, res: Response) =
         req.session.flash = { type: "success", message: `Event "${updatedEvent.name}" saved.` };
         res.redirect(`/guild/${guildId}`);
     } catch (err) {
-        console.error("Guild event edit POST error:", err);
+        logger.error(`Guild event edit POST error: ${err}`);
         req.session.flash = { type: "error", message: "Failed to save event. Please try again." };
         res.redirect(`/guild/${guildId}/event/${encodeURIComponent(originalName)}/edit`);
     }
@@ -305,7 +306,7 @@ router.post("/guild/:id/event/:name/delete", async (req: Request, res: Response)
         req.session.flash = { type: "success", message: `Event "${eventName}" deleted.` };
         res.redirect(`/guild/${guildId}`);
     } catch (err) {
-        console.error("Guild event delete POST error:", err);
+        logger.error(`Guild event delete POST error: ${err}`);
         req.session.flash = { type: "error", message: "Failed to delete event. Please try again." };
         res.redirect(`/guild/${guildId}`);
     }

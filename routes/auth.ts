@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { Router } from "express";
 import { authLimiter } from "../middleware/rateLimit.ts";
 import * as auth from "../modules/auth.ts";
+import logger from "../modules/logger.ts";
 
 const router = Router();
 
@@ -54,7 +55,7 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
         });
         res.redirect(returnTo);
     } catch (err) {
-        console.error("OAuth callback error:", err);
+        logger.error(`OAuth callback error: ${err}`);
         res.redirect("/");
     }
 });

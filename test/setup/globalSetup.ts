@@ -28,6 +28,7 @@ export async function globalSetup(): Promise<void> {
     process.env.DISCORD_REDIRECT_URI = "http://localhost:3300/callback";
     process.env.SESSION_SECRET = "test-session-secret-16ch";
     process.env.DISCORD_BOT_TOKEN = "test-bot-token";
+    process.env.ADMIN_DISCORD_ID = "test-admin-id";
     console.log("MongoDB testcontainer ready on port 27018");
 }
 
