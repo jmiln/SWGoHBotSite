@@ -24,6 +24,9 @@
                 <div class="nav-dropdown-menu" id="nav-user-menu">
                     <a href="/config" class="nav-dropdown-item">My Config</a>
                     <a href="/guild-select" class="nav-dropdown-item">Servers</a>
+                    <% for (const item of (pluginNavItems ?? []).filter(i => i.requiresAuth !== false)) { %>
+                        <a href="<%= item.href %>" class="nav-dropdown-item"><%= item.label %></a>
+                    <% } %>
                     <% if (isAdmin) { %>
                         <a href="/admin/stats" class="nav-dropdown-item">Admin</a>
                     <% } %>

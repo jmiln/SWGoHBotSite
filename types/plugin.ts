@@ -15,6 +15,12 @@ export interface PluginContext {
     partialsPath: string;
 }
 
+export interface PluginNavItem {
+    label: string;
+    href: string;
+    requiresAuth?: boolean;
+}
+
 export interface PluginDefinition {
     mountPath: string;
     router: Router;
@@ -22,6 +28,7 @@ export interface PluginDefinition {
     staticDir?: string;
     staticMountPath?: string;
     name: string;
+    navItems?: PluginNavItem[];
 }
 
 export type PluginFactory = (ctx: PluginContext) => PluginDefinition;

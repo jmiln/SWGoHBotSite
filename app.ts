@@ -88,6 +88,8 @@ export async function createApp(): Promise<Express> {
     app.use("/", guildConfigRoutes);
     app.use("/", guildEventRoutes);
 
+    app.locals.pluginNavItems = plugins.flatMap((p) => p.navItems ?? []);
+
     for (const plugin of plugins) {
         app.use(plugin.mountPath, plugin.router);
         logger.log(`Mounted plugin: ${plugin.name} at ${plugin.mountPath}`);
