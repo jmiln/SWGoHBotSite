@@ -11,8 +11,27 @@ router.get("/login", authLimiter, (req: Request, res: Response) => {
     const state = crypto.randomBytes(16).toString("hex");
     req.session.oauthState = state;
     const rawReturnTo = req.query.returnTo as string;
-    req.session.returnTo = rawReturnTo?.startsWith("/") && !rawReturnTo.startsWith("//") ? rawReturnTo : "/config";
-    res.redirect(auth.buildDiscordAuthURL(state));
+    if (rawReturnTo?.startsWith("/") && !rawReturnTo.startsWith("//")) {
+        req.session.returnTo = rawReturnTo;
+    } else if (!req.session.returnTo) {
+        const referer = req.get("Referer");
+        let refererPath: string | undefined;
+        if (referer) {
+            try {
+                const url = new URL(referer);
+                if (url.origin === `${req.protocol}://${req.get("host")}`) {
+                    refererPath = url.pathname;
+                }
+            } catch {
+                // malformed Referer — ignore
+            }
+        }
+        req.session.returnTo = refererPath ?? "/";
+    }
+    req.session.save((err) => {
+        if (err) logger.error(`Session save error in /login: ${err}`);
+        res.redirect(auth.buildDiscordAuthURL(state));
+    });
 });
 
 router.get("/callback", authLimiter, async (req: Request, res: Response) => {
@@ -34,7 +53,7 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
     try {
         const { accessToken } = await auth.exchangeCodeForToken(code);
         const discordUser = await auth.fetchDiscordUser(accessToken);
-        const returnTo = req.session.returnTo ?? "/dashboard";
+        const returnTo = req.session.returnTo ?? "/";
         await new Promise<void>((resolve, reject) => {
             req.session.regenerate((err) => {
                 if (err) reject(err);
