@@ -36,6 +36,7 @@
 
                 <form id="event-edit-form" method="POST" action="/guild/<%= guild.id %>/event/<%= isNew ? 'new' : (encodeURIComponent(event.name) + '/edit') %>" class="edit-form">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" id="eventDTUtc" name="eventDTUtc" value="">
 
                     <div class="form-group">
                         <label for="name" class="form-label">Event Name <span aria-hidden="true">*</span></label>

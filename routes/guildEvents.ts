@@ -95,6 +95,7 @@ router.post("/guild/:id/event/new", async (req: Request, res: Response) => {
         const parsed = GuildEventFormSchema.safeParse({
             name: req.body.name,
             eventDT: req.body.eventDT || undefined,
+            eventDTUtc: req.body.eventDTUtc || undefined,
             channel: req.body.channel || undefined,
             countdown: req.body.countdown,
             message: req.body.message || undefined,
@@ -117,7 +118,7 @@ router.post("/guild/:id/event/new", async (req: Request, res: Response) => {
             return res.redirect(`/guild/${guildId}/event/new`);
         }
 
-        if (!parsed.data.eventDT) {
+        if (!parsed.data.eventDT && !parsed.data.eventDTUtc) {
             req.session.flash = { type: "error", message: "A date and time is required to create an event." };
             return res.redirect(`/guild/${guildId}/event/new`);
         }
@@ -227,6 +228,7 @@ router.post("/guild/:id/event/:name/edit", async (req: Request, res: Response) =
         const parsed = GuildEventFormSchema.safeParse({
             name: req.body.name,
             eventDT: req.body.eventDT || undefined,
+            eventDTUtc: req.body.eventDTUtc || undefined,
             channel: req.body.channel || undefined,
             countdown: req.body.countdown,
             message: req.body.message || undefined,
@@ -238,6 +240,11 @@ router.post("/guild/:id/event/:name/edit", async (req: Request, res: Response) =
 
         if (!parsed.success) {
             req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
+            return res.redirect(`/guild/${guildId}/event/${encodeURIComponent(originalName)}/edit`);
+        }
+
+        if (!parsed.data.eventDT && !parsed.data.eventDTUtc) {
+            req.session.flash = { type: "error", message: "A date and time is required to save an event." };
             return res.redirect(`/guild/${guildId}/event/${encodeURIComponent(originalName)}/edit`);
         }
 

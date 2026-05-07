@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseEventDateTime } from "./eventDateTime.ts";
 
 const languageEnum = z.enum(["en_US", "de_DE", "es_SP", "ko_KR", "pt_BR"]);
 
@@ -55,6 +56,7 @@ export const GuildEventFormSchema = z
     .object({
         name: z.string().min(1).max(100),
         eventDT: z.string().optional(),
+        eventDTUtc: z.string().optional(),
         channel: discordSnowflake.optional(),
         countdown: z.string().optional(),
         message: z.string().max(1000).optional(),
@@ -73,8 +75,16 @@ export const GuildEventFormSchema = z
     )
     .refine(
         (data) => {
-            if (!data.eventDT) return true;
-            return new Date(data.eventDT).getTime() > Date.now();
+            if (!data.eventDT && !data.eventDTUtc) return true;
+            return parseEventDateTime(data.eventDT, data.eventDTUtc) !== null;
+        },
+        { message: "Event date and time is invalid." },
+    )
+    .refine(
+        (data) => {
+            const timestamp = parseEventDateTime(data.eventDT, data.eventDTUtc);
+            if (timestamp === null) return true;
+            return timestamp > Date.now();
         },
         { message: "Event date and time must be in the future." },
     )

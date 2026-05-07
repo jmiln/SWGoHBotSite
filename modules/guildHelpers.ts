@@ -1,6 +1,7 @@
 import type { Request } from "express";
 import type { infer as ZInfer } from "zod";
 import * as auth from "./auth.ts";
+import { parseEventDateTime } from "./eventDateTime.ts";
 import type { GuildEventFormSchema } from "./formSchemas.ts";
 import type { GuildConfig } from "./guilds.ts";
 
@@ -33,7 +34,8 @@ export async function canAccessGuild(
 
 export function buildEventFromForm(body: ZInfer<typeof GuildEventFormSchema>): NonNullable<GuildConfig["events"]>[number] {
     const event: NonNullable<GuildConfig["events"]>[number] = { name: body.name };
-    if (body.eventDT) event.eventDT = new Date(body.eventDT).getTime();
+    const eventTimestamp = parseEventDateTime(body.eventDT, body.eventDTUtc);
+    if (eventTimestamp !== null) event.eventDT = eventTimestamp;
     if (body.channel) event.channel = body.channel;
     event.countdown = body.countdown === "on";
     if (body.message?.trim()) event.message = body.message.trim();

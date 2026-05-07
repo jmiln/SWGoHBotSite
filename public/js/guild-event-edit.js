@@ -4,6 +4,7 @@ const textarea = document.getElementById("message");
 const counter = document.getElementById("messageCount");
 const tzNameSpan = document.getElementById("tzName");
 const dtInput = document.getElementById("eventDT");
+const dtUtcInput = document.getElementById("eventDTUtc");
 const dtPastError = document.getElementById("dtPastError");
 const channelSelect = document.getElementById("channel");
 const channelError = document.getElementById("channelError");
@@ -94,8 +95,9 @@ document.getElementById("event-edit-form")?.addEventListener("submit", (e) => {
             dtInput.focus();
             return;
         }
-        // Convert local datetime to UTC ISO string for server
-        dtInput.value = new Date(dtInput.value).toISOString().slice(0, 16);
+        if (dtUtcInput) {
+            dtUtcInput.value = new Date(dtInput.value).toISOString();
+        }
     }
 
     // repeatDays: each comma-separated value must be a positive integer > 0

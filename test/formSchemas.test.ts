@@ -88,3 +88,21 @@ test("channel: rejects empty string", () => {
     const r = GuildEventFormSchema.safeParse({ name: "Test Event", channel: "" });
     assert.ok(!r.success, "should have failed");
 });
+
+test("eventDTUtc: accepts a future UTC timestamp", () => {
+    const r = GuildEventFormSchema.safeParse({
+        name: "Test Event",
+        eventDT: "2026-05-06T20:38",
+        eventDTUtc: new Date(Date.now() + 60_000).toISOString(),
+    });
+    assert.ok(r.success, JSON.stringify(r));
+});
+
+test("eventDTUtc: rejects an invalid UTC timestamp", () => {
+    const r = GuildEventFormSchema.safeParse({
+        name: "Test Event",
+        eventDT: "2026-05-06T20:38",
+        eventDTUtc: "not-a-date",
+    });
+    assert.ok(!r.success, "should have failed");
+});
