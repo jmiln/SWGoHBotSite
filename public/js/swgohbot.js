@@ -40,4 +40,11 @@ $(document).ready(() => {
             $this.addClass("active");
         }
     });
+
+    $("form[data-event-name]").on("submit", function (e) {
+        const name = $(this).data("eventName");
+        if (!window.confirm(`Delete event "${name}"? This cannot be undone.`)) {
+            e.preventDefault();
+        }
+    });
 });

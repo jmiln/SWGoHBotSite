@@ -1,5 +1,4 @@
 // --- DOM refs ---
-const deleteForm = document.querySelector("form[data-event-name]");
 const textarea = document.getElementById("message");
 const counter = document.getElementById("messageCount");
 const tzNameSpan = document.getElementById("tzName");
@@ -11,16 +10,6 @@ const channelError = document.getElementById("channelError");
 const repeatDaysInput = document.getElementById("repeatDays");
 const repeatDaysError = document.getElementById("repeatDaysError");
 const intervalInputs = ["repeatDay", "repeatHour", "repeatMin"].map((id) => document.getElementById(id)).filter(Boolean);
-
-// --- Delete confirmation ---
-if (deleteForm) {
-    deleteForm.addEventListener("submit", (e) => {
-        const name = deleteForm.dataset.eventName;
-        if (!confirm(`Delete event "${name}"? This cannot be undone.`)) {
-            e.preventDefault();
-        }
-    });
-}
 
 // --- Message character counter ---
 if (textarea && counter) {

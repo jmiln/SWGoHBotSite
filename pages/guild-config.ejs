@@ -228,9 +228,9 @@
                                     <% if (canManage) { %>
                                     <div class="guild-event-actions">
                                         <a href="/guild/<%= config.guildId %>/event/<%= encodedName %>/edit" class="btn-edit">Edit</a>
-                                        <form method="POST" action="/guild/<%= config.guildId %>/event/<%= encodedName %>/delete" data-event-name="<%= event.name %>" style="display:inline;">
+                                        <form method="POST" action="/guild/<%= config.guildId %>/event/<%= encodedName %>/delete" data-event-name="<%= event.name %>" class="guild-event-delete-form">
                                             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                            <button type="submit" class="btn-danger" onclick="return confirmEventDelete(this)">Delete</button>
+                                            <button type="submit" class="btn-danger">Delete</button>
                                         </form>
                                     </div>
                                     <% } %>
@@ -279,11 +279,5 @@
         </main>
 
         <%- include("../partials/footer") -%>
-        <script nonce="<%= nonce %>">
-            function confirmEventDelete(btn) {
-                const name = btn.closest("form").dataset.eventName;
-                return confirm(`Delete event "${name}"? This cannot be undone.`);
-            }
-        </script>
     </body>
 </html>

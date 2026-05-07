@@ -173,6 +173,10 @@
     font-weight: 600;
 }
 
+.guild-event-delete-form {
+    display: inline;
+}
+
 .guild-event-date {
     font-size: 0.85rem;
     white-space: nowrap;

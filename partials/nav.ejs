@@ -15,11 +15,11 @@
                             alt=""
                             width="35"
                             height="35"
-                            style="border-radius: 50%; vertical-align: middle;"
+                            class="nav-user-avatar"
                         >
                     <% } %>
                     <span class="hide-mobile"><%= user.username %></span>
-                    <i class="fa fa-caret-down hide-mobile" aria-hidden="true" style="margin-left: 0.3em;"></i>
+                    <i class="fa fa-caret-down hide-mobile nav-dropdown-caret" aria-hidden="true"></i>
                 </button>
                 <div class="nav-dropdown-menu" id="nav-user-menu">
                     <a href="/config" class="nav-dropdown-item">My Config</a>
@@ -31,6 +31,7 @@
                         <a href="/admin/stats" class="nav-dropdown-item">Admin</a>
                     <% } %>
                     <form method="POST" action="/logout" class="nav-logout-form">
+                        <input type="hidden" name="_csrf" value="<%= logoutCsrfToken %>">
                         <button type="submit" class="nav-dropdown-item nav-logout-btn">Log out</button>
                     </form>
                 </div>

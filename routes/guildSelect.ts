@@ -26,22 +26,22 @@ router.get("/guild-select", async (req: Request, res: Response) => {
         const configMap = new Map(configs.map((c) => [c.guildId, c]));
 
         type AccessibleGuild = { guild: auth.DiscordGuild; config: Awaited<ReturnType<typeof getGuildConfig>> };
-        const accessibleGuilds: AccessibleGuild[] = [];
-
-        for (const config of configs) {
-            const guild = guildMap.get(config.guildId);
-            if (!guild) continue;
-            const adminRoles = config.settings?.adminRole ?? [];
-            const allowed = await canAccessGuild(accessToken, config.guildId, guild.permissions, adminRoles);
-            if (allowed) {
-                accessibleGuilds.push({ guild, config });
-            }
-        }
-
         const managedWithoutConfig = guilds.filter((g) => BigInt(g.permissions) & 32n && !configMap.has(g.id));
-        const botChecks = await Promise.all(
-            managedWithoutConfig.map((g) => botApi.isBotInGuild(g.id).then((inGuild) => ({ guild: g, inGuild }))),
-        );
+        const [accessibleConfiguredGuilds, botChecks] = await Promise.all([
+            Promise.all(
+                configs.map(async (config): Promise<AccessibleGuild | null> => {
+                    const guild = guildMap.get(config.guildId);
+                    if (!guild) return null;
+
+                    const adminRoles = config.settings?.adminRole ?? [];
+                    const allowed = await canAccessGuild(accessToken, config.guildId, guild.permissions, adminRoles);
+                    return allowed ? { guild, config } : null;
+                }),
+            ),
+            Promise.all(managedWithoutConfig.map((g) => botApi.isBotInGuild(g.id).then((inGuild) => ({ guild: g, inGuild })))),
+        ]);
+
+        const accessibleGuilds = accessibleConfiguredGuilds.filter((guild): guild is AccessibleGuild => guild !== null);
         for (const { guild, inGuild } of botChecks) {
             if (inGuild) {
                 accessibleGuilds.push({ guild, config: null });

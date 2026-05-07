@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { Router } from "express";
 import { authLimiter } from "../middleware/rateLimit.ts";
 import * as auth from "../modules/auth.ts";
+import { verifyCsrfToken } from "../modules/csrf.ts";
 import logger from "../modules/logger.ts";
 
 const router = Router();
@@ -80,6 +81,13 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
 });
 
 router.post("/logout", (req: Request, res: Response) => {
+    if (!verifyCsrfToken(req)) {
+        return res.status(403).render("pages/500", {
+            title: "Forbidden - SWGoHBot",
+            description: "Invalid request. Please refresh and try again.",
+        });
+    }
+
     req.session.destroy(() => {
         res.redirect("/");
     });

@@ -36,6 +36,7 @@ export async function createApp(): Promise<Express> {
         res.locals.user = req.session.user ?? null;
         res.locals.isAdmin = req.session.user?.id === env.ADMIN_DISCORD_ID;
         res.locals.currentPath = req.path;
+        res.locals.logoutCsrfToken = req.session.user ? generateCsrfToken(req) : null;
         next();
     });
 
