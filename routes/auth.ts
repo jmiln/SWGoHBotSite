@@ -3,14 +3,23 @@ import type { Request, Response } from "express";
 import { Router } from "express";
 import { authLimiter } from "../middleware/rateLimit.ts";
 import * as auth from "../modules/auth.ts";
-import { verifyCsrfToken } from "../modules/csrf.ts";
+import { generateCsrfToken, verifyCsrfToken } from "../modules/csrf.ts";
 import logger from "../modules/logger.ts";
+import {
+    clearOAuthReturnToCookie,
+    clearOAuthStateCookie,
+    getOAuthReturnToCookie,
+    getOAuthStateCookie,
+    setOAuthReturnToCookie,
+    setOAuthStateCookie,
+} from "../modules/oauthState.ts";
 
 const router = Router();
 
 router.get("/login", authLimiter, (req: Request, res: Response) => {
     const state = crypto.randomBytes(16).toString("hex");
     req.session.oauthState = state;
+    setOAuthStateCookie(res, state);
     const rawReturnTo = req.query.returnTo as string;
     if (rawReturnTo?.startsWith("/") && !rawReturnTo.startsWith("//")) {
         req.session.returnTo = rawReturnTo;
@@ -29,6 +38,7 @@ router.get("/login", authLimiter, (req: Request, res: Response) => {
         }
         req.session.returnTo = refererPath ?? "/";
     }
+    setOAuthReturnToCookie(res, req.session.returnTo ?? "/");
     req.session.save((err) => {
         if (err) logger.error(`Session save error in /login: ${err}`);
         res.redirect(auth.buildDiscordAuthURL(state));
@@ -38,14 +48,29 @@ router.get("/login", authLimiter, (req: Request, res: Response) => {
 router.get("/callback", authLimiter, async (req: Request, res: Response) => {
     const code = req.query.code as string | undefined;
     const state = req.query.state as string | undefined;
+    const cookieState = getOAuthStateCookie(req);
+    const cookieReturnTo = getOAuthReturnToCookie(req);
+    const sessionState = req.session.oauthState;
+    const fallbackReturnTo = req.session.returnTo ?? cookieReturnTo ?? "/";
 
-    if (!state || state !== req.session.oauthState) {
+    if (!state || (state !== sessionState && state !== cookieState)) {
+        if (req.session.user) {
+            clearOAuthStateCookie(res);
+            clearOAuthReturnToCookie(res);
+            return res.redirect(fallbackReturnTo);
+        }
+
+        clearOAuthStateCookie(res);
+        clearOAuthReturnToCookie(res);
         return res.status(403).render("pages/500", {
             title: "Forbidden - SWGoHBot",
             description: "Invalid OAuth state. Please try logging in again.",
         });
     }
+
     delete req.session.oauthState;
+    clearOAuthStateCookie(res);
+    clearOAuthReturnToCookie(res);
 
     if (!code) {
         return res.redirect("/");
@@ -54,7 +79,7 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
     try {
         const { accessToken } = await auth.exchangeCodeForToken(code);
         const discordUser = await auth.fetchDiscordUser(accessToken);
-        const returnTo = req.session.returnTo ?? "/";
+        const returnTo = fallbackReturnTo;
         await new Promise<void>((resolve, reject) => {
             req.session.regenerate((err) => {
                 if (err) reject(err);
@@ -67,6 +92,7 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
             avatar: discordUser.avatar,
         };
         req.session.accessToken = accessToken;
+        generateCsrfToken(req);
         await new Promise<void>((resolve, reject) => {
             req.session.save((err) => {
                 if (err) reject(err);
