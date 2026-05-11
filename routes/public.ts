@@ -1,10 +1,18 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 import * as commandService from "../modules/commandService.ts";
 
 const router = Router();
 
-router.get("/", (_req: Request, res: Response) => {
+// Applied only to rendering routes so users stay on the current page after
+// logout. Redirect routes (/invite, /server, /dashboard) and all protected /
+// plugin routes inherit the "/" default set in app.ts.
+function setPublicReturnTo(req: Request, res: Response, next: NextFunction): void {
+    res.locals.logoutReturnTo = req.path;
+    next();
+}
+
+router.get("/", setPublicReturnTo, (_req: Request, res: Response) => {
     res.render("pages/index", {
         title: "SWGoHBot - Discord Bot for Star Wars Galaxy of Heroes",
         description:
@@ -12,26 +20,26 @@ router.get("/", (_req: Request, res: Response) => {
     });
 });
 
-router.get("/about", (_req: Request, res: Response) => {
+router.get("/about", setPublicReturnTo, (_req: Request, res: Response) => {
     res.render("pages/about", {
         title: "About SWGoHBot",
         description: "Learn about SWGoHBot, a Discord bot for Star Wars Galaxy of Heroes with character stats, guild management, and more.",
     });
 });
 
-router.get("/tos", (_req: Request, res: Response) => {
+router.get("/tos", setPublicReturnTo, (_req: Request, res: Response) => {
     res.render("pages/tos");
 });
 
-router.get("/privacyPolicy", (_req: Request, res: Response) => {
+router.get("/privacyPolicy", setPublicReturnTo, (_req: Request, res: Response) => {
     res.render("pages/privacyPolicy");
 });
 
-router.get("/faqs", (_req: Request, res: Response) => {
+router.get("/faqs", setPublicReturnTo, (_req: Request, res: Response) => {
     res.render("pages/faqs");
 });
 
-router.get("/commands", (_req: Request, res: Response) => {
+router.get("/commands", setPublicReturnTo, (_req: Request, res: Response) => {
     const commandData = commandService.getCommands();
     res.render("pages/commands", { commandData });
 });
