@@ -7,7 +7,7 @@
     "scripts": {
         "start": "node --env-file=.env server.ts",
         "dev": "node --env-file=.env --watch server.ts",
-        "test": "LOG_LEVEL=silent node --test --test-global-setup ./test/setup/globalSetup.ts ./test/**/*.test.ts"
+        "test": "LOG_LEVEL=silent node --test --test-global-setup ./test/setup/globalSetup.ts './test/**/*.test.ts'"
     },
     "repository": {
         "type": "git",

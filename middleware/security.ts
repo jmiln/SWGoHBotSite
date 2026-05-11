@@ -35,7 +35,7 @@ export function applySecurity(app: Express): void {
                         "https://static.cloudflareinsights.com",
                         (_req: unknown, res: unknown) => `'nonce-${(res as Response).locals.nonce as string}'`,
                     ],
-                    styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+                    styleSrc: ["'self'", "https://cdnjs.cloudflare.com"],
                     imgSrc: ["'self'", "https:", "data:"],
                     connectSrc: ["'self'"],
                     fontSrc: ["'self'", "https://cdnjs.cloudflare.com"],

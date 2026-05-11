@@ -162,6 +162,7 @@
 }
 
 .reset-button {
+    display: none;
     width: 100%;
     margin-top: 12px;
     padding: 10px;

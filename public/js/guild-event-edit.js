@@ -52,7 +52,7 @@ function syncRepeatExclusion() {
     document.getElementById("repeatDaysGroup")?.classList.toggle("form-group--locked", hasInterval);
 
     const note = document.getElementById("repeatExclusionNote");
-    if (note) note.style.display = hasInterval || hasDays ? "" : "none";
+    if (note) note.style.display = hasInterval || hasDays ? "block" : "none";
 }
 
 if (intervalInputs.length && repeatDaysInput) {
@@ -71,7 +71,7 @@ document.getElementById("event-edit-form")?.addEventListener("submit", (e) => {
     // Channel required (when no server-wide announce channel is configured)
     if (channelSelect?.dataset.required === "true" && !channelSelect.value) {
         e.preventDefault();
-        if (channelError) channelError.style.display = "";
+        if (channelError) channelError.style.display = "block";
         channelSelect.focus();
         return;
     }
@@ -80,7 +80,7 @@ document.getElementById("event-edit-form")?.addEventListener("submit", (e) => {
     if (dtInput?.value) {
         if (new Date(dtInput.value) <= new Date()) {
             e.preventDefault();
-            if (dtPastError) dtPastError.style.display = "";
+            if (dtPastError) dtPastError.style.display = "block";
             dtInput.focus();
             return;
         }
@@ -98,7 +98,7 @@ document.getElementById("event-edit-form")?.addEventListener("submit", (e) => {
         const valid = parts.every((s) => /^\d+$/.test(s) && Number(s) > 0);
         if (!valid) {
             e.preventDefault();
-            if (repeatDaysError) repeatDaysError.style.display = "";
+            if (repeatDaysError) repeatDaysError.style.display = "block";
             repeatDaysInput.focus();
             return;
         }

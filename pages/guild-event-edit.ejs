@@ -12,7 +12,7 @@
         </header>
 
         <main class="page-wrapper" id="main-content">
-            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
+            <div class="column w80 autoMargin page-content">
                 <a href="/guild/<%= guild.id %>" class="guild-back-link">&#8592; Back to Server Config</a>
 
                 <div class="guild-header">
@@ -63,7 +63,7 @@
                             value="<%= isNew || !event.eventDT ? '' : new Date(event.eventDT).toISOString().slice(0, 16) %>"
                         >
                         <p class="form-hint">Uses your local timezone<span id="tzName"></span>.</p>
-                        <p id="dtPastError" class="form-hint" style="display:none; color:#dc3545;">Date &amp; time must be in the future.</p>
+                        <p id="dtPastError" class="form-hint form-error">Date &amp; time must be in the future.</p>
                     </div>
 
                     <div class="form-group">
@@ -78,7 +78,7 @@
                         </select>
                         <% if (!config?.settings?.announceChan) { %>
                             <p class="form-hint form-hint--warning">No server-wide announcement channel is set — a channel must be selected for this event.</p>
-                            <p id="channelError" class="form-hint" style="display:none; color:#dc3545;">Please select a channel.</p>
+                            <p id="channelError" class="form-hint form-error">Please select a channel.</p>
                         <% } %>
                     </div>
 
@@ -107,14 +107,14 @@
                         </div>
                     </div>
 
-                    <h2 style="font-size: 1.1rem; border-bottom: 1px solid var(--lightgray); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">Repeat Schedule</h2>
-                    <p class="form-hint" style="margin-bottom: 1.25rem;">Use Repeat Interval OR Repeat Days — not both.</p>
+                    <h2 class="form-section-title form-section-title--sm">Repeat Schedule</h2>
+                    <p class="form-hint form-hint--mb">Use Repeat Interval OR Repeat Days — not both.</p>
 
                     <div class="form-group" id="repeatIntervalGroup">
                         <label class="form-label">Repeat Interval</label>
-                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                            <div style="flex: 1; min-width: 80px;">
-                                <label for="repeatDay" class="form-hint" style="display:block; margin-bottom: 0.25rem;">Days</label>
+                        <div class="repeat-interval-group">
+                            <div class="repeat-interval-item">
+                                <label for="repeatDay" class="form-hint repeat-interval-label">Days</label>
                                 <input
                                     type="number"
                                     id="repeatDay"
@@ -124,8 +124,8 @@
                                     value="<%= isNew ? '' : (event.repeat ? event.repeat.repeatDay : '') %>"
                                 >
                             </div>
-                            <div style="flex: 1; min-width: 80px;">
-                                <label for="repeatHour" class="form-hint" style="display:block; margin-bottom: 0.25rem;">Hours</label>
+                            <div class="repeat-interval-item">
+                                <label for="repeatHour" class="form-hint repeat-interval-label">Hours</label>
                                 <input
                                     type="number"
                                     id="repeatHour"
@@ -135,8 +135,8 @@
                                     value="<%= isNew ? '' : (event.repeat ? event.repeat.repeatHour : '') %>"
                                 >
                             </div>
-                            <div style="flex: 1; min-width: 80px;">
-                                <label for="repeatMin" class="form-hint" style="display:block; margin-bottom: 0.25rem;">Minutes</label>
+                            <div class="repeat-interval-item">
+                                <label for="repeatMin" class="form-hint repeat-interval-label">Minutes</label>
                                 <input
                                     type="number"
                                     id="repeatMin"
@@ -147,7 +147,7 @@
                                 >
                             </div>
                         </div>
-                        <p class="form-hint" style="margin-top: 0.35rem;">Leave all blank for no fixed interval repeat.</p>
+                        <p class="form-hint form-hint--top">Leave all blank for no fixed interval repeat.</p>
                     </div>
 
                     <div class="form-group" id="repeatDaysGroup">
@@ -160,13 +160,13 @@
                             value="<%= isNew ? '' : (event.repeatDays ? event.repeatDays.join(', ') : '') %>"
                         >
                         <p class="form-hint">Comma-separated positive integers, e.g. <code>3,6,1,4</code>. Leave blank for none.</p>
-                        <p id="repeatDaysError" class="form-hint" style="display:none; color:#dc3545;">Each value must be a positive integer greater than 0 (e.g. <code>3,6,14</code>).</p>
+                        <p id="repeatDaysError" class="form-hint form-error">Each value must be a positive integer greater than 0 (e.g. <code>3,6,14</code>).</p>
                     </div>
 
-                    <p id="repeatExclusionNote" class="form-hint form-hint--warning" style="display:none;">Clear the locked section to switch repeat types.</p>
+                    <p id="repeatExclusionNote" class="form-hint form-hint--warning is-hidden">Clear the locked section to switch repeat types.</p>
                 </form>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem;">
+                <div class="form-actions-bar">
                     <div class="form-actions">
                         <button type="submit" form="event-edit-form" class="btn-save">Save</button>
                         <a href="/guild/<%= guild.id %>" class="btn-cancel">Cancel</a>

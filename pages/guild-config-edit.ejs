@@ -11,7 +11,7 @@
         </header>
 
         <main class="page-wrapper" id="main-content">
-            <div class="column w80 autoMargin" style="padding-top: 2rem; padding-bottom: 2rem;">
+            <div class="column w80 autoMargin page-content">
                 <a href="/guild/<%= guild.id %>" class="guild-back-link">&#8592; Back to Server Config</a>
 
                 <div class="guild-header">
@@ -34,13 +34,13 @@
                 <%- include('../partials/flash') %>
 
                 <%
-                    var s = config.settings || {};
+                    var s = locals.formValues || config.settings || {};
                 %>
 
                 <form method="POST" action="/guild/<%= guild.id %>/edit" class="edit-form">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-                    <h2 style="margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid var(--lightgray); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">Settings</h2>
+                    <h2 class="form-section-title form-section-title--flush">Settings</h2>
 
                     <div class="form-group">
                         <label for="language" class="form-label">Bot Language</label>
@@ -158,12 +158,12 @@
                             id="eventCountdown"
                             name="eventCountdown"
                             class="form-input"
-                            value="<%= (s.eventCountdown || [2880,1440,720,360,180,120,60,30,10,5]).join(', ') %>"
+                            value="<%= Array.isArray(s.eventCountdown) ? s.eventCountdown.join(', ') : (s.eventCountdown ?? [2880,1440,720,360,180,120,60,30,10,5].join(', ')) %>"
                         >
                         <p class="form-hint">Comma-separated list of positive integers, e.g. 60, 30, 10, 5.</p>
                     </div>
 
-                    <h2 style="font-size: 1.1rem; border-bottom: 1px solid var(--lightgray); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">Welcome &amp; Part Messages</h2>
+                    <h2 class="form-section-title">Welcome &amp; Part Messages</h2>
 
                     <div class="form-group">
                         <div class="form-toggle-row">

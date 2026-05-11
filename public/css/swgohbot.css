@@ -837,3 +837,52 @@ footer .disclaimer {
     border-color: var(--blue);
     color: white;
 }
+
+.page-content {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.page-center {
+    text-align: center;
+}
+
+.error-page {
+    text-align: center;
+    padding: 4rem 1rem;
+}
+
+.front-button--auto {
+    display: inline-block;
+    width: auto;
+    max-width: 200px;
+}
+
+.is-hidden {
+    display: none;
+}
+
+.privacy-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.privacy-table tr {
+    border: 1px solid #444;
+}
+
+.privacy-table thead tr {
+    background-color: var(--graybrown);
+}
+
+.privacy-table th,
+.privacy-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #444;
+}
+
+.bold-link {
+    font-weight: bold;
+}

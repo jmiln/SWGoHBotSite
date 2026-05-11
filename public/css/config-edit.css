@@ -444,3 +444,54 @@ textarea.form-input {
     font-size: 0.88rem;
     color: var(--lightergray);
 }
+
+.form-section-title {
+    font-size: 1.1rem;
+    border-bottom: 1px solid var(--lightgray);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-section-title--flush {
+    margin-top: 0;
+}
+
+.form-section-title--sm {
+    margin-bottom: 0.5rem;
+}
+
+.form-error {
+    display: none;
+    color: #dc3545;
+}
+
+.repeat-interval-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.repeat-interval-item {
+    flex: 1;
+    min-width: 80px;
+}
+
+.repeat-interval-label {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.form-hint--top {
+    margin-top: 0.35rem;
+}
+
+.form-hint--mb {
+    margin-bottom: 1.25rem;
+}
+
+.form-actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+}

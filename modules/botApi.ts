@@ -14,50 +14,32 @@ export interface DiscordChannel {
 }
 
 export async function isBotInGuild(guildId: string): Promise<boolean> {
-    try {
-        const response = await fetch(`${DISCORD_API_BASE}/guilds/${guildId}`, {
-            headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
-            signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
-        });
-        return response.ok;
-    } catch {
-        return false;
-    }
+    const response = await fetch(`${DISCORD_API_BASE}/guilds/${guildId}`, {
+        headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
+        signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
+    });
+    if (response.status === 404) return false;
+    if (!response.ok) throw new Error(`Discord API error ${response.status} fetching guild ${guildId}`);
+    return true;
 }
 
 export async function fetchGuildRoles(guildId: string): Promise<DiscordRole[]> {
-    try {
-        const response = await fetch(`${DISCORD_API_BASE}/guilds/${guildId}/roles`, {
-            headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
-            signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
-        });
-
-        if (!response.ok) {
-            return [];
-        }
-
-        const data = (await response.json()) as Array<{ id: string; name: string }>;
-        return data.map((r) => ({ id: r.id, name: r.name }));
-    } catch {
-        return [];
-    }
+    const response = await fetch(`${DISCORD_API_BASE}/guilds/${guildId}/roles`, {
+        headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
+        signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
+    });
+    if (!response.ok) throw new Error(`Discord API error ${response.status} fetching roles for guild ${guildId}`);
+    const data = (await response.json()) as Array<{ id: string; name: string }>;
+    return data.map((r) => ({ id: r.id, name: r.name }));
 }
 
 export async function fetchGuildChannels(guildId: string): Promise<DiscordChannel[]> {
-    try {
-        const response = await fetch(`${DISCORD_API_BASE}/guilds/${guildId}/channels`, {
-            headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
-            signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
-        });
-
-        if (!response.ok) {
-            return [];
-        }
-
-        const data = (await response.json()) as Array<{ id: string; name: string; type: number }>;
-        // 0 = GUILD_TEXT, 5 = GUILD_ANNOUNCEMENT
-        return data.filter((c) => c.type === 0 || c.type === 5).map((c) => ({ id: c.id, name: c.name }));
-    } catch {
-        return [];
-    }
+    const response = await fetch(`${DISCORD_API_BASE}/guilds/${guildId}/channels`, {
+        headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
+        signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
+    });
+    if (!response.ok) throw new Error(`Discord API error ${response.status} fetching channels for guild ${guildId}`);
+    const data = (await response.json()) as Array<{ id: string; name: string; type: number }>;
+    // 0 = GUILD_TEXT, 5 = GUILD_ANNOUNCEMENT
+    return data.filter((c) => c.type === 0 || c.type === 5).map((c) => ({ id: c.id, name: c.name }));
 }
