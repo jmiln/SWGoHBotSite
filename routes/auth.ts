@@ -4,6 +4,7 @@ import { Router } from "express";
 import { authLimiter } from "../middleware/rateLimit.ts";
 import * as auth from "../modules/auth.ts";
 import { generateCsrfToken, verifyCsrfToken } from "../modules/csrf.ts";
+import { env } from "../modules/env.ts";
 import logger from "../modules/logger.ts";
 import {
     clearOAuthReturnToCookie,
@@ -15,6 +16,15 @@ import {
 } from "../modules/oauthState.ts";
 
 const router = Router();
+const SESSION_COOKIE_NAME = "connect.sid";
+
+function getSafeLoggedOutReturnTo(returnTo?: string): string {
+    if (!returnTo?.startsWith("/") || returnTo.startsWith("//")) {
+        return "/";
+    }
+
+    return returnTo;
+}
 
 router.get("/login", authLimiter, (req: Request, res: Response) => {
     const state = crypto.randomBytes(16).toString("hex");
@@ -54,6 +64,9 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
     const fallbackReturnTo = req.session.returnTo ?? cookieReturnTo ?? "/";
 
     if (!state || (state !== sessionState && state !== cookieState)) {
+        if (!sessionState) {
+            logger.warn("OAuth callback: session not found (no oauthState in session), attempted cookie fallback — state mismatch");
+        }
         if (req.session.user) {
             clearOAuthStateCookie(res);
             clearOAuthReturnToCookie(res);
@@ -68,6 +81,10 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
         });
     }
 
+    if (!sessionState) {
+        logger.warn("OAuth callback: session not found in MongoDB — using cookie state fallback");
+    }
+
     delete req.session.oauthState;
     clearOAuthStateCookie(res);
     clearOAuthReturnToCookie(res);
@@ -80,10 +97,13 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
         const { accessToken } = await auth.exchangeCodeForToken(code);
         const discordUser = await auth.fetchDiscordUser(accessToken);
         const returnTo = fallbackReturnTo;
-        await new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve) => {
             req.session.regenerate((err) => {
-                if (err) reject(err);
-                else resolve();
+                // store.generate() always runs even if destroy fails, so the new session
+                // is always created. A destroy failure only means the old session remains
+                // in MongoDB until TTL expiry — not a security or functional concern.
+                if (err) logger.warn(`Session destroy error during regenerate (non-fatal): ${err}`);
+                resolve();
             });
         });
         req.session.user = {
@@ -101,7 +121,7 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
         });
         res.redirect(returnTo);
     } catch (err) {
-        logger.error(`OAuth callback error: ${err}`);
+        logger.error(`OAuth callback error (user: ${req.session.user?.id ?? "none"}, step: post-regenerate save): ${err}`);
         res.redirect("/");
     }
 });
@@ -114,8 +134,22 @@ router.post("/logout", (req: Request, res: Response) => {
         });
     }
 
-    req.session.destroy(() => {
-        res.redirect("/");
+    const returnTo = getSafeLoggedOutReturnTo(req.body.returnTo as string | undefined);
+    req.session.destroy((err) => {
+        if (err) {
+            logger.error(`Session destroy error in /logout: ${err}`);
+            return res.status(500).render("pages/500", {
+                title: "Server Error - SWGoHBot",
+                description: "Something went wrong on our end.",
+            });
+        }
+
+        res.clearCookie(SESSION_COOKIE_NAME, {
+            httpOnly: true,
+            secure: env.NODE_ENV === "production",
+            sameSite: "lax",
+        });
+        res.redirect(returnTo);
     });
 });
 

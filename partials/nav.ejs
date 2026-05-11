@@ -32,6 +32,7 @@
                     <% } %>
                     <form method="POST" action="/logout" class="nav-logout-form">
                         <input type="hidden" name="_csrf" value="<%= logoutCsrfToken %>">
+                        <input type="hidden" name="returnTo" value="<%= logoutReturnTo %>">
                         <button type="submit" class="nav-dropdown-item nav-logout-btn">Log out</button>
                     </form>
                 </div>
