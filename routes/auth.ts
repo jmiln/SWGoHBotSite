@@ -135,12 +135,15 @@ router.post("/logout", (req: Request, res: Response) => {
     }
 
     const returnTo = getSafeLoggedOutReturnTo(req.body.returnTo as string | undefined);
+    const sessionId = req.session.id;
+
     req.session.destroy((err) => {
         if (err) {
             logger.error(`Session destroy error in /logout: ${err}`);
-            return res.status(500).render("pages/500", {
-                title: "Server Error - SWGoHBot",
-                description: "Something went wrong on our end.",
+            // Fire a background retry so the MongoDB document is still removed.
+            // The cookie is cleared below regardless, ending the browser session now.
+            req.sessionStore.destroy(sessionId, (retryErr) => {
+                if (retryErr) logger.error(`Session store destroy retry failed in /logout: ${retryErr}`);
             });
         }
 

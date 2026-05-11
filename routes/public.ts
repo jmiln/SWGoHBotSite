@@ -4,11 +4,6 @@ import * as commandService from "../modules/commandService.ts";
 
 const router = Router();
 
-router.use((req: Request, res: Response, next) => {
-    res.locals.logoutReturnTo = req.path;
-    next();
-});
-
 router.get("/", (_req: Request, res: Response) => {
     res.render("pages/index", {
         title: "SWGoHBot - Discord Bot for Star Wars Galaxy of Heroes",
