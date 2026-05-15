@@ -17,6 +17,7 @@ import authRoutes from "./routes/auth.ts";
 import guildConfigRoutes from "./routes/guildConfig.ts";
 import guildEventRoutes from "./routes/guildEvents.ts";
 import guildSelectRoutes from "./routes/guildSelect.ts";
+import healthRoutes from "./routes/health.ts";
 import publicRoutes from "./routes/public.ts";
 import userConfigRoutes from "./routes/userConfig.ts";
 import type { PluginContext } from "./types/plugin.ts";
@@ -41,6 +42,7 @@ export async function createApp(): Promise<Express> {
         next();
     });
 
+    app.use("/", healthRoutes);
     app.use(globalLimiter);
 
     app.locals.formatPayoutTimes = formatPayoutTimes;

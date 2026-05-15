@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { after, before, describe, it } from "node:test";
-import { closeDB, connectDB, getBotDB, getSwapiDB } from "../modules/db.ts";
+import { closeDB, connectDB, getBotDB, getSwapiDB, pingDB } from "../modules/db.ts";
 
 describe("db", () => {
     before(async () => {
@@ -36,5 +36,9 @@ describe("db", () => {
         const db = getSwapiDB();
         const result = await db.command({ ping: 1 });
         assert.strictEqual(result.ok, 1);
+    });
+
+    it("pingDB resolves without throwing when connected", async () => {
+        await assert.doesNotReject(pingDB);
     });
 });
