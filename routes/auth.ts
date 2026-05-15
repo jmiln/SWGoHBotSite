@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import type { Request, Response } from "express";
 import { Router } from "express";
 import { authLimiter } from "../middleware/rateLimit.ts";
@@ -6,17 +5,17 @@ import * as auth from "../modules/auth.ts";
 import { generateCsrfToken, verifyCsrfToken } from "../modules/csrf.ts";
 import { env } from "../modules/env.ts";
 import logger from "../modules/logger.ts";
-import {
-    clearOAuthReturnToCookie,
-    clearOAuthStateCookie,
-    getOAuthReturnToCookie,
-    getOAuthStateCookie,
-    setOAuthReturnToCookie,
-    setOAuthStateCookie,
-} from "../modules/oauthState.ts";
+import { createOAuthState, verifyOAuthState } from "../modules/oauthStateToken.ts";
 
 const router = Router();
 const SESSION_COOKIE_NAME = "connect.sid";
+
+// Prevent Cloudflare (and any other proxy) from caching auth responses.
+// Cloudflare strips Set-Cookie headers from cached responses, which breaks the OAuth flow.
+router.use((_req, res, next) => {
+    res.setHeader("Cache-Control", "no-store");
+    next();
+});
 
 function getSafeLoggedOutReturnTo(returnTo?: string): string {
     if (!returnTo?.startsWith("/") || returnTo.startsWith("//")) {
@@ -27,76 +26,66 @@ function getSafeLoggedOutReturnTo(returnTo?: string): string {
 }
 
 router.get("/login", authLimiter, (req: Request, res: Response) => {
-    const state = crypto.randomBytes(16).toString("hex");
-    req.session.oauthState = state;
-    setOAuthStateCookie(res, state);
+    // Determine where to send the user after login.
+    // Priority: ?returnTo query param > session.returnTo (set by protected routes) > Referer > "/"
+    let returnTo = "/";
     const rawReturnTo = req.query.returnTo as string;
     if (rawReturnTo?.startsWith("/") && !rawReturnTo.startsWith("//")) {
-        req.session.returnTo = rawReturnTo;
-    } else if (!req.session.returnTo) {
+        returnTo = rawReturnTo;
+    } else if (req.session.returnTo) {
+        returnTo = req.session.returnTo;
+    } else {
         const referer = req.get("Referer");
-        let refererPath: string | undefined;
         if (referer) {
             try {
                 const url = new URL(referer);
                 if (url.origin === `${req.protocol}://${req.get("host")}`) {
-                    refererPath = url.pathname;
+                    returnTo = url.pathname;
                 }
             } catch {
                 // malformed Referer — ignore
             }
         }
-        req.session.returnTo = refererPath ?? "/";
     }
-    setOAuthReturnToCookie(res, req.session.returnTo ?? "/");
-    req.session.save((err) => {
-        if (err) logger.error(`Session save error in /login: ${err}`);
-        res.redirect(auth.buildDiscordAuthURL(state));
-    });
+
+    // The state is a signed token containing returnTo and a timestamp.
+    // No session write or cookie is needed — the signature is verified at callback time.
+    const state = createOAuthState(returnTo);
+    res.redirect(auth.buildDiscordAuthURL(state));
 });
 
 router.get("/callback", authLimiter, async (req: Request, res: Response) => {
     const code = req.query.code as string | undefined;
     const state = req.query.state as string | undefined;
-    const cookieState = getOAuthStateCookie(req);
-    const cookieReturnTo = getOAuthReturnToCookie(req);
-    const sessionState = req.session.oauthState;
-    const fallbackReturnTo = req.session.returnTo ?? cookieReturnTo ?? "/";
 
-    if (!state || (state !== sessionState && state !== cookieState)) {
-        if (!sessionState) {
-            logger.warn("OAuth callback: session not found (no oauthState in session), attempted cookie fallback — state mismatch");
-        }
-        if (req.session.user) {
-            clearOAuthStateCookie(res);
-            clearOAuthReturnToCookie(res);
-            return res.redirect(fallbackReturnTo);
-        }
-
-        clearOAuthStateCookie(res);
-        clearOAuthReturnToCookie(res);
+    if (!state) {
         return res.status(403).render("pages/500", {
             title: "Forbidden - SWGoHBot",
             description: "Invalid OAuth state. Please try logging in again.",
         });
     }
 
-    if (!sessionState) {
-        logger.warn("OAuth callback: session not found in MongoDB — using cookie state fallback");
+    // Already logged in and arrived at callback (e.g. browser back button) — just redirect.
+    if (req.session.user) {
+        return res.redirect("/");
     }
-
-    delete req.session.oauthState;
-    clearOAuthStateCookie(res);
-    clearOAuthReturnToCookie(res);
 
     if (!code) {
         return res.redirect("/");
     }
 
+    const returnTo = verifyOAuthState(state);
+    if (returnTo === null) {
+        logger.warn(`OAuth callback: state verification failed (state=${state.slice(0, 20)}...)`);
+        return res.status(403).render("pages/500", {
+            title: "Forbidden - SWGoHBot",
+            description: "Invalid OAuth state. Please try logging in again.",
+        });
+    }
+
     try {
         const { accessToken } = await auth.exchangeCodeForToken(code);
         const discordUser = await auth.fetchDiscordUser(accessToken);
-        const returnTo = fallbackReturnTo;
         await new Promise<void>((resolve) => {
             req.session.regenerate((err) => {
                 // store.generate() always runs even if destroy fails, so the new session
@@ -121,7 +110,7 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
         });
         res.redirect(returnTo);
     } catch (err) {
-        logger.error(`OAuth callback error (user: ${req.session.user?.id ?? "none"}, step: post-regenerate save): ${err}`);
+        logger.error(`OAuth callback error: ${err}`);
         res.redirect("/");
     }
 });

@@ -7,7 +7,6 @@ declare module "express-session" {
             username: string;
             avatar: string | null;
         };
-        oauthState?: string;
         returnTo?: string;
         accessToken?: string;
         csrfToken?: string;
