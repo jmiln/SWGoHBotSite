@@ -27,3 +27,11 @@ export const saveLimiter = rateLimit({
         res.redirect(`/guild/${guildId}/edit`);
     },
 });
+
+export const healthLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 60,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: "Too many requests to /health, please try again later.",
+});

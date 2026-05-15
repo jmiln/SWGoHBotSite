@@ -14,7 +14,7 @@ export function buildDiscordAuthURL(state: string): string {
     return `https://discord.com/oauth2/authorize?${params.toString()}`;
 }
 
-export async function exchangeCodeForToken(code: string): Promise<{ accessToken: string; expiresIn: number }> {
+export async function exchangeCodeForToken(code: string): Promise<{ accessToken: string; refreshToken: string; expiresIn: number }> {
     const params = new URLSearchParams({
         client_id: env.DISCORD_CLIENT_ID,
         client_secret: env.DISCORD_CLIENT_SECRET,
@@ -35,8 +35,32 @@ export async function exchangeCodeForToken(code: string): Promise<{ accessToken:
         throw new Error(`Token exchange failed (${response.status}): ${text}`);
     }
 
-    const data = (await response.json()) as { access_token: string; expires_in: number };
-    return { accessToken: data.access_token, expiresIn: data.expires_in };
+    const data = (await response.json()) as { access_token: string; refresh_token: string; expires_in: number };
+    return { accessToken: data.access_token, refreshToken: data.refresh_token, expiresIn: data.expires_in };
+}
+
+export async function refreshAccessToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; expiresIn: number }> {
+    const params = new URLSearchParams({
+        client_id: env.DISCORD_CLIENT_ID,
+        client_secret: env.DISCORD_CLIENT_SECRET,
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+    });
+
+    const response = await fetch(`${DISCORD_API_BASE}/oauth2/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString(),
+        signal: AbortSignal.timeout(DISCORD_API_TIMEOUT_MS),
+    });
+
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Token refresh failed (${response.status}): ${text}`);
+    }
+
+    const data = (await response.json()) as { access_token: string; refresh_token: string; expires_in: number };
+    return { accessToken: data.access_token, refreshToken: data.refresh_token, expiresIn: data.expires_in };
 }
 
 export interface DiscordUser {

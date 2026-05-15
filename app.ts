@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import type { ErrorRequestHandler, Express, NextFunction, Request, Response } from "express";
 import express from "express";
 import { requireAdmin } from "./middleware/admin.ts";
+import { requireFreshToken } from "./middleware/tokenRefresh.ts";
 import { globalLimiter } from "./middleware/rateLimit.ts";
 import { applySecurity } from "./middleware/security.ts";
 import { applySession } from "./middleware/session.ts";
@@ -88,9 +89,9 @@ export async function createApp(): Promise<Express> {
     app.use("/", publicRoutes);
     app.use("/", authRoutes);
     app.use("/", userConfigRoutes);
-    app.use("/", guildSelectRoutes);
-    app.use("/", guildConfigRoutes);
-    app.use("/", guildEventRoutes);
+    app.use("/", requireFreshToken, guildSelectRoutes);
+    app.use("/", requireFreshToken, guildConfigRoutes);
+    app.use("/", requireFreshToken, guildEventRoutes);
 
     app.locals.pluginNavItems = plugins.flatMap((p) => p.navItems ?? []);
 

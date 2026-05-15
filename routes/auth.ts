@@ -84,7 +84,14 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
     }
 
     try {
-        const { accessToken } = await auth.exchangeCodeForToken(code);
+        const { accessToken, refreshToken, expiresIn } = await auth.exchangeCodeForToken(code);
+        if (!refreshToken || !expiresIn) {
+            logger.error("OAuth callback: Discord token response missing refreshToken or expiresIn");
+            return res.status(500).render("pages/500", {
+                title: "Server Error - SWGoHBot",
+                description: "Failed to complete login. Please try again.",
+            });
+        }
         const discordUser = await auth.fetchDiscordUser(accessToken);
         await new Promise<void>((resolve) => {
             req.session.regenerate((err) => {
@@ -101,6 +108,8 @@ router.get("/callback", authLimiter, async (req: Request, res: Response) => {
             avatar: discordUser.avatar,
         };
         req.session.accessToken = accessToken;
+        req.session.refreshToken = refreshToken;
+        req.session.tokenExpiresAt = Date.now() + expiresIn * 1000;
         generateCsrfToken(req);
         await new Promise<void>((resolve, reject) => {
             req.session.save((err) => {

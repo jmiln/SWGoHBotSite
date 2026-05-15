@@ -9,6 +9,8 @@ declare module "express-session" {
         };
         returnTo?: string;
         accessToken?: string;
+        refreshToken?: string;
+        tokenExpiresAt?: number;
         csrfToken?: string;
         flash?: { type: "success" | "error"; message: string };
         cachedGuilds?: {
