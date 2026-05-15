@@ -14,10 +14,15 @@ export function applySession(app: Express): void {
 
     app.use(
         session({
-            store: MongoStore.create({ mongoUrl: env.MONGODB_URI }),
+            store: MongoStore.create({
+                mongoUrl: env.MONGODB_URI,
+                // Match the cookie TTL so MongoDB doesn't expire sessions before the cookie does.
+                ttl: 7 * 24 * 60 * 60,
+            }),
             secret: env.SESSION_SECRET,
             resave: false,
             saveUninitialized: false,
+            rolling: true,
             cookie: {
                 httpOnly: true,
                 secure: env.NODE_ENV === "production",
