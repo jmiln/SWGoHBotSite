@@ -89,6 +89,49 @@ test("channel: rejects empty string", () => {
     assert.ok(!r.success, "should have failed");
 });
 
+// --- GuildEventFormSchema.repeatDays refine (non-empty path) ---
+
+test("repeatDays: accepts valid comma-separated positive integers", () => {
+    const r = GuildEventFormSchema.safeParse({ name: "Test Event", repeatDays: "1,7,14" });
+    assert.ok(r.success, JSON.stringify(r));
+});
+
+test("repeatDays: rejects list containing a non-integer string", () => {
+    const r = GuildEventFormSchema.safeParse({ name: "Test Event", repeatDays: "1,abc,7" });
+    assert.ok(!r.success, "should have failed");
+});
+
+test("repeatDays: rejects list containing zero", () => {
+    const r = GuildEventFormSchema.safeParse({ name: "Test Event", repeatDays: "0,7" });
+    assert.ok(!r.success, "should have failed");
+});
+
+// --- GuildSettingsFormSchema.eventCountdown transform ---
+
+test("eventCountdown: parses valid comma-separated positive integers into number array", () => {
+    const r = GuildSettingsFormSchema.safeParse({ eventCountdown: "1,7,14" });
+    assert.ok(r.success, JSON.stringify(r));
+    assert.deepStrictEqual(r.data?.eventCountdown, [1, 7, 14]);
+});
+
+test("eventCountdown: rejects list containing a non-integer string and names the invalid value", () => {
+    const r = GuildSettingsFormSchema.safeParse({ eventCountdown: "1,abc,7" });
+    assert.ok(!r.success, "should have failed");
+    assert.ok(
+        r.error?.issues.some((i) => i.message.includes('"abc"')),
+        `Expected error mentioning "abc", got: ${JSON.stringify(r.error?.issues)}`,
+    );
+});
+
+test("eventCountdown: rejects list containing zero and names the invalid value", () => {
+    const r = GuildSettingsFormSchema.safeParse({ eventCountdown: "0,7" });
+    assert.ok(!r.success, "should have failed");
+    assert.ok(
+        r.error?.issues.some((i) => i.message.includes('"0"')),
+        `Expected error mentioning "0", got: ${JSON.stringify(r.error?.issues)}`,
+    );
+});
+
 test("eventDTUtc: accepts a future UTC timestamp", () => {
     const r = GuildEventFormSchema.safeParse({
         name: "Test Event",

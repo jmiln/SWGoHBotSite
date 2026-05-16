@@ -28,6 +28,19 @@ describe("GET /health", () => {
         await closeDB();
     });
 
+    it("returns 503 when the database is unreachable", async () => {
+        await closeDB();
+        try {
+            const res = await fetch(`${baseUrl}/health`);
+            assert.strictEqual(res.status, 503);
+            const body = (await res.json()) as { status: string; db: string };
+            assert.strictEqual(body.status, "degraded");
+            assert.strictEqual(body.db, "error");
+        } finally {
+            await connectDB();
+        }
+    });
+
     it("returns 200 with ok status when DB is healthy", async () => {
         const res = await fetch(`${baseUrl}/health`);
         assert.strictEqual(res.status, 200);

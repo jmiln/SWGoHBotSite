@@ -91,3 +91,11 @@ test("verifyOAuthState returns null for a future-dated token", () => {
 test("verifyOAuthState returns null for garbage input", () => {
     assert.strictEqual(verifyOAuthState("not.a.valid.token.at.all"), null);
 });
+
+test("verifyOAuthState returns null for a token with a valid signature but non-JSON payload", () => {
+    const payloadB64 = toBase64url(Buffer.from("not-valid-json!!!"));
+    const sig = toBase64url(
+        crypto.createHmac("sha256", process.env.SESSION_SECRET as string).update(payloadB64).digest(),
+    );
+    assert.strictEqual(verifyOAuthState(`${payloadB64}.${sig}`), null);
+});

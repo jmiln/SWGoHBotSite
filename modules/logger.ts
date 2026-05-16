@@ -30,7 +30,15 @@ const timeFormatter = new Intl.DateTimeFormat("en", {
     timeZone: "America/Los_Angeles",
 });
 
-function formatLogLine(raw: string): string {
+/** Converts any loggable value to a string for pino. */
+export function stringify(content: unknown): string {
+    if (typeof content === "string") return content;
+    if (content instanceof Error) return content.stack ?? content.message;
+    return JSON.stringify(content);
+}
+
+/** Parses a pino JSON line and returns a human-readable, ANSI-coloured string. */
+export function formatLogLine(raw: string): string {
     try {
         const obj = JSON.parse(raw);
         const level = LEVEL_FORMAT[obj.level as number] ?? { label: "UNKNOWN", color: ANSI.white };
@@ -67,30 +75,24 @@ class Logger {
         );
     }
 
-    private stringify(content: unknown): string {
-        if (typeof content === "string") return content;
-        if (content instanceof Error) return content.stack ?? content.message;
-        return JSON.stringify(content);
-    }
-
     log(content: unknown): void {
-        this.pinoInstance.info(this.stringify(content));
+        this.pinoInstance.info(stringify(content));
     }
 
     info(content: unknown): void {
-        this.pinoInstance.info(this.stringify(content));
+        this.pinoInstance.info(stringify(content));
     }
 
     warn(content: unknown): void {
-        this.pinoInstance.warn(this.stringify(content));
+        this.pinoInstance.warn(stringify(content));
     }
 
     error(content: unknown): void {
-        this.pinoInstance.error(this.stringify(content));
+        this.pinoInstance.error(stringify(content));
     }
 
     debug(content: unknown): void {
-        this.pinoInstance.debug(this.stringify(content));
+        this.pinoInstance.debug(stringify(content));
     }
 }
 

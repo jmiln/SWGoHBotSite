@@ -18,6 +18,7 @@ process.env.ADMIN_DISCORD_ID = "111111111111111111";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const FIXTURE_PLUGIN_PATH = join(__dirname, "fixtures/testPlugin");
+const BROKEN_PLUGIN_PATH = join(__dirname, "fixtures/brokenPlugin");
 
 const mockCtx = {
     env: process.env,
@@ -55,6 +56,13 @@ describe("loadPlugins", () => {
 
     test("skips nonexistent path and logs warning without throwing", async () => {
         process.env.EXTRAS_PATHS = "/nonexistent/path/plugin";
+        const { loadPlugins } = await import("../modules/pluginLoader.ts");
+        const result = await loadPlugins(mockCtx as never);
+        assert.strictEqual(result.length, 0);
+    });
+
+    test("logs warning and skips plugin that exists but throws during import", async () => {
+        process.env.EXTRAS_PATHS = BROKEN_PLUGIN_PATH;
         const { loadPlugins } = await import("../modules/pluginLoader.ts");
         const result = await loadPlugins(mockCtx as never);
         assert.strictEqual(result.length, 0);
