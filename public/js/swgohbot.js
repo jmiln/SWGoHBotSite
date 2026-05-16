@@ -16,20 +16,11 @@ $(document).ready(() => {
     });
 
     // Navbar toggle (mobile)
+    const $navbarLinks = $("#navbar-links");
     $("#navbar-toggle").on("click", function () {
-        const navbar = document.getElementById("navbar");
-        const menus = navbar.getElementsByClassName("nav-links");
-        for (const menu of menus) {
-            menu.classList.toggle("hide-mobile");
-        }
-        const buttons = navbar.getElementsByClassName("nav-btn");
-        for (const button of buttons) {
-            if (!button.closest(".nav-right")) {
-                button.classList.toggle("hide-mobile");
-            }
-        }
         const isExpanded = $(this).attr("aria-expanded") === "true";
         $(this).attr("aria-expanded", String(!isExpanded));
+        $navbarLinks.toggleClass("open", !isExpanded);
     });
 
     // Highlight the active nav link

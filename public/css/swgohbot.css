@@ -149,6 +149,11 @@ main {
     align-items: center;
 }
 
+#navbar-links {
+    display: flex;
+    align-items: center;
+}
+
 .nav-btn {
     display: inline-block;
     font-weight: 400;
@@ -615,7 +620,17 @@ footer .disclaimer {
 }
 @media screen and (max-width: 800px) {
     /* Navbar stuff */
-    .navbar .nav-links:not(.hide-mobile) {
+    #navbar-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #navbar-links.open {
+        display: flex;
+    }
+
+    #navbar-links .nav-links {
         display: block;
     }
     .navbar .navbar-brand {
