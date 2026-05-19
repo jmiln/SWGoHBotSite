@@ -67,13 +67,9 @@ const router = Router();
 
 // GET /guild/:id
 router.get("/guild/:id", async (req: Request, res: Response) => {
-    if (!req.session.user || !req.session.accessToken) {
-        req.session.returnTo = `/guild/${req.params.id}`;
-        return res.redirect("/login");
-    }
-
     const user = req.session.user;
     const accessToken = req.session.accessToken;
+    if (!user || !accessToken) return;
     const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
     try {
@@ -152,12 +148,8 @@ router.get("/guild/:id", async (req: Request, res: Response) => {
 
 // GET /guild/:id/edit
 router.get("/guild/:id/edit", async (req: Request, res: Response) => {
-    if (!req.session.user || !req.session.accessToken) {
-        req.session.returnTo = `/guild/${req.params.id}/edit`;
-        return res.redirect("/login");
-    }
-
     const accessToken = req.session.accessToken;
+    if (!req.session.user || !accessToken) return;
     const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
     try {
@@ -212,11 +204,8 @@ router.get("/guild/:id/edit", async (req: Request, res: Response) => {
 
 // POST /guild/:id/edit
 router.post("/guild/:id/edit", saveLimiter, async (req: Request, res: Response) => {
-    if (!req.session.user || !req.session.accessToken) {
-        return res.redirect("/login");
-    }
-
     const accessToken = req.session.accessToken;
+    if (!req.session.user || !accessToken) return;
     const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
     if (!verifyCsrfToken(req)) {

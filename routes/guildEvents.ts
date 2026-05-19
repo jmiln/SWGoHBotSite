@@ -12,12 +12,8 @@ const router = Router();
 
 // GET /guild/:id/event/new
 router.get("/guild/:id/event/new", async (req: Request, res: Response) => {
-    if (!req.session.user || !req.session.accessToken) {
-        req.session.returnTo = `/guild/${req.params.id}/event/new`;
-        return res.redirect("/login");
-    }
-
     const accessToken = req.session.accessToken;
+    if (!req.session.user || !accessToken) return;
     const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
     try {
@@ -71,9 +67,8 @@ router.get("/guild/:id/event/new", async (req: Request, res: Response) => {
 
 // POST /guild/:id/event/new
 router.post("/guild/:id/event/new", async (req: Request, res: Response) => {
-    if (!req.session.user || !req.session.accessToken) return res.redirect("/login");
-
     const accessToken = req.session.accessToken;
+    if (!req.session.user || !accessToken) return;
     const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
     if (!verifyCsrfToken(req)) {
@@ -151,13 +146,8 @@ router.get("/guild/:id/event/:name/edit", async (req: Request, res: Response) =>
     const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const nameParam = Array.isArray(req.params.name) ? req.params.name[0] : req.params.name;
     const eventName = decodeURIComponent(nameParam);
-
-    if (!req.session.user || !req.session.accessToken) {
-        req.session.returnTo = `/guild/${guildId}/event/${nameParam}/edit`;
-        return res.redirect("/login");
-    }
-
     const accessToken = req.session.accessToken;
+    if (!req.session.user || !accessToken) return;
 
     try {
         const [config, guilds] = await Promise.all([getGuildConfig(guildId), getCachedUserGuilds(req, accessToken)]);
@@ -199,9 +189,8 @@ router.get("/guild/:id/event/:name/edit", async (req: Request, res: Response) =>
 
 // POST /guild/:id/event/:name/edit
 router.post("/guild/:id/event/:name/edit", async (req: Request, res: Response) => {
-    if (!req.session.user || !req.session.accessToken) return res.redirect("/login");
-
     const accessToken = req.session.accessToken;
+    if (!req.session.user || !accessToken) return;
     const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const originalName = decodeURIComponent((Array.isArray(req.params.name) ? req.params.name[0] : req.params.name) as string);
 
@@ -278,9 +267,8 @@ router.post("/guild/:id/event/:name/edit", async (req: Request, res: Response) =
 
 // POST /guild/:id/event/:name/delete
 router.post("/guild/:id/event/:name/delete", async (req: Request, res: Response) => {
-    if (!req.session.user || !req.session.accessToken) return res.redirect("/login");
-
     const accessToken = req.session.accessToken;
+    if (!req.session.user || !accessToken) return;
     const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const eventName = decodeURIComponent((Array.isArray(req.params.name) ? req.params.name[0] : req.params.name) as string);
 

@@ -16,11 +16,8 @@ const router = Router();
 
 // GET /config
 router.get("/config", async (req: Request, res: Response) => {
-    if (!req.session.user) {
-        req.session.returnTo = "/config";
-        return res.redirect("/login");
-    }
     const user = req.session.user;
+    if (!user) return;
     const userConfig = await getUser(user.id);
     if (userConfig?.accounts) {
         userConfig.accounts.sort((a: { name: string }, b: { name: string }) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
@@ -42,11 +39,8 @@ router.get("/config", async (req: Request, res: Response) => {
 
 // GET /config/edit/lang
 router.get("/config/edit/lang", async (req: Request, res: Response) => {
-    if (!req.session.user) {
-        req.session.returnTo = "/config/edit/lang";
-        return res.redirect("/login");
-    }
     const user = req.session.user;
+    if (!user) return;
     const userConfig = await getUser(user.id);
     const csrfToken = generateCsrfToken(req);
     res.render("pages/config-edit-lang", {
@@ -60,9 +54,9 @@ router.get("/config/edit/lang", async (req: Request, res: Response) => {
 
 // POST /config/lang
 router.post("/config/lang", async (req: Request, res: Response) => {
-    if (!req.session.user) return res.redirect("/login");
     if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
     const user = req.session.user;
+    if (!user) return;
     try {
         const userConfig = await getUser(user.id);
         if (!userConfig) {
@@ -90,11 +84,8 @@ router.post("/config/lang", async (req: Request, res: Response) => {
 
 // GET /config/edit/arena-alert
 router.get("/config/edit/arena-alert", async (req: Request, res: Response) => {
-    if (!req.session.user) {
-        req.session.returnTo = "/config/edit/arena-alert";
-        return res.redirect("/login");
-    }
     const user = req.session.user;
+    if (!user) return;
     const userConfig = await getUser(user.id);
     const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
     if (!isPatreon) {
@@ -113,9 +104,9 @@ router.get("/config/edit/arena-alert", async (req: Request, res: Response) => {
 
 // POST /config/arena-alert
 router.post("/config/arena-alert", async (req: Request, res: Response) => {
-    if (!req.session.user) return res.redirect("/login");
     if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
     const user = req.session.user;
+    if (!user) return;
     try {
         const userConfig = await getUser(user.id);
         if (!userConfig) {
@@ -155,11 +146,8 @@ router.post("/config/arena-alert", async (req: Request, res: Response) => {
 
 // GET /config/edit/arena-watch
 router.get("/config/edit/arena-watch", async (req: Request, res: Response) => {
-    if (!req.session.user) {
-        req.session.returnTo = "/config/edit/arena-watch";
-        return res.redirect("/login");
-    }
     const user = req.session.user;
+    if (!user) return;
     const userConfig = await getUser(user.id);
     const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
     if (!isPatreon) {
@@ -178,9 +166,9 @@ router.get("/config/edit/arena-watch", async (req: Request, res: Response) => {
 
 // POST /config/arena-watch
 router.post("/config/arena-watch", async (req: Request, res: Response) => {
-    if (!req.session.user) return res.redirect("/login");
     if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
     const user = req.session.user;
+    if (!user) return;
     try {
         const userConfig = await getUser(user.id);
         if (!userConfig) {
@@ -219,11 +207,8 @@ router.post("/config/arena-watch", async (req: Request, res: Response) => {
 
 // GET /config/edit/guild-update
 router.get("/config/edit/guild-update", async (req: Request, res: Response) => {
-    if (!req.session.user) {
-        req.session.returnTo = "/config/edit/guild-update";
-        return res.redirect("/login");
-    }
     const user = req.session.user;
+    if (!user) return;
     const userConfig = await getUser(user.id);
     const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
     if (!isPatreon) {
@@ -242,9 +227,9 @@ router.get("/config/edit/guild-update", async (req: Request, res: Response) => {
 
 // POST /config/guild-update
 router.post("/config/guild-update", async (req: Request, res: Response) => {
-    if (!req.session.user) return res.redirect("/login");
     if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
     const user = req.session.user;
+    if (!user) return;
     try {
         const userConfig = await getUser(user.id);
         if (!userConfig) {
@@ -279,11 +264,8 @@ router.post("/config/guild-update", async (req: Request, res: Response) => {
 
 // GET /config/edit/guild-tickets
 router.get("/config/edit/guild-tickets", async (req: Request, res: Response) => {
-    if (!req.session.user) {
-        req.session.returnTo = "/config/edit/guild-tickets";
-        return res.redirect("/login");
-    }
     const user = req.session.user;
+    if (!user) return;
     const userConfig = await getUser(user.id);
     const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
     if (!isPatreon) {
@@ -302,9 +284,9 @@ router.get("/config/edit/guild-tickets", async (req: Request, res: Response) => 
 
 // POST /config/guild-tickets
 router.post("/config/guild-tickets", async (req: Request, res: Response) => {
-    if (!req.session.user) return res.redirect("/login");
     if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
     const user = req.session.user;
+    if (!user) return;
     try {
         const userConfig = await getUser(user.id);
         if (!userConfig) {

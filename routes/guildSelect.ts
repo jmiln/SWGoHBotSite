@@ -9,13 +9,9 @@ import logger from "../modules/logger.ts";
 const router = Router();
 
 router.get("/guild-select", async (req: Request, res: Response) => {
-    if (!req.session.user || !req.session.accessToken) {
-        req.session.returnTo = "/guild-select";
-        return res.redirect("/login");
-    }
-
     const user = req.session.user;
     const accessToken = req.session.accessToken;
+    if (!user || !accessToken) return;
 
     try {
         const guilds = await getCachedUserGuilds(req, accessToken);
