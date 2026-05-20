@@ -4,6 +4,7 @@ import type { ErrorRequestHandler, Express, NextFunction, Request, Response } fr
 import express from "express";
 import { requireAdmin } from "./middleware/admin.ts";
 import { requireLogin } from "./middleware/requireLogin.ts";
+import { requestLogger } from "./middleware/requestLogger.ts";
 import { requireFreshToken } from "./middleware/tokenRefresh.ts";
 import { globalLimiter } from "./middleware/rateLimit.ts";
 import { applySecurity } from "./middleware/security.ts";
@@ -33,6 +34,7 @@ export async function createApp(): Promise<Express> {
     app.set("trust proxy", "loopback, linklocal, uniquelocal");
 
     applySecurity(app);
+    app.use(requestLogger);
     app.use(express.static(join(__dirname, "public")));
     applySession(app);
     app.use(express.urlencoded({ extended: false }));
