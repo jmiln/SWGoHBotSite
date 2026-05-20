@@ -5,5 +5,5 @@ export function requireLogin(req: Request, res: Response, next: NextFunction): v
         next();
         return;
     }
-    res.redirect(`/login?returnTo=${encodeURIComponent(req.path)}`);
+    res.redirect(`/login?returnTo=${encodeURIComponent(req.originalUrl)}`);
 }

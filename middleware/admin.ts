@@ -6,8 +6,5 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction): v
         next();
         return;
     }
-    res.status(403).render("pages/500", {
-        title: "Forbidden - SWGoHBot",
-        description: "You do not have permission to view this page.",
-    });
+    res.status(403).render("pages/403");
 }

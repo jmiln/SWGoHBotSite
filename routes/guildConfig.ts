@@ -250,7 +250,7 @@ router.post("/guild/:id/edit", saveLimiter, async (req: Request, res: Response) 
             timezone: req.body.timezone || undefined,
             useEventPages: req.body.useEventPages === "on",
             shardtimeVertical: req.body.shardtimeVertical === "on",
-            announceChan: req.body.announceChan ?? undefined,
+            announceChan: req.body.announceChan || undefined,
             adminRole: adminRoleArr,
             eventCountdown: req.body.eventCountdown ?? "",
             enableWelcome: req.body.enableWelcome === "on",

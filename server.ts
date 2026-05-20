@@ -20,12 +20,11 @@ const shutdown = async (signal: string) => {
         process.exit(1);
     }, 10_000).unref();
 
+    server.closeAllConnections();
     server.close(async () => {
         await closeDB();
         process.exit(0);
     });
-
-    server.closeAllConnections();
 };
 
 process.once("SIGTERM", () => shutdown("SIGTERM"));

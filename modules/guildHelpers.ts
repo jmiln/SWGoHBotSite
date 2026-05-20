@@ -24,10 +24,12 @@ export async function canAccessGuild(
     adminRoles: string[],
 ): Promise<boolean> {
     if (BigInt(discordPermissions) & 32n) return true;
+    if (!adminRoles.length) return false;
     try {
         const member = await auth.fetchGuildMember(accessToken, guildId);
         return member.roles.some((r) => adminRoles.includes(r));
-    } catch {
+    } catch (err) {
+        if (err instanceof Error && err.message.includes("401")) throw err;
         return false;
     }
 }
