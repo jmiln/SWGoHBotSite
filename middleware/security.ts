@@ -49,7 +49,29 @@ export function applySecurity(app: Express): void {
     );
 
     app.use((_req: Request, res: Response, next: NextFunction) => {
-        res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=()");
+        res.setHeader(
+            "Permissions-Policy",
+            [
+                "camera=()",
+                "microphone=()",
+                "geolocation=()",
+                "payment=()",
+                "accelerometer=()",
+                "gyroscope=()",
+                "magnetometer=()",
+                "autoplay=()",
+                "display-capture=()",
+                "encrypted-media=()",
+                "fullscreen=()",
+                "picture-in-picture=()",
+                "publickey-credentials-create=()",
+                "publickey-credentials-get=()",
+                "screen-wake-lock=()",
+                "serial=()",
+                "usb=()",
+                "xr-spatial-tracking=()",
+            ].join(", "),
+        );
         next();
     });
 }
