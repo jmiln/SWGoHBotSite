@@ -3,7 +3,7 @@ import { Router } from "express";
 import * as botApi from "../modules/botApi.ts";
 import { formatValidationError } from "../modules/botSchemas.ts";
 import { generateCsrfToken, rotateCsrfToken, verifyCsrfToken } from "../modules/csrf.ts";
-import { GuildSettingsFormSchema } from "../modules/formSchemas.ts";
+import { GuildSettingsFormSchema, VALID_TIMEZONES } from "../modules/formSchemas.ts";
 import { diffFromDefaults, type GuildConfig, updateGuildSettings } from "../modules/guilds.ts";
 import logger from "../modules/logger.ts";
 import { requireGuildAccess, type GuildLocals } from "../middleware/requireGuildAccess.ts";
@@ -40,7 +40,7 @@ async function renderEditForm(
     try {
         const [roles, channels] = await Promise.all([botApi.fetchGuildRoles(guildId), botApi.fetchGuildChannels(guildId)]);
         const csrfToken = generateCsrfToken(req);
-        const timezones = Intl.supportedValuesOf("timeZone");
+        const timezones = VALID_TIMEZONES;
         res.locals.flash = flash;
         res.render("pages/guild-config-edit", {
             title: `Edit ${guild.name} Config — SWGoHBot`,
@@ -137,7 +137,7 @@ router.get("/guild/:id/edit", requireGuildAccess, async (req: Request, res: Resp
     try {
         const [roles, channels] = await Promise.all([botApi.fetchGuildRoles(guildId), botApi.fetchGuildChannels(guildId)]);
         const csrfToken = generateCsrfToken(req);
-        const timezones = Intl.supportedValuesOf("timeZone");
+        const timezones = VALID_TIMEZONES;
 
         res.render("pages/guild-config-edit", {
             title: `Edit ${guild.name} Config — SWGoHBot`,

@@ -100,7 +100,7 @@ export const GuildEventFormSchema = z
         { message: "Repeat days must be a comma-separated list of positive integers greater than 0 (e.g. 1,7,14)." },
     );
 
-const VALID_TIMEZONES = Intl.supportedValuesOf("timeZone");
+export const VALID_TIMEZONES = Intl.supportedValuesOf("timeZone");
 
 export const GuildSettingsFormSchema = z.object({
     language: languageEnum.optional(),

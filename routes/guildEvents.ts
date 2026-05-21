@@ -127,8 +127,7 @@ router.post("/guild/:id/event/new", requireGuildAccess, async (req: Request, res
 // GET /guild/:id/event/:name/edit
 router.get("/guild/:id/event/:name/edit", requireGuildAccess, async (req: Request, res: Response) => {
     const { guildId, guild, config } = res.locals as GuildLocals;
-    const nameParam = Array.isArray(req.params.name) ? req.params.name[0] : req.params.name;
-    const eventName = decodeURIComponent(nameParam);
+    const eventName = req.params.name as string;
 
     if (!config) {
         res.redirect(`/guild/${guildId}`);
@@ -170,7 +169,7 @@ router.get("/guild/:id/event/:name/edit", requireGuildAccess, async (req: Reques
 // POST /guild/:id/event/:name/edit
 router.post("/guild/:id/event/:name/edit", requireGuildAccess, async (req: Request, res: Response) => {
     const { guildId, config } = res.locals as GuildLocals;
-    const originalName = decodeURIComponent((Array.isArray(req.params.name) ? req.params.name[0] : req.params.name) as string);
+    const originalName = req.params.name as string;
 
     if (!config) {
         res.redirect(`/guild/${guildId}`);
@@ -249,7 +248,7 @@ router.post("/guild/:id/event/:name/edit", requireGuildAccess, async (req: Reque
 // POST /guild/:id/event/:name/delete
 router.post("/guild/:id/event/:name/delete", requireGuildAccess, async (req: Request, res: Response) => {
     const { guildId, config } = res.locals as GuildLocals;
-    const eventName = decodeURIComponent((Array.isArray(req.params.name) ? req.params.name[0] : req.params.name) as string);
+    const eventName = req.params.name as string;
 
     if (!config) {
         res.redirect(`/guild/${guildId}`);

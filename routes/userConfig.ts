@@ -10,9 +10,26 @@ import {
     LangFormSchema,
 } from "../modules/formSchemas.ts";
 import logger from "../modules/logger.ts";
-import { getUser, updateUser } from "../modules/users.ts";
+import { type UserConfig, getUser, updateUser } from "../modules/users.ts";
 
 const router = Router();
+
+function isPatreon(userConfig: UserConfig | null | undefined): boolean {
+    return (userConfig?.patreonAmountCents ?? 0) > 0;
+}
+
+async function renderPatreonGatedEdit(req: Request, res: Response, page: string, title: string, description: string): Promise<void> {
+    const user = req.session.user;
+    if (!user) return;
+    const userConfig = await getUser(user.id);
+    if (!isPatreon(userConfig)) {
+        req.session.flash = { type: "error", message: "This feature requires an active Patreon subscription." };
+        res.redirect("/config");
+        return;
+    }
+    const csrfToken = generateCsrfToken(req);
+    res.render(page, { title, description, user, userConfig, csrfToken });
+}
 
 // GET /config
 router.get("/config", async (req: Request, res: Response) => {
@@ -27,13 +44,12 @@ router.get("/config", async (req: Request, res: Response) => {
             a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
         );
     }
-    const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
     res.render("pages/config", {
         title: "My Config — SWGoHBot",
         description: "Your SWGoHBot configuration.",
         user,
         userConfig,
-        isPatreon,
+        isPatreon: isPatreon(userConfig),
     });
 });
 
@@ -54,14 +70,18 @@ router.get("/config/edit/lang", async (req: Request, res: Response) => {
 
 // POST /config/lang
 router.post("/config/lang", async (req: Request, res: Response) => {
-    if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
+    if (!verifyCsrfToken(req)) {
+        res.status(403).send("Forbidden");
+        return;
+    }
     const user = req.session.user;
     if (!user) return;
     try {
         const userConfig = await getUser(user.id);
         if (!userConfig) {
             req.session.flash = { type: "error", message: "Config not found." };
-            return res.redirect("/config");
+            res.redirect("/config");
+            return;
         }
         const parsed = LangFormSchema.safeParse({
             language: req.body.language || undefined,
@@ -69,7 +89,8 @@ router.post("/config/lang", async (req: Request, res: Response) => {
         });
         if (!parsed.success) {
             req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
-            return res.redirect("/config/edit/lang");
+            res.redirect("/config/edit/lang");
+            return;
         }
         await updateUser(user.id, { lang: parsed.data });
         rotateCsrfToken(req);
@@ -83,38 +104,34 @@ router.post("/config/lang", async (req: Request, res: Response) => {
 });
 
 // GET /config/edit/arena-alert
-router.get("/config/edit/arena-alert", async (req: Request, res: Response) => {
-    const user = req.session.user;
-    if (!user) return;
-    const userConfig = await getUser(user.id);
-    const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
-    if (!isPatreon) {
-        req.session.flash = { type: "error", message: "This feature requires an active Patreon subscription." };
-        return res.redirect("/config");
-    }
-    const csrfToken = generateCsrfToken(req);
-    res.render("pages/config-edit-arena-alert", {
-        title: "Edit Arena Alert Settings — SWGoHBot",
-        description: "Edit your SWGoHBot arena alert settings.",
-        user,
-        userConfig,
-        csrfToken,
-    });
+router.get("/config/edit/arena-alert", (req: Request, res: Response) => {
+    return renderPatreonGatedEdit(
+        req,
+        res,
+        "pages/config-edit-arena-alert",
+        "Edit Arena Alert Settings — SWGoHBot",
+        "Edit your SWGoHBot arena alert settings.",
+    );
 });
 
 // POST /config/arena-alert
 router.post("/config/arena-alert", async (req: Request, res: Response) => {
-    if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
+    if (!verifyCsrfToken(req)) {
+        res.status(403).send("Forbidden");
+        return;
+    }
     const user = req.session.user;
     if (!user) return;
     try {
         const userConfig = await getUser(user.id);
         if (!userConfig) {
             req.session.flash = { type: "error", message: "Config not found." };
-            return res.redirect("/config");
+            res.redirect("/config");
+            return;
         }
-        if ((userConfig.patreonAmountCents ?? 0) <= 0) {
-            return res.status(403).send("Forbidden");
+        if (!isPatreon(userConfig)) {
+            res.status(403).send("Forbidden");
+            return;
         }
         const parsed = ArenaAlertFormSchema.safeParse({
             enableRankDMs: req.body.enableRankDMs || undefined,
@@ -124,7 +141,8 @@ router.post("/config/arena-alert", async (req: Request, res: Response) => {
         });
         if (!parsed.success) {
             req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
-            return res.redirect("/config/edit/arena-alert");
+            res.redirect("/config/edit/arena-alert");
+            return;
         }
         await updateUser(user.id, {
             arenaAlert: {
@@ -145,38 +163,34 @@ router.post("/config/arena-alert", async (req: Request, res: Response) => {
 });
 
 // GET /config/edit/arena-watch
-router.get("/config/edit/arena-watch", async (req: Request, res: Response) => {
-    const user = req.session.user;
-    if (!user) return;
-    const userConfig = await getUser(user.id);
-    const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
-    if (!isPatreon) {
-        req.session.flash = { type: "error", message: "This feature requires an active Patreon subscription." };
-        return res.redirect("/config");
-    }
-    const csrfToken = generateCsrfToken(req);
-    res.render("pages/config-edit-arena-watch", {
-        title: "Edit Arena Watch Settings — SWGoHBot",
-        description: "Edit your SWGoHBot arena watch settings.",
-        user,
-        userConfig,
-        csrfToken,
-    });
+router.get("/config/edit/arena-watch", (req: Request, res: Response) => {
+    return renderPatreonGatedEdit(
+        req,
+        res,
+        "pages/config-edit-arena-watch",
+        "Edit Arena Watch Settings — SWGoHBot",
+        "Edit your SWGoHBot arena watch settings.",
+    );
 });
 
 // POST /config/arena-watch
 router.post("/config/arena-watch", async (req: Request, res: Response) => {
-    if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
+    if (!verifyCsrfToken(req)) {
+        res.status(403).send("Forbidden");
+        return;
+    }
     const user = req.session.user;
     if (!user) return;
     try {
         const userConfig = await getUser(user.id);
         if (!userConfig) {
             req.session.flash = { type: "error", message: "Config not found." };
-            return res.redirect("/config");
+            res.redirect("/config");
+            return;
         }
-        if ((userConfig.patreonAmountCents ?? 0) <= 0) {
-            return res.status(403).send("Forbidden");
+        if (!isPatreon(userConfig)) {
+            res.status(403).send("Forbidden");
+            return;
         }
         const parsed = ArenaWatchFormSchema.safeParse({
             enabled: req.body.enabled === "on",
@@ -185,7 +199,8 @@ router.post("/config/arena-watch", async (req: Request, res: Response) => {
         });
         if (!parsed.success) {
             req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
-            return res.redirect("/config/edit/arena-watch");
+            res.redirect("/config/edit/arena-watch");
+            return;
         }
         await updateUser(user.id, {
             arenaWatch: {
@@ -206,45 +221,42 @@ router.post("/config/arena-watch", async (req: Request, res: Response) => {
 });
 
 // GET /config/edit/guild-update
-router.get("/config/edit/guild-update", async (req: Request, res: Response) => {
-    const user = req.session.user;
-    if (!user) return;
-    const userConfig = await getUser(user.id);
-    const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
-    if (!isPatreon) {
-        req.session.flash = { type: "error", message: "This feature requires an active Patreon subscription." };
-        return res.redirect("/config");
-    }
-    const csrfToken = generateCsrfToken(req);
-    res.render("pages/config-edit-guild-update", {
-        title: "Edit Guild Update Settings — SWGoHBot",
-        description: "Edit your SWGoHBot guild update settings.",
-        user,
-        userConfig,
-        csrfToken,
-    });
+router.get("/config/edit/guild-update", (req: Request, res: Response) => {
+    return renderPatreonGatedEdit(
+        req,
+        res,
+        "pages/config-edit-guild-update",
+        "Edit Guild Update Settings — SWGoHBot",
+        "Edit your SWGoHBot guild update settings.",
+    );
 });
 
 // POST /config/guild-update
 router.post("/config/guild-update", async (req: Request, res: Response) => {
-    if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
+    if (!verifyCsrfToken(req)) {
+        res.status(403).send("Forbidden");
+        return;
+    }
     const user = req.session.user;
     if (!user) return;
     try {
         const userConfig = await getUser(user.id);
         if (!userConfig) {
             req.session.flash = { type: "error", message: "Config not found." };
-            return res.redirect("/config");
+            res.redirect("/config");
+            return;
         }
-        if ((userConfig.patreonAmountCents ?? 0) <= 0) {
-            return res.status(403).send("Forbidden");
+        if (!isPatreon(userConfig)) {
+            res.status(403).send("Forbidden");
+            return;
         }
         const parsed = GuildUpdateFormSchema.safeParse({
             enabled: req.body.enabled === "on",
         });
         if (!parsed.success) {
             req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
-            return res.redirect("/config/edit/guild-update");
+            res.redirect("/config/edit/guild-update");
+            return;
         }
         await updateUser(user.id, {
             guildUpdate: {
@@ -263,38 +275,34 @@ router.post("/config/guild-update", async (req: Request, res: Response) => {
 });
 
 // GET /config/edit/guild-tickets
-router.get("/config/edit/guild-tickets", async (req: Request, res: Response) => {
-    const user = req.session.user;
-    if (!user) return;
-    const userConfig = await getUser(user.id);
-    const isPatreon = (userConfig?.patreonAmountCents ?? 0) > 0;
-    if (!isPatreon) {
-        req.session.flash = { type: "error", message: "This feature requires an active Patreon subscription." };
-        return res.redirect("/config");
-    }
-    const csrfToken = generateCsrfToken(req);
-    res.render("pages/config-edit-guild-tickets", {
-        title: "Edit Guild Tickets Settings — SWGoHBot",
-        description: "Edit your SWGoHBot guild tickets settings.",
-        user,
-        userConfig,
-        csrfToken,
-    });
+router.get("/config/edit/guild-tickets", (req: Request, res: Response) => {
+    return renderPatreonGatedEdit(
+        req,
+        res,
+        "pages/config-edit-guild-tickets",
+        "Edit Guild Tickets Settings — SWGoHBot",
+        "Edit your SWGoHBot guild tickets settings.",
+    );
 });
 
 // POST /config/guild-tickets
 router.post("/config/guild-tickets", async (req: Request, res: Response) => {
-    if (!verifyCsrfToken(req)) return res.status(403).send("Forbidden");
+    if (!verifyCsrfToken(req)) {
+        res.status(403).send("Forbidden");
+        return;
+    }
     const user = req.session.user;
     if (!user) return;
     try {
         const userConfig = await getUser(user.id);
         if (!userConfig) {
             req.session.flash = { type: "error", message: "Config not found." };
-            return res.redirect("/config");
+            res.redirect("/config");
+            return;
         }
-        if ((userConfig.patreonAmountCents ?? 0) <= 0) {
-            return res.status(403).send("Forbidden");
+        if (!isPatreon(userConfig)) {
+            res.status(403).send("Forbidden");
+            return;
         }
         const parsed = GuildTicketsFormSchema.safeParse({
             enabled: req.body.enabled === "on",
@@ -303,7 +311,8 @@ router.post("/config/guild-tickets", async (req: Request, res: Response) => {
         });
         if (!parsed.success) {
             req.session.flash = { type: "error", message: formatValidationError(parsed.error) };
-            return res.redirect("/config/edit/guild-tickets");
+            res.redirect("/config/edit/guild-tickets");
+            return;
         }
         await updateUser(user.id, {
             guildTickets: {
