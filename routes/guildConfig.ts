@@ -1,17 +1,14 @@
 import type { Request, Response } from "express";
 import { Router } from "express";
-import type { DiscordGuild } from "../modules/auth.ts";
 import * as botApi from "../modules/botApi.ts";
 import { formatValidationError } from "../modules/botSchemas.ts";
 import { generateCsrfToken, rotateCsrfToken, verifyCsrfToken } from "../modules/csrf.ts";
 import { GuildSettingsFormSchema } from "../modules/formSchemas.ts";
-import { canAccessGuild, getCachedUserGuilds } from "../modules/guildHelpers.ts";
-import { diffFromDefaults, getGuildConfig, updateGuildSettings } from "../modules/guilds.ts";
+import { diffFromDefaults, type GuildConfig, updateGuildSettings } from "../modules/guilds.ts";
 import logger from "../modules/logger.ts";
+import { requireGuildAccess, type GuildLocals } from "../middleware/requireGuildAccess.ts";
 import { saveLimiter } from "../middleware/rateLimit.ts";
 import { getUnitNames } from "../modules/units.ts";
-
-type GuildConfig = Awaited<ReturnType<typeof getGuildConfig>>;
 
 function bodyToSettings(body: Record<string, unknown>) {
     const adminRoleRaw = body.adminRole;
@@ -35,8 +32,8 @@ async function renderEditForm(
     req: Request,
     res: Response,
     guildId: string,
-    guild: DiscordGuild,
-    config: GuildConfig,
+    guild: GuildLocals["guild"],
+    config: GuildConfig | null,
     flash: { type: "success" | "error"; message: string },
     formValues?: ReturnType<typeof bodyToSettings>,
 ) {
@@ -66,45 +63,26 @@ async function renderEditForm(
 const router = Router();
 
 // GET /guild/:id
-router.get("/guild/:id", async (req: Request, res: Response) => {
+router.get("/guild/:id", requireGuildAccess, async (req: Request, res: Response) => {
     const user = req.session.user;
-    const accessToken = req.session.accessToken;
-    if (!user || !accessToken) return;
-    const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    if (!user) return;
+    const { guildId, guild, config } = res.locals as GuildLocals;
+
+    if (!config) {
+        res.render("pages/guild-config", {
+            title: `${guild.name} Config — SWGoHBot`,
+            description: `SWGoHBot configuration for ${guild.name}.`,
+            user,
+            guild,
+            config: null,
+            roleMap: {},
+            channelMap: {},
+            unitNameMap: {},
+        });
+        return;
+    }
 
     try {
-        const [config, guilds] = await Promise.all([getGuildConfig(guildId), getCachedUserGuilds(req, accessToken)]);
-
-        const guild = guilds.find((g) => g.id === guildId);
-        if (!guild) {
-            return res.status(403).render("pages/500", {
-                title: "Access Denied — SWGoHBot",
-                description: "You do not have access to this server's configuration.",
-            });
-        }
-
-        const adminRoles = config?.settings?.adminRole ?? [];
-        const allowed = await canAccessGuild(accessToken, guildId, guild.permissions, adminRoles);
-        if (!allowed) {
-            return res.status(403).render("pages/500", {
-                title: "Access Denied — SWGoHBot",
-                description: "You do not have access to this server's configuration.",
-            });
-        }
-
-        if (!config) {
-            return res.render("pages/guild-config", {
-                title: `${guild.name} Config — SWGoHBot`,
-                description: `SWGoHBot configuration for ${guild.name}.`,
-                user,
-                guild,
-                config: null,
-                roleMap: {},
-                channelMap: {},
-                unitNameMap: {},
-            });
-        }
-
         const twDefIds = [
             ...(config.settings?.twList?.light ?? []),
             ...(config.settings?.twList?.dark ?? []),
@@ -130,13 +108,14 @@ router.get("/guild/:id", async (req: Request, res: Response) => {
             roleMap,
             channelMap,
             unitNameMap,
-            canManage: allowed,
+            canManage: true,
             csrfToken,
         });
     } catch (err: unknown) {
         if (err instanceof Error && err.message.includes("401")) {
             req.session.returnTo = `/guild/${guildId}`;
-            return res.redirect("/login");
+            res.redirect("/login");
+            return;
         }
         logger.error(`Guild config error: ${err}`);
         res.status(500).render("pages/500", {
@@ -147,35 +126,15 @@ router.get("/guild/:id", async (req: Request, res: Response) => {
 });
 
 // GET /guild/:id/edit
-router.get("/guild/:id/edit", async (req: Request, res: Response) => {
-    const accessToken = req.session.accessToken;
-    if (!req.session.user || !accessToken) return;
-    const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+router.get("/guild/:id/edit", requireGuildAccess, async (req: Request, res: Response) => {
+    const { guildId, guild, config } = res.locals as GuildLocals;
+
+    if (!config) {
+        res.redirect(`/guild/${guildId}`);
+        return;
+    }
 
     try {
-        const [config, guilds] = await Promise.all([getGuildConfig(guildId), getCachedUserGuilds(req, accessToken)]);
-
-        const guild = guilds.find((g) => g.id === guildId);
-        if (!guild) {
-            return res.status(403).render("pages/500", {
-                title: "Access Denied — SWGoHBot",
-                description: "You do not have access to this server's configuration.",
-            });
-        }
-
-        const adminRoles = config?.settings?.adminRole ?? [];
-        const allowed = await canAccessGuild(accessToken, guildId, guild.permissions, adminRoles);
-        if (!allowed) {
-            return res.status(403).render("pages/500", {
-                title: "Access Denied — SWGoHBot",
-                description: "You do not have access to this server's configuration.",
-            });
-        }
-
-        if (!config) {
-            return res.redirect(`/guild/${guildId}`);
-        }
-
         const [roles, channels] = await Promise.all([botApi.fetchGuildRoles(guildId), botApi.fetchGuildChannels(guildId)]);
         const csrfToken = generateCsrfToken(req);
         const timezones = Intl.supportedValuesOf("timeZone");
@@ -194,7 +153,8 @@ router.get("/guild/:id/edit", async (req: Request, res: Response) => {
     } catch (err: unknown) {
         if (err instanceof Error && err.message.includes("401")) {
             req.session.returnTo = `/guild/${guildId}/edit`;
-            return res.redirect("/login");
+            res.redirect("/login");
+            return;
         }
         logger.error(`Guild config edit GET error: ${err}`);
         req.session.flash = { type: "error", message: "Could not load server data from Discord. Please try again shortly." };
@@ -203,74 +163,52 @@ router.get("/guild/:id/edit", async (req: Request, res: Response) => {
 });
 
 // POST /guild/:id/edit
-router.post("/guild/:id/edit", saveLimiter, async (req: Request, res: Response) => {
-    const accessToken = req.session.accessToken;
-    if (!req.session.user || !accessToken) return;
-    const guildId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+router.post("/guild/:id/edit", saveLimiter, requireGuildAccess, async (req: Request, res: Response) => {
+    const { guildId, guild, config } = res.locals as GuildLocals;
+
+    if (!config) {
+        res.redirect(`/guild/${guildId}`);
+        return;
+    }
 
     if (!verifyCsrfToken(req)) {
         req.session.flash = { type: "error", message: "Invalid request. Please try again." };
-        return res.redirect(`/guild/${guildId}/edit`);
+        res.redirect(`/guild/${guildId}/edit`);
+        return;
     }
 
-    let guild: DiscordGuild | undefined;
-    let config: GuildConfig | undefined;
+    const adminRoleRaw = req.body.adminRole;
+    const adminRoleArr = Array.isArray(adminRoleRaw) ? adminRoleRaw : adminRoleRaw ? [adminRoleRaw] : [];
+
+    const parsed = GuildSettingsFormSchema.safeParse({
+        language: req.body.language || undefined,
+        swgohLanguage: req.body.swgohLanguage || undefined,
+        timezone: req.body.timezone || undefined,
+        useEventPages: req.body.useEventPages === "on",
+        shardtimeVertical: req.body.shardtimeVertical === "on",
+        announceChan: req.body.announceChan || undefined,
+        adminRole: adminRoleArr,
+        eventCountdown: req.body.eventCountdown ?? "",
+        enableWelcome: req.body.enableWelcome === "on",
+        welcomeMessage: req.body.welcomeMessage ?? undefined,
+        enablePart: req.body.enablePart === "on",
+        partMessage: req.body.partMessage ?? undefined,
+    });
+
+    if (!parsed.success) {
+        renderEditForm(
+            req,
+            res,
+            guildId,
+            guild,
+            config,
+            { type: "error", message: formatValidationError(parsed.error) },
+            bodyToSettings(req.body as Record<string, unknown>),
+        );
+        return;
+    }
 
     try {
-        const [fetchedConfig, guilds] = await Promise.all([getGuildConfig(guildId), getCachedUserGuilds(req, accessToken)]);
-        config = fetchedConfig;
-        guild = guilds.find((g) => g.id === guildId);
-
-        if (!guild) {
-            return res.status(403).render("pages/500", {
-                title: "Access Denied — SWGoHBot",
-                description: "You do not have access to this server's configuration.",
-            });
-        }
-
-        const adminRoles = config?.settings?.adminRole ?? [];
-        const allowed = await canAccessGuild(accessToken, guildId, guild.permissions, adminRoles);
-        if (!allowed) {
-            return res.status(403).render("pages/500", {
-                title: "Access Denied — SWGoHBot",
-                description: "You do not have access to this server's configuration.",
-            });
-        }
-
-        if (!config) {
-            return res.redirect(`/guild/${guildId}`);
-        }
-
-        const adminRoleRaw = req.body.adminRole;
-        const adminRoleArr = Array.isArray(adminRoleRaw) ? adminRoleRaw : adminRoleRaw ? [adminRoleRaw] : [];
-
-        const parsed = GuildSettingsFormSchema.safeParse({
-            language: req.body.language || undefined,
-            swgohLanguage: req.body.swgohLanguage || undefined,
-            timezone: req.body.timezone || undefined,
-            useEventPages: req.body.useEventPages === "on",
-            shardtimeVertical: req.body.shardtimeVertical === "on",
-            announceChan: req.body.announceChan || undefined,
-            adminRole: adminRoleArr,
-            eventCountdown: req.body.eventCountdown ?? "",
-            enableWelcome: req.body.enableWelcome === "on",
-            welcomeMessage: req.body.welcomeMessage ?? undefined,
-            enablePart: req.body.enablePart === "on",
-            partMessage: req.body.partMessage ?? undefined,
-        });
-
-        if (!parsed.success) {
-            return renderEditForm(
-                req,
-                res,
-                guildId,
-                guild,
-                config,
-                { type: "error", message: formatValidationError(parsed.error) },
-                bodyToSettings(req.body as Record<string, unknown>),
-            );
-        }
-
         const { set, unset } = diffFromDefaults(parsed.data);
         await updateGuildSettings(guildId, set, unset.length ? unset : undefined);
 
@@ -279,19 +217,15 @@ router.post("/guild/:id/edit", saveLimiter, async (req: Request, res: Response) 
         res.redirect(`/guild/${guildId}`);
     } catch (err) {
         logger.error(`Guild config edit POST error: ${err}`);
-        if (guild && config) {
-            return renderEditForm(
-                req,
-                res,
-                guildId,
-                guild,
-                config,
-                { type: "error", message: "Failed to save settings. Please try again." },
-                bodyToSettings(req.body as Record<string, unknown>),
-            );
-        }
-        req.session.flash = { type: "error", message: "Failed to save settings. Please try again." };
-        res.redirect(`/guild/${guildId}/edit`);
+        renderEditForm(
+            req,
+            res,
+            guildId,
+            guild,
+            config,
+            { type: "error", message: "Failed to save settings. Please try again." },
+            bodyToSettings(req.body as Record<string, unknown>),
+        );
     }
 });
 

@@ -6,7 +6,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
         const { statusCode } = res;
         if (statusCode >= 500) {
             logger.error(`${req.method} ${req.path} ${statusCode}`);
-        } else if (statusCode >= 400) {
+        } else if (statusCode >= 400 && statusCode !== 429) {
             logger.warn(`${req.method} ${req.path} ${statusCode}`);
         }
     });
