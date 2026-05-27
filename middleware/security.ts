@@ -63,7 +63,6 @@ export function applySecurity(app: Express): void {
                 "display-capture=()",
                 "encrypted-media=()",
                 "fullscreen=()",
-                "picture-in-picture=()",
                 "publickey-credentials-create=()",
                 "publickey-credentials-get=()",
                 "screen-wake-lock=()",
