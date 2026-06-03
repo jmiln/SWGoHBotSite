@@ -7,12 +7,26 @@ import type { GuildConfig } from "./guilds.ts";
 
 export const GUILD_CACHE_TTL_MS = 5 * 60 * 1000;
 
+// Coalesces concurrent guild fetches for the same token to avoid Discord 429s.
+// Multiple simultaneous requests (e.g. parallel /track/status calls) can all miss the
+// session cache before any of them writes back, causing redundant Discord API calls.
+const inFlightFetches = new Map<string, Promise<auth.DiscordGuild[]>>();
+
 export async function getCachedUserGuilds(req: Request, accessToken: string): Promise<auth.DiscordGuild[]> {
     const cached = req.session.cachedGuilds;
     if (cached && cached.expiresAt > Date.now()) {
         return cached.guilds as auth.DiscordGuild[];
     }
-    const guilds = await auth.fetchUserGuilds(accessToken);
+
+    let promise = inFlightFetches.get(accessToken);
+    if (!promise) {
+        promise = auth.fetchUserGuilds(accessToken).finally(() => {
+            inFlightFetches.delete(accessToken);
+        });
+        inFlightFetches.set(accessToken, promise);
+    }
+
+    const guilds = await promise;
     req.session.cachedGuilds = { guilds, expiresAt: Date.now() + GUILD_CACHE_TTL_MS };
     return guilds;
 }

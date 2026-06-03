@@ -52,6 +52,29 @@ describe("getCachedUserGuilds", () => {
         assert.deepStrictEqual(result, freshGuilds);
         assert.deepStrictEqual(session.cachedGuilds?.guilds, freshGuilds);
     });
+
+    it("coalesces concurrent fetches for the same token into a single Discord API call", async () => {
+        let fetchCallCount = 0;
+        mock.method(globalThis, "fetch", async () => {
+            fetchCallCount++;
+            return { ok: true, json: async () => fakeGuilds };
+        });
+        const session1: FakeSession = {};
+        const session2: FakeSession = {};
+        const session3: FakeSession = {};
+        const [result1, result2, result3] = await Promise.all([
+            getCachedUserGuilds(makeReq(session1), "dedup-token"),
+            getCachedUserGuilds(makeReq(session2), "dedup-token"),
+            getCachedUserGuilds(makeReq(session3), "dedup-token"),
+        ]);
+        assert.strictEqual(fetchCallCount, 1, "Discord API should only be called once");
+        assert.deepStrictEqual(result1, fakeGuilds);
+        assert.deepStrictEqual(result2, fakeGuilds);
+        assert.deepStrictEqual(result3, fakeGuilds);
+        assert.deepStrictEqual(session1.cachedGuilds?.guilds, fakeGuilds);
+        assert.deepStrictEqual(session2.cachedGuilds?.guilds, fakeGuilds);
+        assert.deepStrictEqual(session3.cachedGuilds?.guilds, fakeGuilds);
+    });
 });
 
 // --- canAccessGuild ---
