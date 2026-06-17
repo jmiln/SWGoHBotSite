@@ -10,7 +10,7 @@ import {
     LangFormSchema,
 } from "../modules/formSchemas.ts";
 import logger from "../modules/logger.ts";
-import { type UserConfig, getUser, updateUser } from "../modules/users.ts";
+import { buildLinkedAccounts, buildWatchAccounts, getArenaPlayers, getUser, type UserConfig, updateUser } from "../modules/users.ts";
 
 const router = Router();
 
@@ -36,20 +36,22 @@ router.get("/config", async (req: Request, res: Response) => {
     const user = req.session.user;
     if (!user) return;
     const userConfig = await getUser(user.id);
-    if (userConfig?.accounts) {
-        userConfig.accounts.sort((a: { name: string }, b: { name: string }) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-    }
-    if (userConfig?.arenaWatch?.allyCodes) {
-        userConfig.arenaWatch.allyCodes.sort((a: { name: string }, b: { name: string }) =>
-            a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
-        );
-    }
+
+    // Names and arena ranks live in the `arenaPlayers` collection, keyed by ally code.
+    // Gather every ally code referenced by the config and fetch them in one batched query.
+    const accountCodes = userConfig?.accounts ?? [];
+    const watchEntries = userConfig?.arenaWatch?.allyCodes ?? [];
+    const allyCodes = [...new Set([...accountCodes, ...watchEntries.map((entry) => entry.allyCode)])];
+    const players = await getArenaPlayers(allyCodes);
+
     res.render("pages/config", {
         title: "My Config — SWGoHBot",
         description: "Your SWGoHBot configuration.",
         user,
         userConfig,
         isPatreon: isPatreon(userConfig),
+        linkedAccounts: buildLinkedAccounts(accountCodes, userConfig?.primaryAllyCode, players),
+        watchAccounts: buildWatchAccounts(watchEntries, players),
     });
 });
 
