@@ -13,6 +13,7 @@ import * as commandService from "./modules/commandService.ts";
 import { generateCsrfToken, verifyCsrfToken } from "./modules/csrf.ts";
 import { connectDB } from "./modules/db.ts";
 import { env } from "./modules/env.ts";
+import { getCachedUserGuilds } from "./modules/guildHelpers.ts";
 import logger from "./modules/logger.ts";
 import { ARENA_OFFSETS, formatPayoutTimes, getTimeLeft } from "./modules/payout.ts";
 import { loadPlugins } from "./modules/pluginLoader.ts";
@@ -76,6 +77,7 @@ export async function createApp(): Promise<Express> {
         requireAdmin,
         generateCsrfToken,
         verifyCsrfToken,
+        getCachedUserGuilds,
         partialsPath: join(__dirname, "partials"),
     };
 

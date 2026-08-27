@@ -1,5 +1,22 @@
 import type { Request, RequestHandler, Router } from "express";
 
+/**
+ * A Discord guild as returned by the host's guild helper.
+ *
+ * Declared structurally rather than importing `DiscordGuild` from ../modules/auth.ts on purpose:
+ * this file is vendored verbatim into plugin repos, so it must not import anything but express.
+ * The shapes are identical, and TypeScript is structural, so the real helper satisfies this.
+ */
+export interface PluginUserGuild {
+    id: string;
+    name: string;
+    icon: string | null;
+    permissions: string;
+}
+
+/** The host's cached guild lookup, handed to plugins rather than imported by them. */
+export type GetCachedUserGuilds = (req: Request, accessToken: string) => Promise<PluginUserGuild[]>;
+
 export interface PluginContext {
     env: Record<string, string | undefined>;
     logger: {
@@ -12,6 +29,7 @@ export interface PluginContext {
     requireAdmin: RequestHandler;
     generateCsrfToken: (req: Request) => string;
     verifyCsrfToken: (req: Request) => boolean;
+    getCachedUserGuilds: GetCachedUserGuilds;
     partialsPath: string;
 }
 
