@@ -2,6 +2,7 @@ import { createApp } from "./app.ts";
 import { closeDB } from "./modules/db.ts";
 import { env } from "./modules/env.ts";
 import logger from "./modules/logger.ts";
+import { closePlugins } from "./modules/pluginLoader.ts";
 
 const app = await createApp();
 const port = Number.parseInt(env.PORT, 10);
@@ -22,6 +23,7 @@ const shutdown = async (signal: string) => {
 
     server.closeAllConnections();
     server.close(async () => {
+        await closePlugins();
         await closeDB();
         process.exit(0);
     });

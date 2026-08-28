@@ -49,6 +49,8 @@ export interface PluginDefinition {
     staticMountPath?: string;
     name: string;
     navItems?: PluginNavItem[];
+    /** Released during graceful shutdown. Close DB clients, timers and sockets here. */
+    close?: () => Promise<void>;
 }
 
 export type PluginFactory = (ctx: PluginContext) => PluginDefinition;

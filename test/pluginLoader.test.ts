@@ -19,6 +19,8 @@ process.env.ADMIN_DISCORD_ID = "111111111111111111";
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const FIXTURE_PLUGIN_PATH = join(__dirname, "fixtures/testPlugin");
 const BROKEN_PLUGIN_PATH = join(__dirname, "fixtures/brokenPlugin");
+const CLOSABLE_PLUGIN_PATH = join(__dirname, "fixtures/closablePlugin");
+const THROWING_PLUGIN_PATH = join(__dirname, "fixtures/throwingClosePlugin");
 
 const mockCtx = {
     env: process.env,
@@ -73,5 +75,54 @@ describe("loadPlugins", () => {
         const { loadPlugins } = await import("../modules/pluginLoader.ts");
         const result = await loadPlugins(mockCtx as never);
         assert.strictEqual(result.length, 2);
+    });
+
+    test("closePlugins calls the close hook of every loaded plugin", async () => {
+        process.env.EXTRAS_PATHS = CLOSABLE_PLUGIN_PATH;
+        const { loadPlugins, closePlugins } = await import("../modules/pluginLoader.ts");
+        const { closeCalls } = await import("./fixtures/closablePlugin/index.ts");
+
+        closeCalls.length = 0;
+        await loadPlugins(mockCtx as never);
+        await closePlugins();
+
+        assert.strictEqual(closeCalls.length, 1);
+    });
+
+    test("closePlugins is a no-op when no plugin defines a close hook", async () => {
+        process.env.EXTRAS_PATHS = FIXTURE_PLUGIN_PATH;
+        const { loadPlugins, closePlugins } = await import("../modules/pluginLoader.ts");
+
+        await loadPlugins(mockCtx as never);
+        await assert.doesNotReject(() => closePlugins());
+    });
+
+    test("a throwing close hook does not prevent later hooks from running", async () => {
+        process.env.EXTRAS_PATHS = `${THROWING_PLUGIN_PATH},${CLOSABLE_PLUGIN_PATH}`;
+        const { loadPlugins, closePlugins } = await import("../modules/pluginLoader.ts");
+        const { closeCalls } = await import("./fixtures/closablePlugin/index.ts");
+
+        closeCalls.length = 0;
+        await loadPlugins(mockCtx as never);
+        await assert.doesNotReject(() => closePlugins());
+
+        assert.strictEqual(closeCalls.length, 1);
+    });
+
+    test("loadPlugins resets the registry so closePlugins only closes current plugins", async () => {
+        const { loadPlugins, closePlugins } = await import("../modules/pluginLoader.ts");
+        const { closeCalls } = await import("./fixtures/closablePlugin/index.ts");
+
+        process.env.EXTRAS_PATHS = CLOSABLE_PLUGIN_PATH;
+        await loadPlugins(mockCtx as never);
+
+        // A second load with no plugins must clear the first load's registry.
+        process.env.EXTRAS_PATHS = "";
+        await loadPlugins(mockCtx as never);
+
+        closeCalls.length = 0;
+        await closePlugins();
+
+        assert.strictEqual(closeCalls.length, 0);
     });
 });
