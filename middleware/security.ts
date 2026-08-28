@@ -5,7 +5,10 @@ import { env } from "../modules/env.ts";
 
 export function applySecurity(app: Express): void {
     app.use((req: Request, res: Response, next: NextFunction) => {
-        if (env.NODE_ENV === "production") {
+        // Docker's HEALTHCHECK and uptime-kuma both reach /health over plain HTTP from inside the
+        // container network, where no proxy sets x-forwarded-proto. Redirecting them would leave
+        // the container permanently unhealthy. The endpoint exposes no sensitive data.
+        if (env.NODE_ENV === "production" && req.path !== "/health") {
             const proto = Array.isArray(req.headers["x-forwarded-proto"])
                 ? req.headers["x-forwarded-proto"][0]
                 : req.headers["x-forwarded-proto"];
