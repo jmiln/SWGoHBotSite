@@ -30,7 +30,7 @@
         "enabled": true,
         "includes": ["**", "!**/node_modules", "!scripts/**", "!languages/**", "!data/**", "!wipCommands/**", "!test/**"],
         "rules": {
-            "recommended": true,
+            "preset": "recommended",
             "style": {
                 "noParameterAssign": "error",
                 "useAsConstAssertion": "error",

@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { Router } from "express";
+import { type GuildLocals, requireGuildAccess } from "../middleware/requireGuildAccess.ts";
 import * as botApi from "../modules/botApi.ts";
 import { formatValidationError } from "../modules/botSchemas.ts";
 import { generateCsrfToken, rotateCsrfToken, verifyCsrfToken } from "../modules/csrf.ts";
@@ -7,7 +8,6 @@ import { GuildEventFormSchema } from "../modules/formSchemas.ts";
 import { buildEventFromForm } from "../modules/guildHelpers.ts";
 import { updateGuildEvents } from "../modules/guilds.ts";
 import logger from "../modules/logger.ts";
-import { requireGuildAccess, type GuildLocals } from "../middleware/requireGuildAccess.ts";
 
 const router = Router();
 

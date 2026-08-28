@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { Router } from "express";
-import { pingDB } from "../modules/db.ts";
 import { healthLimiter } from "../middleware/rateLimit.ts";
+import { pingDB } from "../modules/db.ts";
 import logger from "../modules/logger.ts";
 
 const router = Router();

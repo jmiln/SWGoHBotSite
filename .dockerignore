@@ -1,0 +1,32 @@
+# Deny everything, then allow back only what the image actually needs.
+# There is no build step - Node strips types from the .ts sources directly - so every runtime
+# source directory has to be listed explicitly below.
+*
+
+# Manifests - the deps stage installs from these
+!package.json
+!package-lock.json
+
+# Entry point and app factory
+!server.ts
+!app.ts
+
+# Runtime source
+!middleware/
+!modules/
+!routes/
+!types/
+
+# EJS templates. app.ts resolves both from __dirname, and partials/ is also handed to plugins
+# through app.locals.partialsPath, so plugin templates break without it.
+!pages/
+!partials/
+
+# Served by express.static
+!public/
+
+# Re-deny anything that could sneak in through the allowed directories
+**/node_modules/
+**/*.test.ts
+**/.env
+**/.env.*

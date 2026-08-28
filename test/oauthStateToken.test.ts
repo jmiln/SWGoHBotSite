@@ -1,5 +1,5 @@
-import crypto from "node:crypto";
 import assert from "node:assert";
+import crypto from "node:crypto";
 import { test } from "node:test";
 
 process.env.BOT_DATA_PATH = "/tmp";

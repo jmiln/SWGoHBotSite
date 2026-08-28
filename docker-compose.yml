@@ -1,0 +1,69 @@
+name: SWGoHBotSite
+
+# MongoDB is external - it runs on the host and is shared with the bot, so it is not managed here.
+# MONGODB_URI in .env must use host.docker.internal, not localhost, which inside a container
+# resolves to the container itself.
+#
+# Host nginx terminates TLS for swgohbot.com and proxies to http://localhost:3300, so the port
+# below is published on loopback only and never reaches the public interface.
+
+services:
+  website:
+    image: ghcr.io/jmiln/swgohbotsite:${IMAGE_TAG:-latest}
+    # `build:` is for local iteration only. Anything deployed is built and published by CI.
+    build:
+      context: .
+      args:
+        APP_VERSION: ${APP_VERSION:-dev}
+        VCS_REF: ${VCS_REF:-unknown}
+    container_name: swgohbotsite
+    restart: unless-stopped
+    env_file: .env
+    init: true
+    # server.ts arms a 10s force-exit timer, so the container must outlive it or Docker will
+    # SIGKILL mid-teardown and hide the timeout.
+    stop_grace_period: 20s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      # Overrides whatever .env holds, so the in-container paths cannot drift from the mounts below.
+      BOT_SCHEMAS_PATH: /bot/schemas
+      BOT_DATA_PATH: /bot/data/help.json
+      EXTRAS_PATHS: /app/plugins/moviechecker
+    volumes:
+      # The whole bot checkout, not just data/ and schemas/. schemas/index.ts re-exports from
+      # ../data/constants/defaultGuildConf.ts, which imports discord.js at runtime, and that
+      # resolves out of the bot's own node_modules. Mounting less makes the site fail at startup.
+      - /home/j_milner359/swgohBot:/bot:ro
+      # Must sit under /app: the plugin's node_modules symlink is dead in here, so Node walks up
+      # to /app/node_modules. Mounting it anywhere else breaks every import in the plugin.
+      - /home/j_milner359/movieChecker/web:/app/plugins/moviechecker:ro
+      # routes/poster.ts writes its TMDB image cache here, so it cannot live on the :ro bind above.
+      # A named volume nested inside a read-only bind is an independent, writable mount.
+      - moviechecker_posters:/app/plugins/moviechecker/posters
+    ports:
+      - "127.0.0.1:${PORT:-3300}:${PORT:-3300}"
+    networks:
+      - swgoh
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - "no-new-privileges:true"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  moviechecker_posters:
+
+# Owned by the separate `fake-help` compose project, which runs comlink, nginx and swgoh-ae2.
+# That project must be up first; compose will neither create nor destroy this network.
+networks:
+  swgoh:
+    name: fake-help_default
+    external: true

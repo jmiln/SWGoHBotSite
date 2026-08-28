@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, test } from "node:test";
+import { fileURLToPath } from "node:url";
 
 // Set required env vars before any import that touches env.ts
 process.env.BOT_DATA_PATH = "/tmp";
