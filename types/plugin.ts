@@ -37,6 +37,8 @@ export interface PluginNavItem {
     label: string;
     href: string;
     requiresAuth?: boolean;
+    /** Show only to the ADMIN_DISCORD_ID user. Pair with `requireAdmin` on the plugin's router. */
+    requiresAdmin?: boolean;
 }
 
 export interface PluginDefinition {
