@@ -43,9 +43,9 @@ EXTRAS_PATHS=/absolute/path/to/plugin
 ```
 
 `BOT_DATA_PATH` is a path to the bot's `help.json` file, not to the directory containing it.
-`BOT_SCHEMAS_PATH` is a directory, and must be the bot's real `schemas/` directory inside its
-checkout: `schemas/index.ts` re-exports from `../data/constants/` and resolves `discord.js` and
-`zod` from the bot's own `node_modules`, so a copy of the schema files alone will not load.
+`BOT_SCHEMAS_PATH` is a directory: the bot's `schemas/`, which is self-contained apart from `zod`
+and so can be copied or mounted on its own. `zod` resolves from this project's `node_modules`, so
+both repos need compatible versions (both track `^4.4.3`).
 
 `EXTRAS_PATHS` is optional (comma-separated absolute paths). Plugins listed there supply their own
 environment variables in addition to the above.
