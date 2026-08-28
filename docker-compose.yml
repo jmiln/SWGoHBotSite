@@ -42,7 +42,10 @@ services:
       # A named volume nested inside a read-only bind is an independent, writable mount.
       - moviechecker_posters:/app/plugins/moviechecker/posters
     ports:
-      - "127.0.0.1:${PORT:-3300}:${PORT:-3300}"
+      # The container port follows PORT from .env, which is what the app binds. The host port is
+      # separate so a smoke-test instance can be published elsewhere (HOST_PORT=3301 docker compose
+      # up -d) while PM2 still holds 3300, without changing what the app listens on.
+      - "127.0.0.1:${HOST_PORT:-${PORT:-3300}}:${PORT:-3300}"
     networks:
       - swgoh
     read_only: true

@@ -1,5 +1,5 @@
 {
-    "name": "dashboard",
+    "name": "SWGoHBotSite",
     "version": "1.0.0",
     "type": "module",
     "main": "server.ts",
@@ -22,7 +22,7 @@
     },
     "homepage": "https://github.com/jmiln/SWGoHBotSite#readme",
     "engines": {
-        "node": ">=25.2"
+        "node": ">=26"
     },
     "dependencies": {
         "connect-mongo": "^6.0.0",
