@@ -12,7 +12,7 @@
         <main id="main-content">
             <div class="column w80 autoMargin">
                 <h2>Privacy Policy</h2>
-                <p><strong>Last Updated:</strong> February 20, 2026</p>
+                <p><strong>Last Updated:</strong> September 27, 2026</p>
                 <hr>
 
                 <p>
@@ -25,17 +25,20 @@
                 <p>When you use the Bot, we collect:</p>
                 <ul>
                     <li><strong>Discord User ID:</strong> Your unique Discord identifier, used to save your preferences and provide personalized features</li>
-                    <li><strong>Player Ally Code:</strong> Your Star Wars Galaxy of Heroes ally code, used to fetch your game data</li>
+                    <li><strong>Player Ally Code:</strong> Your Star Wars Galaxy of Heroes ally code and in-game player name, used to fetch your game data</li>
                     <li><strong>Server/Guild IDs:</strong> Discord server identifiers where the Bot is used, for guild-specific features and settings</li>
                     <li><strong>User Preferences:</strong> Settings you configure, notification preferences, and display options</li>
-                    <li><strong>Command Usage Data:</strong> Information about which commands you use, to help us improve the Bot</li>
                 </ul>
+                <p>
+                    We also keep anonymous command usage statistics: which command and options were used (not the values you entered), how long it took, and whether it succeeded. These are not linked to your Discord account, server, or channel, and are deleted automatically after 90 days.
+                </p>
 
                 <h4>Additional Information from Patreon Subscribers</h4>
                 <p>If you subscribe to premium features via Patreon, we also collect:</p>
                 <ul>
                     <li><strong>Patreon ID:</strong> Your unique Patreon identifier</li>
                     <li><strong>Discord ID:</strong> Your Discord identifier, used to verify your Patreon subscription</li>
+                    <li><strong>Arena Rank History:</strong> Your character and fleet arena rank at each daily payout, for ally codes linked to your account or on your arena watch list, used for arena alerts and arena history graphs</li>
                 </ul>
                 <p>
                     This additional information is collected from the Patreon API to verify your subscription status and provide premium features. Patreon handles all payment processing—we do not store credit card information.
@@ -47,7 +50,7 @@
                     <li><strong>Provide Bot Functionality:</strong> Character lookups, guild searching, arena tracking, and other core features</li>
                     <li><strong>Save Your Preferences:</strong> Remember your settings across sessions and servers</li>
                     <li><strong>Deliver Premium Features:</strong> Provide arena alerts and other Patreon-exclusive features to subscribers</li>
-                    <li><strong>Improve the Service:</strong> Analyze command usage to understand which features are most valuable and identify areas for improvement</li>
+                    <li><strong>Improve the Service:</strong> Analyze anonymous command usage statistics to understand which features are most valuable and identify areas for improvement</li>
                     <li><strong>Verify Subscriptions:</strong> Confirm Patreon subscription status for premium feature access</li>
                 </ul>
                 <p>
@@ -80,6 +83,16 @@
                             <td>Player Game Data</td>
                             <td>7 days</td>
                             <td>Automatically deleted after 7 days (data becomes stale)</td>
+                        </tr>
+                        <tr>
+                            <td>Arena Rank History</td>
+                            <td>Last 90 daily payouts</td>
+                            <td>Older entries are dropped as new ones are recorded; all of it when you request deletion</td>
+                        </tr>
+                        <tr>
+                            <td>Command Usage Statistics</td>
+                            <td>90 days</td>
+                            <td>Automatically deleted after 90 days</td>
                         </tr>
                         <tr>
                             <td>Patreon Subscriber Data</td>
