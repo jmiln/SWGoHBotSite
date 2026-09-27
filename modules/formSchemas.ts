@@ -131,8 +131,4 @@ export const GuildSettingsFormSchema = z.object({
             return parts.map(Number);
         })
         .optional(),
-    enableWelcome: z.boolean().optional(),
-    welcomeMessage: z.string().max(1000).optional(),
-    enablePart: z.boolean().optional(),
-    partMessage: z.string().max(1000).optional(),
 });

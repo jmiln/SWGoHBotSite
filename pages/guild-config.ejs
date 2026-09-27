@@ -54,10 +54,6 @@
                         var shardtimeVert   = s.shardtimeVertical ?? false;
                         var announceChan    = s.announceChan    ?? "";
                         var eventCountdown  = s.eventCountdown  ?? [2880, 1440, 720, 360, 180, 120, 60, 30, 10, 5];
-                        var enableWelcome   = s.enableWelcome   ?? false;
-                        var welcomeMessage  = s.welcomeMessage  ?? "Say hello to {{user}}, everyone! We all need a warm welcome sometimes :D";
-                        var enablePart      = s.enablePart      ?? false;
-                        var partMessage     = s.partMessage     ?? "Goodbye {{user}}, thanks for stopping by!";
                     %>
 
                     <!-- Settings Section -->
@@ -118,22 +114,6 @@
                         <div class="config-row">
                             <span class="config-label">Event Countdown (min)</span>
                             <span><%= eventCountdown.join(", ") %></span>
-                        </div>
-
-                        <!-- Welcome Message -->
-                        <div class="config-row">
-                            <span class="config-label">Join Message (<%= enableWelcome ? "Enabled" : "Disabled" %>)</span>
-                            <span>
-                                <span class="guild-msg-preview"><%= welcomeMessage %></span>
-                            </span>
-                        </div>
-
-                        <!-- Part/Leave Message -->
-                        <div class="config-row">
-                            <span class="config-label">Part Message (<%= enablePart ? "Enabled" : "Disabled" %>)</span>
-                            <span>
-                                <span class="guild-msg-preview"><%= partMessage %></span>
-                            </span>
                         </div>
                     </section>
 

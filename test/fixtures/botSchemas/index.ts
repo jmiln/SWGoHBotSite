@@ -5,8 +5,6 @@ export const defaultGuildSettings = {
     useEventPages: false,
     shardtimeVertical: false,
     eventCountdown: [24, 2, 1],
-    enableWelcome: false,
-    enablePart: false,
 };
 
 export const formatValidationError = () => "";

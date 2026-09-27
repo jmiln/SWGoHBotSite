@@ -163,46 +163,6 @@
                         <p class="form-hint">Comma-separated list of positive integers, e.g. 60, 30, 10, 5.</p>
                     </div>
 
-                    <h2 class="form-section-title">Welcome &amp; Part Messages</h2>
-
-                    <div class="form-group">
-                        <div class="form-toggle-row">
-                            <label class="form-toggle">
-                                <input type="checkbox" id="enableWelcome" name="enableWelcome" aria-labelledby="enableWelcomeLabel" <%= s.enableWelcome ? 'checked' : '' %>>
-                                <span class="form-toggle-slider"></span>
-                            </label>
-                            <span id="enableWelcomeLabel" class="form-toggle-label">Enable Join Message</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="welcomeMessage" class="form-label">Join Message</label>
-                        <textarea id="welcomeMessage" name="welcomeMessage" class="form-input" rows="3" maxlength="1000"><%= s.welcomeMessage ?? 'Say hello to {{user}}, everyone! We all need a warm welcome sometimes :D' %></textarea>
-                        <div class="form-field-footer">
-                            <p class="form-hint">Placeholders: <code>{{user}}</code> (username), <code>{{usermention}}</code> (@mention), <code>{{server}}</code> (server name).</p>
-                            <span class="form-char-count"><span id="welcomeCount"><%= (s.welcomeMessage ?? 'Say hello to {{user}}, everyone! We all need a warm welcome sometimes :D').length %></span>/1000</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="form-toggle-row">
-                            <label class="form-toggle">
-                                <input type="checkbox" id="enablePart" name="enablePart" aria-labelledby="enablePartLabel" <%= s.enablePart ? 'checked' : '' %>>
-                                <span class="form-toggle-slider"></span>
-                            </label>
-                            <span id="enablePartLabel" class="form-toggle-label">Enable Part Message</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="partMessage" class="form-label">Part Message</label>
-                        <textarea id="partMessage" name="partMessage" class="form-input" rows="3" maxlength="1000"><%= s.partMessage ?? 'Goodbye {{user}}, thanks for stopping by!' %></textarea>
-                        <div class="form-field-footer">
-                            <p class="form-hint">Placeholders: <code>{{user}}</code> (username), <code>{{usermention}}</code> (@mention), <code>{{server}}</code> (server name).</p>
-                            <span class="form-char-count"><span id="partCount"><%= (s.partMessage ?? 'Goodbye {{user}}, thanks for stopping by!').length %></span>/1000</span>
-                        </div>
-                    </div>
-
                     <div class="form-actions">
                         <button type="submit" class="btn-save">Save</button>
                         <a href="/guild/<%= guild.id %>" class="btn-cancel">Cancel</a>

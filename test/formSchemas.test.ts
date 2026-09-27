@@ -67,6 +67,20 @@ test("adminRole: rejects array mixing valid and invalid", () => {
     assert.ok(!r.success, "should have failed");
 });
 
+// --- GuildSettingsFormSchema: join/part messages were removed from the bot ---
+
+test("join/part fields: dropped from parsed output so a stale form cannot write them to the bot's settings", () => {
+    const r = GuildSettingsFormSchema.safeParse({
+        timezone: "Europe/Berlin",
+        enableWelcome: true,
+        welcomeMessage: "Hello {{user}}",
+        enablePart: true,
+        partMessage: "Bye {{user}}",
+    });
+    assert.ok(r.success, JSON.stringify(r));
+    assert.deepStrictEqual(r.data, { timezone: "Europe/Berlin" });
+});
+
 // --- GuildEventFormSchema.channel (discordSnowflake, optional) ---
 
 test("channel: accepts valid snowflake", () => {

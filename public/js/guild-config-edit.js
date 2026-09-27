@@ -89,17 +89,3 @@
         }
     });
 })();
-
-// --- Message character counters ---
-for (const [textareaId, counterId] of [
-    ["welcomeMessage", "welcomeCount"],
-    ["partMessage", "partCount"],
-]) {
-    const ta = document.getElementById(textareaId);
-    const counter = document.getElementById(counterId);
-    if (ta && counter) {
-        ta.addEventListener("input", () => {
-            counter.textContent = ta.value.length;
-        });
-    }
-}

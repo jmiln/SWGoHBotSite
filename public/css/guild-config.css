@@ -101,16 +101,6 @@
     margin: 0;
 }
 
-/* Message preview (welcome/leave) */
-
-.guild-msg-preview {
-    display: block;
-    margin-top: 0.25rem;
-    font-size: 0.85rem;
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-
 /* TW List two-column grid */
 
 .guild-tw-grid {

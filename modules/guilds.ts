@@ -12,10 +12,6 @@ export interface GuildConfig {
         shardtimeVertical?: boolean;
         announceChan?: string;
         eventCountdown?: number[];
-        enableWelcome?: boolean;
-        welcomeMessage?: string;
-        enablePart?: boolean;
-        partMessage?: string;
         twList?: {
             light?: string[];
             dark?: string[];

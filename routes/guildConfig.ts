@@ -21,10 +21,6 @@ function bodyToSettings(body: Record<string, unknown>) {
         useEventPages: body.useEventPages === "on",
         shardtimeVertical: body.shardtimeVertical === "on",
         eventCountdown: typeof body.eventCountdown === "string" ? body.eventCountdown : undefined,
-        enableWelcome: body.enableWelcome === "on",
-        welcomeMessage: body.welcomeMessage,
-        enablePart: body.enablePart === "on",
-        partMessage: body.partMessage,
     };
 }
 
@@ -189,10 +185,6 @@ router.post("/guild/:id/edit", saveLimiter, requireGuildAccess, async (req: Requ
         announceChan: req.body.announceChan || undefined,
         adminRole: adminRoleArr,
         eventCountdown: req.body.eventCountdown ?? "",
-        enableWelcome: req.body.enableWelcome === "on",
-        welcomeMessage: req.body.welcomeMessage ?? undefined,
-        enablePart: req.body.enablePart === "on",
-        partMessage: req.body.partMessage ?? undefined,
     });
 
     if (!parsed.success) {
