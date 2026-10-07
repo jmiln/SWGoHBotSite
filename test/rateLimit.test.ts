@@ -3,7 +3,7 @@ import type { Server } from "node:http";
 import { after, before, describe, it } from "node:test";
 import express from "express";
 
-process.env.BOT_DATA_PATH = "/tmp";
+process.env.BOT_HELP_PATH = "/tmp";
 process.env.BOT_SCHEMAS_PATH = "/tmp";
 process.env.DISCORD_CLIENT_ID = "test";
 process.env.DISCORD_CLIENT_SECRET = "test";

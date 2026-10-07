@@ -60,7 +60,7 @@ const cache: CacheData & {
  */
 function loadCommandData(): CommandData | null {
     try {
-        const dataPath = env.BOT_DATA_PATH;
+        const dataPath = env.BOT_HELP_PATH;
 
         if (!existsSync(dataPath)) {
             logger.warn(`[CommandService] Warning: help.json not found at ${dataPath}`);
@@ -83,11 +83,11 @@ function loadCommandData(): CommandData | null {
     } catch (error) {
         const err = error as NodeJS.ErrnoException;
         if (err.code === "ENOENT") {
-            logger.error(`[CommandService] Error: File not found at ${env.BOT_DATA_PATH}`);
+            logger.error(`[CommandService] Error: File not found at ${env.BOT_HELP_PATH}`);
         } else if (err.code === "EACCES") {
-            logger.error(`[CommandService] Error: Permission denied reading ${env.BOT_DATA_PATH}`);
+            logger.error(`[CommandService] Error: Permission denied reading ${env.BOT_HELP_PATH}`);
         } else if (error instanceof SyntaxError) {
-            logger.error(`[CommandService] Error: Invalid JSON in ${env.BOT_DATA_PATH}`);
+            logger.error(`[CommandService] Error: Invalid JSON in ${env.BOT_HELP_PATH}`);
         } else {
             logger.error(`[CommandService] Error loading command data: ${err.message}`);
         }

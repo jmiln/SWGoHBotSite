@@ -10,7 +10,7 @@ process.env.MONGODB_SWAPI_DB = "testSwapiDB";
 process.env.SESSION_SECRET = "test-session-secret-16ch";
 process.env.DISCORD_BOT_TOKEN = "test-bot-token";
 process.env.ADMIN_DISCORD_ID = "test-admin-id";
-process.env.BOT_DATA_PATH = "/tmp";
+process.env.BOT_HELP_PATH = "/tmp";
 process.env.BOT_SCHEMAS_PATH = "/tmp";
 
 const { refreshAccessToken, exchangeCodeForToken, buildDiscordAuthURL, fetchDiscordUser, fetchUserGuilds } = await import("../modules/auth.ts");

@@ -3,7 +3,7 @@ import { z } from "zod";
 const envSchema = z.object({
     PORT: z.string().default("3300"),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-    BOT_DATA_PATH: z.string(),
+    BOT_HELP_PATH: z.string(),
     BOT_SCHEMAS_PATH: z.string(),
     DISCORD_CLIENT_ID: z.string(),
     DISCORD_CLIENT_SECRET: z.string(),

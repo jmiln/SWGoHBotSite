@@ -4,7 +4,7 @@ import { describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 // Set required env vars before any import that touches env.ts
-process.env.BOT_DATA_PATH = "/tmp";
+process.env.BOT_HELP_PATH = "/tmp";
 process.env.BOT_SCHEMAS_PATH = "/tmp";
 process.env.DISCORD_CLIENT_ID = "test";
 process.env.DISCORD_CLIENT_SECRET = "test";

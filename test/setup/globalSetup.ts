@@ -22,7 +22,7 @@ export async function globalSetup(): Promise<void> {
     process.env.MONGODB_BOT_DB = "testBotDB";
     process.env.MONGODB_SWAPI_DB = "testSwapiDB";
     process.env.BOT_SCHEMAS_PATH = fixturesDir;
-    process.env.BOT_DATA_PATH = "/tmp";
+    process.env.BOT_HELP_PATH = "/tmp";
     process.env.DISCORD_CLIENT_ID = "test-client-id";
     process.env.DISCORD_CLIENT_SECRET = "test-client-secret";
     process.env.DISCORD_REDIRECT_URI = "http://localhost:3300/callback";

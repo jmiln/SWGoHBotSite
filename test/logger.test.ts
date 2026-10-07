@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { test } from "node:test";
 
-process.env.BOT_DATA_PATH = "/tmp";
+process.env.BOT_HELP_PATH = "/tmp";
 process.env.BOT_SCHEMAS_PATH = "/tmp";
 process.env.DISCORD_CLIENT_ID = "test";
 process.env.DISCORD_CLIENT_SECRET = "test";

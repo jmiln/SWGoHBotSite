@@ -28,7 +28,7 @@ Create a `.env` file in the project root:
 ```env
 PORT=3300
 NODE_ENV=development
-BOT_DATA_PATH=/path/to/bot/data/help.json
+BOT_HELP_PATH=/path/to/bot/data/help.json
 BOT_SCHEMAS_PATH=/path/to/bot/schemas
 DISCORD_CLIENT_ID=your_client_id
 DISCORD_CLIENT_SECRET=your_client_secret
@@ -42,7 +42,7 @@ ADMIN_DISCORD_ID=your_discord_user_id
 EXTRAS_PATHS=/absolute/path/to/plugin
 ```
 
-`BOT_DATA_PATH` is a path to the bot's `help.json` file, not to the directory containing it.
+`BOT_HELP_PATH` is a path to the bot's `help.json` file, not to the directory containing it.
 `BOT_SCHEMAS_PATH` is a directory: the bot's `schemas/`, which is self-contained apart from `zod`
 and so can be copied or mounted on its own. `zod` resolves from this project's `node_modules`, so
 both repos need compatible versions (both track `^4.4.3`).
@@ -79,9 +79,13 @@ docker compose up -d --build                    # rebuild from local sources
 docker compose pull && docker compose up -d     # deploy a published image
 ```
 
-`BOT_SCHEMAS_PATH`, `BOT_DATA_PATH` and `EXTRAS_PATHS` are set by `docker-compose.yml` to their
-in-container paths and override whatever `.env` holds, so one `.env` works both in Docker and
-under a local `npm start`.
+`docker-compose.yml` reads the host values of `BOT_SCHEMAS_PATH` and `BOT_HELP_PATH` from `.env`
+as its mount sources, then sets both to their in-container paths, so one `.env` works both in
+Docker and under a local `npm start`. It also sets `EXTRAS_PATHS` to empty.
+
+Plugins go in a gitignored `docker-compose.override.yml`, which Compose merges automatically. It
+mounts the plugin and sets `EXTRAS_PATHS`. Keep host paths out of it too: reference variables from
+`.env` (e.g. `MOVIECHECKER_WEB_PATH`).
 
 To run a second instance alongside an existing one, set `HOST_PORT` — it moves only the published
 port, leaving the app bound to `PORT` inside the container:

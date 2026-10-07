@@ -4,7 +4,7 @@ import type { NextFunction, Request, Response } from "express";
 
 // Set all required env vars before importing anything that loads env.ts
 process.env.ADMIN_DISCORD_ID = "111111111111111111";
-process.env.BOT_DATA_PATH = "/tmp";
+process.env.BOT_HELP_PATH = "/tmp";
 process.env.BOT_SCHEMAS_PATH = "/tmp";
 process.env.DISCORD_CLIENT_ID = "test";
 process.env.DISCORD_CLIENT_SECRET = "test";

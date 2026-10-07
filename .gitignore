@@ -9,3 +9,6 @@ settings.json
 
 # Environment variables
 .env
+
+# Local compose additions
+docker-compose.override.yml
