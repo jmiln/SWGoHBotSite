@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { env } from "./env.ts";
+import { isSafeLocalPath } from "./safeRedirect.ts";
 
 interface StatePayload {
     v: 1;
@@ -25,7 +26,7 @@ function sign(data: string): string {
 
 /** Build a signed OAuth state token embedding returnTo. */
 export function createOAuthState(returnTo: string): string {
-    const safeReturnTo = returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/";
+    const safeReturnTo = isSafeLocalPath(returnTo) ? returnTo : "/";
     const payload: StatePayload = { v: 1, r: safeReturnTo, ts: Math.floor(Date.now() / 1000) };
     const payloadB64 = toBase64url(Buffer.from(JSON.stringify(payload)));
     return `${payloadB64}.${sign(payloadB64)}`;
@@ -57,5 +58,5 @@ export function verifyOAuthState(state: string): string | null {
     const age = Math.floor(Date.now() / 1000) - payload.ts;
     if (age < 0 || age > STATE_TTL_SECONDS) return null;
 
-    return payload.r?.startsWith("/") && !payload.r?.startsWith("//") ? payload.r : "/";
+    return isSafeLocalPath(payload.r) ? payload.r : "/";
 }

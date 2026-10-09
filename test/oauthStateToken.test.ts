@@ -55,6 +55,16 @@ test("verifyOAuthState normalises an unsafe returnTo to /", () => {
     assert.strictEqual(verifyOAuthState(state), "/");
 });
 
+test("createOAuthState normalises a backslash returnTo to /", () => {
+    const state = createOAuthState("/\\evil.com");
+    assert.strictEqual(verifyOAuthState(state), "/");
+});
+
+test("verifyOAuthState normalises a signed backslash returnTo to /", () => {
+    const state = buildTokenWithTimestamp("/\\evil.com", Math.floor(Date.now() / 1000));
+    assert.strictEqual(verifyOAuthState(state), "/");
+});
+
 test("verifyOAuthState returns null for a tampered signature", () => {
     const state = createOAuthState("/config");
     const [payload] = state.split(".");

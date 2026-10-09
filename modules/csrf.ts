@@ -9,8 +9,12 @@ export function generateCsrfToken(req: Request): string {
 }
 
 export function verifyCsrfToken(req: Request): boolean {
-    const token = req.body._csrf as string | undefined;
-    return !!token && token === req.session.csrfToken;
+    const submitted = req.body._csrf;
+    const expected = req.session.csrfToken;
+    if (typeof submitted !== "string" || !expected) return false;
+    const submittedBytes = Buffer.from(submitted);
+    const expectedBytes = Buffer.from(expected);
+    return submittedBytes.length === expectedBytes.length && crypto.timingSafeEqual(submittedBytes, expectedBytes);
 }
 
 export function rotateCsrfToken(req: Request): string {

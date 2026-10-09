@@ -6,6 +6,7 @@ import { generateCsrfToken, verifyCsrfToken } from "../modules/csrf.ts";
 import { env } from "../modules/env.ts";
 import logger from "../modules/logger.ts";
 import { createOAuthState, verifyOAuthState } from "../modules/oauthStateToken.ts";
+import { isSafeLocalPath } from "../modules/safeRedirect.ts";
 
 const router = Router();
 const SESSION_COOKIE_NAME = "connect.sid";
@@ -17,20 +18,12 @@ router.use((_req, res, next) => {
     next();
 });
 
-function getSafeLoggedOutReturnTo(returnTo?: string): string {
-    if (!returnTo?.startsWith("/") || returnTo.startsWith("//")) {
-        return "/";
-    }
-
-    return returnTo;
-}
-
 router.get("/login", authLimiter, (req: Request, res: Response) => {
     // Determine where to send the user after login.
     // Priority: ?returnTo query param > session.returnTo (set by protected routes) > Referer > "/"
     let returnTo = "/";
-    const rawReturnTo = req.query.returnTo as string;
-    if (rawReturnTo?.startsWith("/") && !rawReturnTo.startsWith("//")) {
+    const rawReturnTo = req.query.returnTo;
+    if (isSafeLocalPath(rawReturnTo)) {
         returnTo = rawReturnTo;
     } else if (req.session.returnTo) {
         returnTo = req.session.returnTo;
@@ -132,7 +125,7 @@ router.post("/logout", (req: Request, res: Response) => {
         });
     }
 
-    const returnTo = getSafeLoggedOutReturnTo(req.body.returnTo as string | undefined);
+    const returnTo = isSafeLocalPath(req.body.returnTo) ? req.body.returnTo : "/";
     const sessionId = req.session.id;
 
     req.session.destroy((err) => {

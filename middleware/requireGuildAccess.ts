@@ -14,7 +14,7 @@ export interface GuildLocals {
 export async function requireGuildAccess(req: Request, res: Response, next: NextFunction): Promise<void> {
     const accessToken = req.session.accessToken;
     if (!req.session.user || !accessToken) {
-        next();
+        res.redirect(`/login?returnTo=${encodeURIComponent(req.originalUrl)}`);
         return;
     }
 

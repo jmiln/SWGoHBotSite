@@ -53,3 +53,29 @@ test("verifyCsrfToken returns false when body token is absent", () => {
     generateCsrfToken(req);
     assert.strictEqual(verifyCsrfToken(req), false);
 });
+
+test("verifyCsrfToken returns false for a token of a different length", () => {
+    const req = makeReq();
+    const token = generateCsrfToken(req);
+    req.body._csrf = token.slice(0, -1);
+    assert.strictEqual(verifyCsrfToken(req), false);
+});
+
+test("verifyCsrfToken returns false for a same-length token containing multi-byte characters", () => {
+    const req = makeReq();
+    const token = generateCsrfToken(req);
+    req.body._csrf = `é${token.slice(1)}`;
+    assert.strictEqual(verifyCsrfToken(req), false);
+});
+
+test("verifyCsrfToken returns false when the field is repeated", () => {
+    const req = makeReq();
+    const token = generateCsrfToken(req);
+    req.body._csrf = [token, token];
+    assert.strictEqual(verifyCsrfToken(req), false);
+});
+
+test("verifyCsrfToken returns false when the session has no token", () => {
+    const req = makeReq("a".repeat(64));
+    assert.strictEqual(verifyCsrfToken(req), false);
+});
