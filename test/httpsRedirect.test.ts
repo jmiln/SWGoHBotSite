@@ -63,3 +63,41 @@ describe("HTTPS redirect in production", () => {
         assert.strictEqual(res.status, 200);
     });
 });
+
+describe("Content-Security-Policy", () => {
+    let server: Server;
+    let baseUrl: string;
+
+    before(async () => {
+        const app = express();
+        applySecurity(app);
+        app.get("/anything", (_req: Request, res: Response) => res.send("page"));
+        await new Promise<void>((resolve) => {
+            server = app.listen(0, () => resolve());
+        });
+        const addr = server.address() as { address: string; port: number };
+        baseUrl = `http://127.0.0.1:${addr.port}`;
+    });
+
+    after(async () => {
+        server.closeAllConnections();
+        await new Promise<void>((resolve, reject) => {
+            server.close((err) => (err ? reject(err) : resolve()));
+        });
+    });
+
+    async function directive(name: string): Promise<string> {
+        const res = await fetch(`${baseUrl}/anything`, { headers: { "x-forwarded-proto": "https" } });
+        const csp = res.headers.get("content-security-policy") ?? "";
+        return csp.split(";").find((d) => d.trim().startsWith(`${name} `)) ?? "";
+    }
+
+    it("allows scripts and stylesheets from jsDelivr", async () => {
+        assert.match(await directive("script-src"), /https:\/\/cdn\.jsdelivr\.net/);
+        assert.match(await directive("style-src"), /https:\/\/cdn\.jsdelivr\.net/);
+    });
+
+    it("still refuses inline styles", async () => {
+        assert.doesNotMatch(await directive("style-src"), /unsafe-inline/);
+    });
+});
