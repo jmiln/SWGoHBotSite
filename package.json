@@ -5,11 +5,19 @@
     "main": "server.ts",
     "description": "",
     "scripts": {
+        "prepare": "husky",
+        "setup": "npm install && npm run prepare",
         "start": "node --env-file=.env server.ts",
         "dev": "node --env-file=.env --watch server.ts",
         "lint": "biome check --no-errors-on-unmatched .",
+        "lint:write": "biome check --write --no-errors-on-unmatched .",
         "typecheck": "tsc --noEmit",
-        "test": "LOG_LEVEL=silent node --test --test-global-setup ./test/setup/globalSetup.ts './test/**/*.test.ts'"
+        "test": "LOG_LEVEL=silent node --test --test-global-setup ./test/setup/globalSetup.ts './test/**/*.test.ts'",
+        "changelog:draft": "scripts/changelog-draft.sh",
+        "changelog:write": "scripts/changelog-draft.sh --write",
+        "changelog:release": "scripts/changelog-draft.sh --write --release",
+        "release": "npm version --ignore-scripts=false",
+        "version": "scripts/changelog-draft.sh --write --stage --release $npm_package_version"
     },
     "repository": {
         "type": "git",
@@ -41,6 +49,7 @@
         "@types/ejs": "^3.1.5",
         "@types/express": "^5.0.6",
         "@types/express-session": "^1.19.0",
+        "husky": "^9.1.7",
         "typescript": "^7.0.2"
     }
 }

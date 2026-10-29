@@ -1,7 +1,7 @@
 name: Publish
 
 # Release flow, run locally:
-#   npm version patch|minor|major   # bumps package.json, commits, creates the vX.Y.Z tag
+#   npm run release -- patch|minor|major   # bumps package.json, writes CHANGELOG.md, commits, tags X.Y.Z
 #   git push --follow-tags
 #
 # package.json is the source of truth; the tag is derived from it by npm. This workflow only
@@ -9,7 +9,7 @@ name: Publish
 
 on:
   push:
-    tags: ["v*"]
+    tags: ['[0-9]+.[0-9]+.[0-9]+']
 
 permissions:
   contents: write
@@ -65,8 +65,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # No changelog in this repo, so the notes are GitHub's list of commits since the last tag
+      # A tag with no CHANGELOG.md section would publish an empty release; fail instead.
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes
+        run: |
+          awk -v heading="## [$GITHUB_REF_NAME]" '
+            index($0, heading) == 1 { on = 1; next }
+            on && /^## \[/ { exit }
+            on
+          ' CHANGELOG.md > release-notes.md
+          test -s release-notes.md || { echo "CHANGELOG.md has no section for $GITHUB_REF_NAME" >&2; exit 1; }
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --notes-file release-notes.md
