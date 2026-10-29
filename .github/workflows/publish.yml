@@ -12,7 +12,7 @@ on:
     tags: ["v*"]
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 concurrency:
@@ -64,3 +64,9 @@ jobs:
             VCS_REF=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # No changelog in this repo, so the notes are GitHub's list of commits since the last tag
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes
