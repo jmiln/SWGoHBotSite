@@ -12,7 +12,7 @@ ARG NODE_VERSION=26-slim
 FROM node:${NODE_VERSION} AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 
 # --- runtime ------------------------------------------------------------------------------------
 FROM node:${NODE_VERSION} AS runtime
