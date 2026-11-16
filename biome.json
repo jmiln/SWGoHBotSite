@@ -15,6 +15,21 @@
         "lineWidth": 140,
         "includes": ["**", "!**/node_modules", "!scripts/**", "!languages/**", "!data/**", "!wipCommands/**", "!test/**"]
     },
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "markdown": {
+        "formatter": {
+            "enabled": false
+        }
+    },
+    "yaml": {
+        "formatter": {
+            "enabled": false
+        }
+    },
     "javascript": {
         "formatter": {
             "quoteStyle": "double",
